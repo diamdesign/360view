@@ -28,7 +28,7 @@ const sphere = new THREE.Mesh(geometry, material);
 scene.add(sphere);
 
 // Create ambient light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.1); // Reduce intensity
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); // Reduce intensity
 scene.add(ambientLight);
 
 // Create directional light
@@ -38,6 +38,8 @@ scene.add(directionalLight);
 
 // Add mouse controls to the camera
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
 
 // Set camera position
 camera.position.set(0, 0, 1); // Move the camera further from the object
@@ -50,7 +52,7 @@ const lightHelper = new THREE.Object3D();
 camera.add(lightHelper);
 
 // Update the light's position relative to the helper object
-const lightDistance = 10; // Distance from camera to light
+const lightDistance = 1; // Distance from camera to light
 lightHelper.position.set(0, 0, lightDistance);
 directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 

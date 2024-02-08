@@ -98,3 +98,11 @@ ul li:hover div {
 ul li.active div {
 	display: flex;
 }
+
+canvas:hover {
+	cursor: grab;
+}
+
+canvas:active {
+	cursor: grabbing;
+}
