@@ -1,0 +1,66 @@
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+
+// Set up Three.js scene
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Create a texture loader with linear encoding for correct color mapping
+const loader = new THREE.TextureLoader();
+const texture = loader.load("3604.jpg", function (texture) {
+	texture.wrapS = THREE.RepeatWrapping;
+	texture.repeat.x = -1; // Flip texture horizontally
+	texture.mapping = THREE.UVMapping; // Apply UV mapping
+	texture.encoding = THREE.sRGBEncoding; // Set texture encoding to sRGB
+	texture.gammaFactor = 2.2; // Adjust gamma correction (e.g., 2.2 for typical images)
+});
+
+// Create a sphere geometry for the 360 photo
+const geometry = new THREE.SphereGeometry(5, 60, 40);
+const material = new THREE.MeshStandardMaterial({
+	map: texture,
+	side: THREE.DoubleSide,
+}); // Set side to DoubleSide
+const sphere = new THREE.Mesh(geometry, material);
+scene.add(sphere);
+
+// Create ambient light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.1); // Reduce intensity
+scene.add(ambientLight);
+
+// Create directional light
+const directionalLight = new THREE.DirectionalLight(0xffffff, 4); // Reduce intensity
+directionalLight.position.set(1, 1, 1).normalize();
+scene.add(directionalLight);
+
+// Add mouse controls to the camera
+const controls = new OrbitControls(camera, renderer.domElement);
+
+// Set camera position
+camera.position.set(0, 0, 1); // Move the camera further from the object
+controls.minDistance = 0.1; // Set a minimum zoom distance that allows zooming in closer
+controls.maxDistance = 3; // Set maximum zoom distance
+controls.zoomSpeed = 10; // Adjust zoom speed
+
+// Create a helper object to track the position in front of the camera
+const lightHelper = new THREE.Object3D();
+camera.add(lightHelper);
+
+// Update the light's position relative to the helper object
+const lightDistance = 10; // Distance from camera to light
+lightHelper.position.set(0, 0, lightDistance);
+directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
+
+function animate() {
+	requestAnimationFrame(animate);
+	controls.update(); // Update mouse controls
+
+	// Update the light's position relative to the helper object
+	directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
+
+	renderer.render(scene, camera);
+}
+animate();
