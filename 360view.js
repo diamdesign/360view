@@ -10,7 +10,7 @@ document.body.appendChild(renderer.domElement);
 
 // Create a texture loader with linear encoding for correct color mapping
 const loader = new THREE.TextureLoader();
-const texture = loader.load("3604.jpg", function (texture) {
+const texture = loader.load("360.jpg", function (texture) {
 	texture.wrapS = THREE.RepeatWrapping;
 	texture.repeat.x = -1; // Flip texture horizontally
 	texture.mapping = THREE.UVMapping; // Apply UV mapping
@@ -64,3 +64,57 @@ function animate() {
 	renderer.render(scene, camera);
 }
 animate();
+
+document.addEventListener("DOMContentLoaded", function () {
+	// Get all the <li> elements
+	const listItems = document.querySelectorAll("li");
+	// Add click event listener to each <li> element
+	listItems.forEach(function (item) {
+		item.addEventListener("click", function () {
+			// Get the value of the data-image attribute
+
+			listItems.forEach((item) => {
+				item.classList.remove("active");
+			});
+
+			item.classList.add("active");
+			const imageId = item.getAttribute("data-image");
+
+			// Call a function to change the 360 image based on the imageId
+			change360Image(imageId);
+		});
+	});
+
+	// Function to change the 360 image
+	function change360Image(imageId) {
+		// Load the new image based on the imageId
+		const textureLoader = new THREE.TextureLoader();
+
+		const texture = loader.load(`${imageId}.jpg`, function (texture) {
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.repeat.x = -1; // Flip texture horizontally
+			texture.mapping = THREE.UVMapping; // Apply UV mapping
+			texture.encoding = THREE.sRGBEncoding; // Set texture encoding to sRGB
+			texture.gammaFactor = 2.2; // Adjust gamma correction (e.g., 2.2 for typical images)
+		});
+
+		// Assuming sphere is the mesh representing the 360 image
+		// Update the texture of the sphere mesh
+		sphere.material.map = texture;
+		sphere.material.needsUpdate = true;
+	}
+});
+
+// Refresh the canvas on window resize
+window.addEventListener("resize", function () {
+	// Update camera aspect ratio
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+
+	// Update renderer size
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.setPixelRatio(window.devicePixelRatio);
+
+	// Render the scene
+	renderer.render(scene, camera);
+});
