@@ -16,7 +16,8 @@ canvas {
 }
 
 .locations {
-	width: 100%;
+	width: calc(100% + 20px);
+	left: -10px;
 	position: fixed;
 	height: 175px;
 	bottom: 0px;
@@ -28,6 +29,7 @@ canvas {
 	overflow-y: hidden;
 	scrollbar-width: thin;
 	scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+	z-index: 1000;
 }
 
 ul {
@@ -123,4 +125,9 @@ canvas:hover {
 
 canvas:active {
 	cursor: grabbing;
+}
+
+#video {
+	z-index: -1000;
+	position: fixed;
 }

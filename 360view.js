@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { CSS3DRenderer, CSS3DObject } from "three/examples/jsm/renderers/CSS3DRenderer";
 
 const labelContainerElem = document.querySelector("#labels");
 
@@ -23,7 +22,7 @@ const texture = loader.load("360.jpg", function (texture) {
 });
 
 // Create a sphere geometry for the 360 photo
-const geometry = new THREE.SphereGeometry(60, 80, 80); // Increase the radius to 10
+const geometry = new THREE.SphereGeometry(100, 80, 80); // Increase the radius to 10
 
 const material = new THREE.MeshStandardMaterial({
 	map: texture,
@@ -85,7 +84,7 @@ scene.add(points);
 // Set camera position
 camera.position.set(0, 0, 1); // Move the camera further from the object
 controls.minDistance = 0.1; // Set a minimum zoom distance that allows zooming in closer
-controls.maxDistance = 30; // Set maximum zoom distance
+controls.maxDistance = 50; // Set maximum zoom distance
 controls.zoomSpeed = 10; // Adjust zoom speed
 
 // Create a helper object to track the position in front of the camera
@@ -173,4 +172,35 @@ scrollableContent.addEventListener("wheel", function (event) {
 
 	// Adjust the scrollLeft property based on the scroll amount
 	scrollableContent.scrollLeft += scrollAmount;
+});
+
+let isDragging = false;
+let startX;
+let scrollLeft;
+
+scrollableContent.addEventListener("mousedown", function (event) {
+	// Prevent default click behavior when starting drag
+	event.preventDefault();
+
+	isDragging = true;
+	startX = event.pageX - scrollableContent.offsetLeft;
+	scrollLeft = scrollableContent.scrollLeft;
+	scrollableContent.style.cursor = "grabbing"; // Change cursor style
+});
+
+scrollableContent.addEventListener("mouseup", function (event) {
+	isDragging = false;
+	scrollableContent.style.cursor = "grab"; // Restore cursor style
+});
+
+scrollableContent.addEventListener("mouseleave", function (event) {
+	isDragging = false;
+	scrollableContent.style.cursor = "grab"; // Restore cursor style
+});
+
+scrollableContent.addEventListener("mousemove", function (event) {
+	if (!isDragging) return;
+	const x = event.pageX - scrollableContent.offsetLeft;
+	const walk = (x - startX) * 3; // Adjust scroll speed
+	scrollableContent.scrollLeft = scrollLeft - walk;
 });
