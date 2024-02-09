@@ -1,6 +1,55 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
+var imageArray = [
+	{
+		id: 1,
+		image: "360.jpg",
+		title: "One",
+	},
+	{
+		id: 2,
+		image: "3602.jpg",
+		title: "Two",
+	},
+	{
+		id: 3,
+		image: "3603.jpg",
+		title: "Three",
+	},
+	{
+		id: 4,
+		image: "3604.jpg",
+		title: "Four",
+	},
+	{
+		id: 5,
+		image: "3605.jpg",
+		title: "Five",
+	},
+	{
+		id: 6,
+		image: "3606.jpg",
+		title: "Six",
+	},
+	{
+		id: 7,
+		image: "3607.jpg",
+		title: "Seven",
+	},
+];
+
+let locationhtml = ``;
+imageArray.forEach((image) => {
+	locationhtml += `<li data-image="${image.image}" data-id="${image.id}">
+					<div>${image.title}</div>
+					<img src="${image.image}" alt="" />
+				</li>`;
+});
+
+const locationElem = document.querySelector("#locations ul");
+locationElem.innerHTML = locationhtml;
+
 const labelContainerElem = document.querySelector("#labels");
 
 // Set up Three.js scene
@@ -132,7 +181,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		// Load the new image based on the imageId
 		const textureLoader = new THREE.TextureLoader();
 
-		const texture = loader.load(`${imageId}.jpg`, function (texture) {
+		const texture = loader.load(`${imageId}`, function (texture) {
 			texture.wrapS = THREE.RepeatWrapping;
 			texture.repeat.x = -1; // Flip texture horizontally
 			texture.mapping = THREE.UVMapping; // Apply UV mapping

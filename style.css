@@ -131,3 +131,7 @@ canvas:active {
 	z-index: -1000;
 	position: fixed;
 }
+
+canvas {
+	filter: contrast(1.2) saturate(1.2);
+}
