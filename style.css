@@ -15,17 +15,33 @@ canvas {
 	height: 100%;
 }
 
-ul {
+.locations {
 	width: 100%;
 	position: fixed;
+	height: 175px;
 	bottom: 0px;
 	display: flex;
 	justify-content: center;
 	list-style: none;
 	background: rgba(0, 0, 0, 0.4);
+	overflow-x: auto;
+	overflow-y: hidden;
+	scrollbar-width: thin;
+	scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+}
+
+ul {
+	padding-left: 20px;
+	padding-right: 20px;
+	display: flex;
+	justify-content: center;
+	list-style: none;
+	position: absolute;
+	left: 0;
 }
 
 ul li {
+	user-select: none;
 	margin-bottom: 2px;
 	font-family: Arial, Helvetica, sans-serif;
 	font-weight: bold;
@@ -43,6 +59,7 @@ ul li {
 }
 
 ul li img {
+	user-select: none;
 	display: block;
 	height: 300%;
 	object-fit: cover;
@@ -57,6 +74,7 @@ ul li:hover {
 }
 
 ul li:hover img {
+	user-select: none;
 	scale: 1.1;
 }
 

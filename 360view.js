@@ -2,6 +2,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { CSS3DRenderer, CSS3DObject } from "three/examples/jsm/renderers/CSS3DRenderer";
 
+const labelContainerElem = document.querySelector("#labels");
+
 // Set up Three.js scene
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -158,4 +160,17 @@ window.addEventListener("resize", function () {
 
 	// Render the scene
 	renderer.render(scene, camera);
+});
+
+const scrollableContent = document.getElementById("locations");
+
+scrollableContent.addEventListener("wheel", function (event) {
+	// Prevent the default scroll behavior
+	event.preventDefault();
+
+	// Calculate the amount to scroll
+	const scrollAmount = event.deltaY;
+
+	// Adjust the scrollLeft property based on the scroll amount
+	scrollableContent.scrollLeft += scrollAmount;
 });
