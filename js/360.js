@@ -7,6 +7,21 @@ const viewElem = document.querySelector("#view-container");
 const scrollableContent = document.querySelector("#scrollable");
 const labelContainerElem = document.querySelector("#labels");
 
+const settingsElem = document.querySelector("#settings");
+const settingsBrightness = document.getElementById("brightness");
+const settingsContrast = document.getElementById("contrast");
+const settingsSaturate = document.getElementById("saturation");
+const settingsAmbient = document.getElementById("ambient");
+const settingsVolume = document.getElementById("volume");
+const settingsBrightnessNo = document.getElementById("brightnessNo");
+const settingsContrastNo = document.getElementById("contrastNo");
+const settingsSaturateNo = document.getElementById("saturationNo");
+const settingsAmbientNo = document.getElementById("ambientNo");
+const settingsVolumeNo = document.getElementById("volumeNo");
+
+const resetButton = document.getElementById("reset");
+const closeSettingsButton = document.querySelector(".closebtn");
+
 // Function to extract and display the first frame of the video as an image
 function extractVideoFrame(videoUrl, callback) {
 	var video = document.createElement("video");
@@ -193,6 +208,7 @@ Promise.all(promises).then((htmlArray) => {
 
 // Set up Three.js scene
 const scene = new THREE.Scene();
+scene.background = new THREE.Color("black");
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer();
 
@@ -245,8 +261,10 @@ function change360Content(fileName, fileType) {
 		sphere.material.needsUpdate = true;
 	} else if (fileType === "image") {
 		sceneType = "image";
+
 		// Remove the previous texture
 		sphere.material.map = null;
+		// Create a black texture
 		// Pause and remove the current video
 		video.pause();
 		video.src = "";
@@ -463,11 +481,6 @@ scrollableContent.addEventListener("mousemove", function (event) {
 
 // Global
 
-const settingsAmbient = document.getElementById("ambient");
-const settingsVolume = document.getElementById("volume");
-const settingsAmbientNo = document.getElementById("ambientNo");
-const settingsVolumeNo = document.getElementById("volumeNo");
-
 settingsVolume.addEventListener("input", () => {
 	const volume = settingsVolume.value; // Get the volume value from the range input
 	video.volume = volume; // Set the volume of the video
@@ -482,13 +495,59 @@ settingsAmbient.addEventListener("input", () => {
 
 var threshold = 40;
 const locationsElem = document.getElementById("locations");
+const locationsIndicatorElem = document.querySelector(".indicator");
 
-const settingsBrightness = document.getElementById("brightness");
-const settingsContrast = document.getElementById("contrast");
-const settingsSaturate = document.getElementById("saturation");
-const settingsBrightnessNo = document.getElementById("brightnessNo");
-const settingsContrastNo = document.getElementById("contrastNo");
-const settingsSaturateNo = document.getElementById("saturationNo");
+function updateScrollableContentStyle(event) {
+	const mouseY = event.clientY; // Get the vertical position of the mouse
+
+	// Get the height of the viewport
+	const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+	// Get the current style of scrollableContent
+	const scrollableBottom = parseFloat(locationsElem.style.bottom);
+
+	// Check if scrollableContent is at bottom: 0
+	if (scrollableBottom === 0) {
+		threshold = 175;
+	} else {
+		threshold = 40;
+	}
+
+	// Check if the mouse is within the threshold distance from the bottom
+	if (viewportHeight - mouseY < threshold) {
+		locationsIndicatorElem.classList.add("rotate180");
+		locationsElem.style.bottom = "0";
+	} else {
+		locationsElem.style.bottom = "-175px";
+		locationsIndicatorElem.classList.remove("rotate180");
+	}
+}
+
+// Add mousemove event listener to the document
+document.addEventListener("mousemove", function (event) {
+	updateScrollableContentStyle(event);
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+	// Get all the <li> elements
+	// Function to change the 360 image
+
+	function checkFirstListItem() {
+		const firstListItem = document.querySelector("#locations ul li:first-child");
+		if (firstListItem) {
+			const fileType = firstListItem.getAttribute("data-type");
+			const fileName = firstListItem.getAttribute("data-file");
+			console.log("First Type:", fileType);
+			change360Content(fileName, fileType);
+		} else {
+			// Retry after a delay if the first list item is not found
+			setTimeout(checkFirstListItem, 1000); // Retry after 1 second
+		}
+	}
+
+	// Start checking for the first list item
+	checkFirstListItem();
+});
 
 settingsBrightness.addEventListener("input", () => {
 	const c = document.getElementsByTagName("canvas")[0];
@@ -529,52 +588,28 @@ settingsSaturate.addEventListener("input", () => {
 	settingsSaturateNo.textContent = saturation; // Update value of the corresponding input
 });
 
-function updateScrollableContentStyle(event) {
-	const mouseY = event.clientY; // Get the vertical position of the mouse
+resetButton.addEventListener("click", () => {
+	const c = document.getElementsByTagName("canvas")[0];
+	c.style.filter = "contrast(1.23) brightness(1) saturate(1.23)";
 
-	// Get the height of the viewport
-	const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+	settingsAmbient.value = "3.5";
+	settingsAmbientNo.textContent = "3.5";
+	updateLight(3.5);
 
-	// Get the current style of scrollableContent
-	const scrollableBottom = parseFloat(locationsElem.style.bottom);
+	settingsBrightness.value = "1";
+	settingsBrightnessNo.textContent = "1";
 
-	// Check if scrollableContent is at bottom: 0
-	if (scrollableBottom === 0) {
-		threshold = 175;
-	} else {
-		threshold = 40;
-	}
+	settingsContrast.value = "1.23";
+	settingsContrastNo.textContent = "1.23";
 
-	// Check if the mouse is within the threshold distance from the bottom
-	if (viewportHeight - mouseY < threshold) {
-		locationsElem.style.bottom = "0";
-	} else {
-		locationsElem.style.bottom = "-175px";
-	}
-}
+	settingsSaturate.value = "1.23";
+	settingsSaturateNo.textContent = "1.23";
 
-// Add mousemove event listener to the document
-document.addEventListener("mousemove", function (event) {
-	updateScrollableContentStyle(event);
+	settingsVolume.value = "1";
+	settingsVolumeNo.textContent = "1";
+	video.volume = "1";
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-	// Get all the <li> elements
-	// Function to change the 360 image
-
-	function checkFirstListItem() {
-		const firstListItem = document.querySelector("#locations ul li:first-child");
-		if (firstListItem) {
-			const fileType = firstListItem.getAttribute("data-type");
-			const fileName = firstListItem.getAttribute("data-file");
-			console.log("First Type:", fileType);
-			change360Content(fileName, fileType);
-		} else {
-			// Retry after a delay if the first list item is not found
-			setTimeout(checkFirstListItem, 1000); // Retry after 1 second
-		}
-	}
-
-	// Start checking for the first list item
-	checkFirstListItem();
+closeSettingsButton.addEventListener("click", () => {
+	settingsElem.style.right = "-60%";
 });

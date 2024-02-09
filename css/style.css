@@ -7,17 +7,21 @@
 }
 body,
 html {
+	background: rgb(38, 38, 38);
+	background: radial-gradient(circle, rgba(38, 38, 38, 1) 0%, rgba(0, 0, 0, 1) 100%);
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
 }
 canvas {
+	background: radial-gradient(circle, rgba(38, 38, 38, 1) 0%, rgba(0, 0, 0, 1) 100%) !important;
 	display: block;
 	width: 100%;
 	height: 100%;
 }
 
 .locations {
+	backdrop-filter: blur(12px);
 	width: calc(100% + 20px);
 	left: -10px;
 	position: fixed;
@@ -64,6 +68,7 @@ canvas {
 	height: 32px;
 	width: 32px;
 	transform-origin: top left;
+	transition: rotate 0.4s ease-in-out;
 	top: 50%;
 	left: 50%;
 	transform: translateX(-50%) translateY(-50%);
@@ -72,6 +77,10 @@ canvas {
 	background-position: center center !important;
 	background-repeat: no-repeat !important;
 	background-size: 16px !important;
+}
+
+.indicator.rotate180:after {
+	rotate: 180deg;
 }
 
 ul {
@@ -239,19 +248,36 @@ canvas {
 }
 
 #settings {
-	color: white;
-	background: rgba(0, 0, 0, 0.4);
+	backdrop-filter: blur(12px);
+	color: rgba(255, 255, 255, 0.6);
+	background: rgba(0, 0, 0, 0.6);
 	border-radius: 12px;
 	position: fixed;
-	z-index: 1000;
+	z-index: 1001;
 	padding: 40px;
+	padding-right: 80px;
+	right: 0;
+	transition: right 0.7s ease-in-out;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
 	top: 50%;
-	left: 50%;
-	transform: translateX(-50%) translateY(-50%);
+	transform: translateY(-50%);
 	width: 640px;
+}
+
+#settings .row {
 	display: grid;
-	grid-template-columns: 1fr 4fr 1fr;
+	grid-template-columns: 2fr 10fr 1fr;
 	grid-gap: 10px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+	margin-top: 10px;
+	padding-bottom: 10px;
+}
+
+#settings .row span:nth-child(3n) {
+	text-align: right;
+	color: white;
+	font-weight: bold;
 }
 
 #settings input {
@@ -284,4 +310,113 @@ canvas {
 	width: 21px;
 	height: 21px;
 	border-radius: 4px;
+}
+
+#reset {
+	border-radius: 6px;
+	background: rgba(255, 255, 255, 0.2);
+	padding: 10px 20px;
+	margin-top: 20px;
+	text-align: center;
+}
+
+#reset:hover {
+	animation: outlinepush 0.8s ease-out 1 forwards;
+	cursor: pointer;
+	filter: invert(1);
+	color: white;
+	background: black !important;
+}
+#settings .closebtn {
+	width: 40px;
+	height: 100%;
+	position: absolute;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	content: "";
+}
+#settings .closebtn:after {
+	width: 40px;
+	height: 40px;
+	position: absolute;
+	right: -50%;
+	top: 50%;
+	transform: translateX(10px);
+	content: "";
+	background: url(/img/chevron.svg);
+	transform-origin: top center;
+	background-size: 16px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	filter: invert(1);
+	rotate: 90deg;
+	opacity: 0.5;
+}
+
+#settings .closebtn:hover {
+	cursor: pointer;
+}
+#settings .closebtn:hover:after {
+	opacity: 1;
+}
+
+/*********** Baseline, reset styles ***********/
+input[type="range"] {
+	-webkit-appearance: none;
+	appearance: none;
+	background: transparent;
+	cursor: pointer;
+	width: 100%;
+}
+
+/* Removes default focus */
+input[type="range"]:focus {
+	outline: none;
+}
+
+/******** Chrome, Safari, Opera and Edge Chromium styles ********/
+/* slider track */
+input[type="range"]::-webkit-slider-runnable-track {
+	background-color: #ffffff7c;
+	border-radius: 1rem;
+	height: 1rem;
+}
+
+/* slider thumb */
+input[type="range"]::-webkit-slider-thumb {
+	-webkit-appearance: none; /* Override default look */
+	appearance: none;
+	margin-top: -4px; /* Centers thumb on the track */
+	background-color: #ffffff;
+	border-radius: 1.5rem;
+	height: 1.5rem;
+	width: 1.5rem;
+}
+
+input[type="range"]:focus::-webkit-slider-thumb {
+	outline: 3px solid #fffb01;
+	outline-offset: 0.125rem;
+}
+
+/*********** Firefox styles ***********/
+/* slider track */
+input[type="range"]::-moz-range-track {
+	background-color: #ffffff7c;
+	border-radius: 1rem;
+	height: 1rem;
+}
+
+/* slider thumb */
+input[type="range"]::-moz-range-thumb {
+	background-color: #ffffff;
+	border: none; /*Removes extra border that FF applies*/
+	border-radius: 1.5rem;
+	height: 1.5rem;
+	width: 1.5rem;
+}
+
+input[type="range"]:focus::-moz-range-thumb {
+	outline: 3px solid #fffb01;
+	outline-offset: 0.125rem;
 }
