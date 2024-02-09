@@ -20,19 +20,58 @@ canvas {
 	left: -10px;
 	position: fixed;
 	height: 175px;
-	bottom: 0px;
+	bottom: -175px;
+	transition: bottom 0.4s ease-in-out;
 	display: flex;
 	justify-content: center;
 	list-style: none;
 	background: rgba(0, 0, 0, 0.4);
+
+	z-index: 1000;
+}
+
+.locations .container {
+	width: 100%;
+	height: 100%;
 	overflow-x: auto;
 	overflow-y: hidden;
 	scrollbar-width: thin;
 	scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
-	z-index: 1000;
+}
+
+.locations .indicator {
+	content: "";
+	display: block;
+	position: absolute;
+	top: -32px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 64px;
+	height: 32px;
+	border-top-left-radius: 12px;
+	border-top-right-radius: 12px;
+	background: rgba(0, 0, 0, 0.4);
+}
+
+.locations .indicator:after {
+	content: "";
+	display: block;
+	position: absolute;
+	height: 32px;
+	width: 32px;
+	transform-origin: top left;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	filter: invert(1);
+	background-image: url("chevron.svg") !important;
+	background-position: center center !important;
+	background-repeat: no-repeat !important;
+	background-size: 21px !important;
 }
 
 ul {
+	min-width: 100%;
 	padding-left: 20px;
 	padding-right: 20px;
 	display: flex;

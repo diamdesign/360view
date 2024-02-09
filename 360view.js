@@ -40,17 +40,36 @@ var imageArray = [
 ];
 
 let locationhtml = ``;
-imageArray.forEach((image) => {
-	locationhtml += `<li data-image="${image.image}" data-id="${image.id}">
-					<div>${image.title}</div>
-					<img src="${image.image}" alt="" />
-				</li>`;
+imageArray.forEach((image, index) => {
+	// Determine if this is the first item and set the appropriate class
+	let activeClass = index === 0 ? "active" : "";
+
+	locationhtml += `<li class="${activeClass}" data-image="${image.image}" data-id="${image.id}">
+                    <div>${image.title}</div>
+                    <img src="${image.image}" alt="" />
+                </li>`;
 });
 
 const locationElem = document.querySelector("#locations ul");
 locationElem.innerHTML = locationhtml;
 
-const labelContainerElem = document.querySelector("#labels");
+const listItems = document.querySelectorAll("li");
+// Add click event listener to each <li> element
+listItems.forEach(function (item) {
+	item.addEventListener("click", function () {
+		// Get the value of the data-image attribute
+
+		listItems.forEach((item) => {
+			item.classList.remove("active");
+		});
+
+		item.classList.add("active");
+		const imageId = item.getAttribute("data-image");
+
+		// Call a function to change the 360 image based on the imageId
+		change360Image(imageId);
+	});
+});
 
 // Set up Three.js scene
 const scene = new THREE.Scene();
@@ -156,100 +175,20 @@ function animate() {
 }
 animate();
 
-document.addEventListener("DOMContentLoaded", function () {
-	// Get all the <li> elements
-	const listItems = document.querySelectorAll("li");
-	// Add click event listener to each <li> element
-	listItems.forEach(function (item) {
-		item.addEventListener("click", function () {
-			// Get the value of the data-image attribute
+function change360Image(imageId) {
+	// Load the new image based on the imageId
+	const textureLoader = new THREE.TextureLoader();
 
-			listItems.forEach((item) => {
-				item.classList.remove("active");
-			});
-
-			item.classList.add("active");
-			const imageId = item.getAttribute("data-image");
-
-			// Call a function to change the 360 image based on the imageId
-			change360Image(imageId);
-		});
+	const texture = loader.load(`${imageId}`, function (texture) {
+		texture.wrapS = THREE.RepeatWrapping;
+		texture.repeat.x = -1; // Flip texture horizontally
+		texture.mapping = THREE.UVMapping; // Apply UV mapping
+		texture.encoding = THREE.sRGBEncoding; // Set texture encoding to sRGB
+		texture.gammaFactor = 2.2; // Adjust gamma correction (e.g., 2.2 for typical images)
 	});
 
-	// Function to change the 360 image
-	function change360Image(imageId) {
-		// Load the new image based on the imageId
-		const textureLoader = new THREE.TextureLoader();
-
-		const texture = loader.load(`${imageId}`, function (texture) {
-			texture.wrapS = THREE.RepeatWrapping;
-			texture.repeat.x = -1; // Flip texture horizontally
-			texture.mapping = THREE.UVMapping; // Apply UV mapping
-			texture.encoding = THREE.sRGBEncoding; // Set texture encoding to sRGB
-			texture.gammaFactor = 2.2; // Adjust gamma correction (e.g., 2.2 for typical images)
-		});
-
-		// Assuming sphere is the mesh representing the 360 image
-		// Update the texture of the sphere mesh
-		sphere.material.map = texture;
-		sphere.material.needsUpdate = true;
-	}
-});
-
-// Refresh the canvas on window resize
-window.addEventListener("resize", function () {
-	// Update camera aspect ratio
-	camera.aspect = window.innerWidth / window.innerHeight;
-	camera.updateProjectionMatrix();
-
-	// Update renderer size
-	renderer.setSize(window.innerWidth, window.innerHeight);
-	renderer.setPixelRatio(window.devicePixelRatio);
-
-	// Render the scene
-	renderer.render(scene, camera);
-});
-
-const scrollableContent = document.getElementById("locations");
-
-scrollableContent.addEventListener("wheel", function (event) {
-	// Prevent the default scroll behavior
-	event.preventDefault();
-
-	// Calculate the amount to scroll
-	const scrollAmount = event.deltaY;
-
-	// Adjust the scrollLeft property based on the scroll amount
-	scrollableContent.scrollLeft += scrollAmount;
-});
-
-let isDragging = false;
-let startX;
-let scrollLeft;
-
-scrollableContent.addEventListener("mousedown", function (event) {
-	// Prevent default click behavior when starting drag
-	event.preventDefault();
-
-	isDragging = true;
-	startX = event.pageX - scrollableContent.offsetLeft;
-	scrollLeft = scrollableContent.scrollLeft;
-	scrollableContent.style.cursor = "grabbing"; // Change cursor style
-});
-
-scrollableContent.addEventListener("mouseup", function (event) {
-	isDragging = false;
-	scrollableContent.style.cursor = "grab"; // Restore cursor style
-});
-
-scrollableContent.addEventListener("mouseleave", function (event) {
-	isDragging = false;
-	scrollableContent.style.cursor = "grab"; // Restore cursor style
-});
-
-scrollableContent.addEventListener("mousemove", function (event) {
-	if (!isDragging) return;
-	const x = event.pageX - scrollableContent.offsetLeft;
-	const walk = (x - startX) * 3; // Adjust scroll speed
-	scrollableContent.scrollLeft = scrollLeft - walk;
-});
+	// Assuming sphere is the mesh representing the 360 image
+	// Update the texture of the sphere mesh
+	sphere.material.map = texture;
+	sphere.material.needsUpdate = true;
+}

@@ -28,7 +28,7 @@ function extractVideoFrame(videoUrl, callback) {
 	};
 }
 
-var imageArray = [
+var videoArray = [
 	{
 		id: 1,
 		image: "360_vr_master_series___free_asset_download____bavarian_alps_wimbachklamm (1080p).mp4",
@@ -45,20 +45,37 @@ var imageArray = [
 		title: "Ayutthaya",
 	},
 ];
-
 let promises = [];
-imageArray.forEach((image) => {
+
+// Create a promise for the first item
+let firstPromise = new Promise((resolve) => {
+	let isFirst = true;
+	extractVideoFrame(videoArray[0].image, function (imageUrl) {
+		let activeClass = isFirst ? "active" : "";
+		let itemHtml = `<li class="${activeClass}" data-image="${videoArray[0].image}" data-id="${videoArray[0].id}">
+                            <div>${videoArray[0].title}</div>
+                            <img src="${imageUrl}" alt="" />
+                        </li>`;
+		isFirst = false; // Set isFirst to false after the first iteration
+		resolve(itemHtml);
+	});
+});
+
+promises.push(firstPromise); // Push the first promise
+
+// Create promises for the remaining items
+for (let i = 1; i < videoArray.length; i++) {
 	let promise = new Promise((resolve) => {
-		extractVideoFrame(image.image, function (imageUrl) {
-			let itemHtml = `<li data-image="${image.image}" data-id="${image.id}">
-                                <div>${image.title}</div>
+		extractVideoFrame(videoArray[i].image, function (imageUrl) {
+			let itemHtml = `<li data-image="${videoArray[i].image}" data-id="${videoArray[i].id}">
+                                <div>${videoArray[i].title}</div>
                                 <img src="${imageUrl}" alt="" />
                             </li>`;
 			resolve(itemHtml);
 		});
 	});
 	promises.push(promise);
-});
+}
 
 Promise.all(promises).then((htmlArray) => {
 	let locationHtml = htmlArray.join("");
@@ -69,8 +86,6 @@ Promise.all(promises).then((htmlArray) => {
 	// Add click event listener to each <li> element
 	listItems.forEach(function (item) {
 		item.addEventListener("click", function () {
-			// Get the value of the data-image attribute
-
 			listItems.forEach((item) => {
 				item.classList.remove("active");
 			});
@@ -95,7 +110,7 @@ document.body.appendChild(renderer.domElement);
 
 // Create a video element
 const video = document.createElement("video");
-video.src = imageArray[0].image;
+video.src = videoArray[0].image;
 video.crossOrigin = "anonymous";
 video.loop = true;
 video.muted = false;
@@ -171,7 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Initialize currentVideoSrc with the URL of the initial video
-let currentVideoSrc = imageArray[0].image;
+let currentVideoSrc = videoArray[0].image;
 
 function change360Video(videoId) {
 	// Check if the videoId is the same as the current video
@@ -190,61 +205,3 @@ function change360Video(videoId) {
 	// Update the texture with the new video source
 	texture.needsUpdate = true;
 }
-
-// Refresh the canvas on window resize
-window.addEventListener("resize", function () {
-	// Update camera aspect ratio
-	camera.aspect = window.innerWidth / window.innerHeight;
-	camera.updateProjectionMatrix();
-
-	// Update renderer size
-	renderer.setSize(window.innerWidth, window.innerHeight);
-	renderer.setPixelRatio(window.devicePixelRatio);
-
-	// Render the scene
-	renderer.render(scene, camera);
-});
-
-const scrollableContent = document.getElementById("locations");
-
-scrollableContent.addEventListener("wheel", function (event) {
-	// Prevent the default scroll behavior
-	event.preventDefault();
-
-	// Calculate the amount to scroll
-	const scrollAmount = event.deltaY;
-
-	// Adjust the scrollLeft property based on the scroll amount
-	scrollableContent.scrollLeft += scrollAmount;
-});
-
-let isDragging = false;
-let startX;
-let scrollLeft;
-
-scrollableContent.addEventListener("mousedown", function (event) {
-	// Prevent default click behavior when starting drag
-	event.preventDefault();
-
-	isDragging = true;
-	startX = event.pageX - scrollableContent.offsetLeft;
-	scrollLeft = scrollableContent.scrollLeft;
-	scrollableContent.style.cursor = "grabbing"; // Change cursor style
-});
-
-scrollableContent.addEventListener("mouseup", function (event) {
-	isDragging = false;
-	scrollableContent.style.cursor = "grab"; // Restore cursor style
-});
-
-scrollableContent.addEventListener("mouseleave", function (event) {
-	isDragging = false;
-	scrollableContent.style.cursor = "grab"; // Restore cursor style
-});
-
-scrollableContent.addEventListener("mousemove", function (event) {
-	if (!isDragging) return;
-	const x = event.pageX - scrollableContent.offsetLeft;
-	const walk = (x - startX) * 3; // Adjust scroll speed
-	scrollableContent.scrollLeft = scrollLeft - walk;
-});
