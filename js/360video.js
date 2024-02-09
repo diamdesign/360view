@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
+const viewElem = document.querySelector("#view-container");
 const scrollableContent = document.querySelector("#scrollable");
 const labelContainerElem = document.querySelector("#labels");
 
@@ -31,43 +32,55 @@ function extractVideoFrame(videoUrl, callback) {
 	};
 }
 
-var videoArray = [
+var contentArray = [
 	{
 		id: 1,
-		image: "360_vr_master_series___free_asset_download____bavarian_alps_wimbachklamm (1080p).mp4",
+		type: "video",
+		file: "360_vr_master_series___free_asset_download____bavarian_alps_wimbachklamm (1080p).mp4",
 		title: "Bavarian Alps",
 	},
 
 	{
 		id: 2,
-		image: "ayutthaya_-_needs_stabilization_and_horizon_correction___360_vr_master_series___free_download (1080p).mp4",
+		type: "video",
+		file: "ayutthaya_-_needs_stabilization_and_horizon_correction___360_vr_master_series___free_download (1080p).mp4",
 		title: "Ayutthaya",
 	},
 	{
 		id: 3,
-		image: "ayutthaya_-_easy_tripod_paint___360_vr_master_series___free_download (1080p).mp4",
+		type: "video",
+		file: "ayutthaya_-_easy_tripod_paint___360_vr_master_series___free_download (1080p).mp4",
 		title: "Ayutthaya Two",
 	},
 	{
 		id: 4,
-		image: "360_vr_master_series___free_download___london_park_ducks_swans (1080p).mp4",
+		type: "video",
+		file: "360_vr_master_series___free_download___london_park_ducks_swans (1080p).mp4",
 		title: "London Park",
 	},
 	{
 		id: 5,
-		image: "360_vr_master_series___free_download___london_on_tower_bridge (1080p).mp4",
+		type: "video",
+		file: "360_vr_master_series___free_download___london_on_tower_bridge (1080p).mp4",
 		title: "London Tower Bridge",
 	},
+	{
+		id: 6,
+		type: "video",
+		file: "360_vr_master_series___free_download___crystal_shower_falls (1080p).mp4",
+		title: "Crystal Shower Falls",
+	},
 ];
+
 let promises = [];
 
 // Create a promise for the first item
 let firstPromise = new Promise((resolve) => {
 	let isFirst = true;
-	extractVideoFrame(videoArray[0].image, function (imageUrl) {
+	extractVideoFrame(contentArray[0].file, function (imageUrl) {
 		let activeClass = isFirst ? "active" : "";
-		let itemHtml = `<li class="${activeClass}" data-image="${videoArray[0].image}" data-id="${videoArray[0].id}">
-                            <div>${videoArray[0].title}</div>
+		let itemHtml = `<li class="${activeClass}" data-image="${contentArray[0].file}" data-id="${contentArray[0].id}">
+                            <div>${contentArray[0].title}</div>
                             <img src="${imageUrl}" alt="" />
                         </li>`;
 		isFirst = false; // Set isFirst to false after the first iteration
@@ -78,11 +91,11 @@ let firstPromise = new Promise((resolve) => {
 promises.push(firstPromise); // Push the first promise
 
 // Create promises for the remaining items
-for (let i = 1; i < videoArray.length; i++) {
+for (let i = 1; i < contentArray.length; i++) {
 	let promise = new Promise((resolve) => {
-		extractVideoFrame(videoArray[i].image, function (imageUrl) {
-			let itemHtml = `<li data-image="${videoArray[i].image}" data-id="${videoArray[i].id}">
-                                <div>${videoArray[i].title}</div>
+		extractVideoFrame(contentArray[i].file, function (imageUrl) {
+			let itemHtml = `<li data-file="${contentArray[i].file}" data-id="${contentArray[i].id}" data-type="${contentArray[i].type}>
+                                <div>${contentArray[i].title}</div>
                                 <img src="${imageUrl}" alt="" />
                             </li>`;
 			resolve(itemHtml);
@@ -105,9 +118,11 @@ Promise.all(promises).then((htmlArray) => {
 			});
 
 			item.classList.add("active");
-			const videoId = item.getAttribute("data-image");
+			const fileName = item.getAttribute("data-file");
+			const fileType = item.getAttribute("data-type");
+			console.log(fileName, fileType);
 			// Call a function to change the 360 image based on the imageId
-			change360Video(videoId);
+			change360Content(fileName, fileType);
 		});
 	});
 });
@@ -122,7 +137,7 @@ document.body.appendChild(renderer.domElement);
 
 // Create a video element
 const video = document.createElement("video");
-video.src = "video/" + videoArray[0].image;
+video.src = "video/" + contentArray[0].file;
 video.crossOrigin = "anonymous";
 video.loop = true;
 video.muted = false;
@@ -164,7 +179,7 @@ function updateLight(intensity) {
 	scene.add(ambientLight); // Add new ambient light to the scene
 }
 
-updateLight(4);
+updateLight(3.5);
 
 /*
 // Create directional light
@@ -247,7 +262,7 @@ function createAngleIndicator() {
 	const angleIndicator = document.createElement("div");
 	angleIndicator.id = "angleIndicator";
 	angleIndicator.textContent = "↑"; // Add an arrow on top
-	document.body.appendChild(angleIndicator);
+	viewElem.appendChild(angleIndicator);
 
 	// Add click event listener
 	angleIndicator.addEventListener("click", () => {
@@ -280,24 +295,44 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Initialize currentVideoSrc with the URL of the initial video
-let currentVideoSrc = videoArray[0].image;
+let currentVideoSrc = contentArray[0].file;
 
-function change360Video(videoId) {
-	// Check if the videoId is the same as the current video
-	if (currentVideoSrc === videoId) {
-		return; // No need to change the video if it's the same
+function change360Content(fileName, fileType) {
+	if (fileType === "video") {
+		// Check if the videoId is the same as the current video
+		if (currentVideoSrc === fileName) {
+			return; // No need to change the video if it's the same
+		}
+
+		// Update the src attribute of the existing video element
+		video.src = "video/" + fileName;
+		video.load();
+		video.play();
+
+		// Update the current video source
+		currentVideoSrc = "video/" + fileName;
+
+		// Update the texture with the new video source
+		texture.needsUpdate = true;
+	} else if (fileType === "image") {
+		// Load the new image based on the imageId
+		const textureLoader = new THREE.TextureLoader();
+
+		const texture = loader.load(`img/${fileName}`, function (texture) {
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.repeat.x = -1; // Flip texture horizontally
+			texture.mapping = THREE.UVMapping; // Apply UV mapping
+			texture.encoding = THREE.sRGBEncoding; // Set texture encoding to sRGB
+			texture.gammaFactor = 2.2; // Adjust gamma correction (e.g., 2.2 for typical images)
+		});
+
+		// Assuming sphere is the mesh representing the 360 image
+		// Update the texture of the sphere mesh
+		sphere.material.map = texture;
+		sphere.material.needsUpdate = true;
+	} else {
+		console.log("Something went wrong, no image or video type");
 	}
-
-	// Update the src attribute of the existing video element
-	video.src = "video/" + videoId;
-	video.load();
-	video.play();
-
-	// Update the current video source
-	currentVideoSrc = "video/" + videoId;
-
-	// Update the texture with the new video source
-	texture.needsUpdate = true;
 }
 
 // Refresh the canvas on window resize
@@ -354,4 +389,101 @@ scrollableContent.addEventListener("mousemove", function (event) {
 	const x = event.pageX - scrollableContent.offsetLeft;
 	const walk = (x - startX) * 3; // Adjust scroll speed
 	scrollableContent.scrollLeft = scrollLeft - walk;
+});
+
+// Global
+
+const settingsAmbient = document.getElementById("ambient");
+const settingsVolume = document.getElementById("volume");
+const settingsAmbientNo = document.getElementById("ambientNo");
+const settingsVolumeNo = document.getElementById("volumeNo");
+
+settingsVolume.addEventListener("input", () => {
+	const volume = settingsVolume.value; // Get the volume value from the range input
+	video.volume = volume; // Set the volume of the video
+	settingsVolumeNo.value = volume; // Update value of the corresponding input
+});
+
+settingsAmbient.addEventListener("input", () => {
+	const value = settingsAmbient.value; // Get the ambient value from the range input
+	updateLight(value);
+	settingsAmbientNo.value = value; // Update value of the corresponding input
+});
+
+var threshold = 40;
+const locationsElem = document.getElementById("locations");
+
+const settingsBrightness = document.getElementById("brightness");
+const settingsContrast = document.getElementById("contrast");
+const settingsSaturate = document.getElementById("saturation");
+const settingsBrightnessNo = document.getElementById("brightnessNo");
+const settingsContrastNo = document.getElementById("contrastNo");
+const settingsSaturateNo = document.getElementById("saturationNo");
+
+settingsBrightness.addEventListener("input", () => {
+	const c = document.getElementsByTagName("canvas")[0];
+	const currentFilter = c.style.filter || "contrast(1) brightness(1) saturate(1)";
+	const contrastRegex = /contrast\((\d+(\.\d+)?)\)/;
+	const currentContrast = parseFloat(currentFilter.match(contrastRegex)[1]);
+	const saturationRegex = /saturate\((\d+(\.\d+)?)\)/;
+	const currentSaturation = parseFloat(currentFilter.match(saturationRegex)[1]);
+	const brightness = settingsBrightness.value;
+
+	c.style.filter = `contrast(${currentContrast}) brightness(${brightness}) saturate(${currentSaturation})`;
+	settingsBrightnessNo.value = brightness; // Update value of the corresponding input
+});
+
+settingsContrast.addEventListener("input", () => {
+	const c = document.getElementsByTagName("canvas")[0];
+	const currentFilter = c.style.filter || "contrast(1) brightness(1) saturate(1)";
+	const brightnessRegex = /brightness\((\d+(\.\d+)?)\)/;
+	const currentBrightness = parseFloat(currentFilter.match(brightnessRegex)[1]);
+	const saturationRegex = /saturate\((\d+(\.\d+)?)\)/;
+	const currentSaturation = parseFloat(currentFilter.match(saturationRegex)[1]);
+	const contrast = settingsContrast.value;
+
+	c.style.filter = `contrast(${contrast}) brightness(${currentBrightness}) saturate(${currentSaturation})`;
+	settingsContrastNo.value = contrast; // Update value of the corresponding input
+});
+
+settingsSaturate.addEventListener("input", () => {
+	const c = document.getElementsByTagName("canvas")[0];
+	const currentFilter = c.style.filter || "contrast(1) brightness(1) saturate(1)";
+	const brightnessRegex = /brightness\((\d+(\.\d+)?)\)/;
+	const currentBrightness = parseFloat(currentFilter.match(brightnessRegex)[1]);
+	const contrastRegex = /contrast\((\d+(\.\d+)?)\)/;
+	const currentContrast = parseFloat(currentFilter.match(contrastRegex)[1]);
+	const saturation = settingsSaturate.value;
+
+	c.style.filter = `contrast(${currentContrast}) brightness(${currentBrightness}) saturate(${saturation})`;
+	settingsSaturateNo.value = saturation; // Update value of the corresponding input
+});
+
+function updateScrollableContentStyle(event) {
+	const mouseY = event.clientY; // Get the vertical position of the mouse
+
+	// Get the height of the viewport
+	const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+	// Get the current style of scrollableContent
+	const scrollableBottom = parseFloat(locationsElem.style.bottom);
+
+	// Check if scrollableContent is at bottom: 0
+	if (scrollableBottom === 0) {
+		threshold = 175;
+	} else {
+		threshold = 40;
+	}
+
+	// Check if the mouse is within the threshold distance from the bottom
+	if (viewportHeight - mouseY < threshold) {
+		locationsElem.style.bottom = "0";
+	} else {
+		locationsElem.style.bottom = "-175px";
+	}
+}
+
+// Add mousemove event listener to the document
+document.addEventListener("mousemove", function (event) {
+	updateScrollableContentStyle(event);
 });

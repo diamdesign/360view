@@ -2,6 +2,8 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+	font-family: Arial, Helvetica, sans-serif;
+	user-select: none;
 }
 body,
 html {
@@ -86,7 +88,7 @@ ul {
 ul li {
 	user-select: none;
 	margin-bottom: 2px;
-	font-family: Arial, Helvetica, sans-serif;
+
 	font-weight: bold;
 	font-size: 12px;
 	padding: 10px;
@@ -174,7 +176,7 @@ canvas:active {
 }
 
 canvas {
-	filter: contrast(1.23) saturate(1.23);
+	filter: contrast(1.23) brightness(1) saturate(1.23);
 }
 
 #angleIndicator {
@@ -182,13 +184,43 @@ canvas {
 	top: 40px;
 	right: 0px;
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: center;
 	width: 50px;
 	height: 50px;
+
+	font-size: 28px;
 	background: rgba(0, 0, 0, 0.4);
 	border-radius: 100%;
 	color: white;
+	z-index: 1000;
+}
+#angleIndicator:before {
+	position: absolute;
+	content: "";
+	display: block;
+
+	width: 38px;
+	height: 38px;
+	rotate: 45deg;
+	top: -3px;
+	left: -3px;
+	transform: skewX(16deg) skewY(16deg);
+	transform-origin: center right;
+	background: linear-gradient(-48deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 48%);
+}
+
+#angleIndicator:after {
+	position: absolute;
+	content: "";
+	display: block;
+	background: linear-gradient(0deg, rgba(105, 11, 11, 1) 0%, rgba(193, 20, 20, 1) 100%);
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	border-radius: 100%;
+	width: 18px;
+	height: 18px;
 }
 
 #angleIndicator:hover {
@@ -204,4 +236,52 @@ canvas {
 	100% {
 		outline: 16px solid rgba(0, 0, 0, 0);
 	}
+}
+
+#settings {
+	color: white;
+	background: rgba(0, 0, 0, 0.4);
+	border-radius: 12px;
+	position: fixed;
+	z-index: 1000;
+	padding: 40px;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	width: 640px;
+	display: grid;
+	grid-template-columns: 1fr 4fr 1fr;
+	grid-gap: 10px;
+}
+
+#settings input {
+	background: transparent;
+	color: white !important;
+	box-shadow: none;
+	border: none;
+	width: 100%;
+}
+
+#settings input::placeholder,
+#settings input {
+	font-weight: bold;
+	font-size: 16px;
+	color: white;
+}
+
+.icon-video {
+	background-color: white;
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	content: "";
+	display: block;
+	background-image: url("../img/icon-play.svg");
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 24px;
+	z-index: 1;
+	width: 21px;
+	height: 21px;
+	border-radius: 4px;
 }

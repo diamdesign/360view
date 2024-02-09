@@ -8,15 +8,35 @@
 		<title>360 View</title>
 	</head>
 	<body>
-		<div class="locations" id="locations">
-			<div class="indicator"></div>
-			<div class="container" id="scrollable">
-				<ul></ul>
-			</div>
-		</div>
-		<div id="labels"></div>
+		<div id="view-container">
+			<div id="settings">
+				<span>Ambient:</span>
+				<input type="range" min="0.5" max="8" step="0.1" id="ambient" value="3.5" />
+				<span id="ambientNo">3.5</span>
+				<span>Brightness:</span>
+				<input type="range" min="0.5" max="2" step="0.01" id="brightness" value="1" />
+				<span id="brightnessNo">1</span>
+				<span>Contrast:</span>
+				<input type="range" min="0.5" max="2" step="0.01" id="contrast" value="1.23" />
+				<span id="contrastNo">1.23</span>
+				<span>Saturation:</span>
+				<input type="range" min="0" max="3" step="0.01" id="saturation" value="1.23" />
+				<span id="saturationNo">1.23</span>
+				<span>Volume:</span>
+				<input type="range" min="0" max="1" step="0.01" id="volume" value="1" />
+				<span id="volumeNo">1</span>
 
-		<script type="module" src="js/360video.js"></script>
-		<script type="module" src="js/360global.js"></script>
+				<div id="reset" class="button">Reset</div>
+			</div>
+			<div class="locations" id="locations">
+				<div class="indicator"></div>
+				<div class="container" id="scrollable">
+					<ul></ul>
+				</div>
+			</div>
+			<div id="labels"></div>
+		</div>
+		<script type="module" src="node_modules/three/src/Three.js"></script>
+		<script type="module" src="js/360.js"></script>
 	</body>
 </html>
