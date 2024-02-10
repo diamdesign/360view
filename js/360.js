@@ -4,41 +4,23 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 var sceneType = "image";
 
 const viewElem = document.getElementById("view-container");
+const zoomLevel = document.querySelector("#zoombtn");
+const zoomLevelInput = document.querySelector("#zoomlevel");
+const mapButton = document.querySelector("#mapbtn");
+const fullscreenButton = document.querySelector("#fullscreenbtn");
 const locationsElem = document.getElementById("locations");
 const angleIndicator = document.getElementById("angleIndicator");
 const locationsIndicatorElem = document.querySelector("#indicatorbtn");
 
-var threshold = 35;
-
-function updateScrollableContentStyle(event) {
-	const mouseY = event.clientY; // Get the vertical position of the mouse
-
-	// Get the height of the viewport
-	const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-
-	// Get the current style of scrollableContent
+locationsIndicatorElem.addEventListener("click", () => {
 	const scrollableBottom = parseFloat(locationsElem.style.bottom);
-
-	// Check if scrollableContent is at bottom: 0
 	if (scrollableBottom === 0) {
-		threshold = 175;
-	} else {
-		threshold = 35;
-	}
-
-	// Check if the mouse is within the threshold distance from the bottom
-	if (viewportHeight - mouseY < threshold) {
-		locationsIndicatorElem.classList.add("rotate180");
-		locationsElem.style.bottom = "0";
-	} else {
 		locationsElem.style.bottom = "-175px";
 		locationsIndicatorElem.classList.remove("rotate180");
+	} else {
+		locationsIndicatorElem.classList.add("rotate180");
+		locationsElem.style.bottom = "0";
 	}
-}
-
-// Add mousemove event listener to the document
-document.addEventListener("mousemove", function (event) {
-	updateScrollableContentStyle(event);
 });
 
 const scrollableContent = document.querySelector("#scrollable");
@@ -61,23 +43,49 @@ const resetButton = document.getElementById("reset");
 const closeSettingsButton = document.querySelector(".closebtn");
 
 function viewContainerFadeIn() {
-	viewElem.style.opacity = "1";
 	locationsElem.style.opacity = "1";
 	angleIndicator.style.opacity = "1";
 	settingsButton.style.opacity = "1";
+	zoomLevel.style.opacity = "1";
+	mapButton.style.opacity = "1";
+	fullscreenButton.style.opacity = "1";
 }
 
 function viewContainerFadeOut() {
-	viewElem.style.opacity = "0";
 	locationsElem.style.opacity = "0";
 	angleIndicator.style.opacity = "0";
 	settingsButton.style.opacity = "0";
+	zoomLevel.style.opacity = "0";
+	mapButton.style.opacity = "0";
+	fullscreenButton.style.opacity = "0";
 }
 
 viewContainerFadeIn();
 
+let idleTimeout;
+idleTimeout = setTimeout(() => {
+	// Fade out the view container after 7 seconds of inactivity
+	viewContainerFadeOut();
+}, 7000);
+
+// Add mousemove event listener to the document
+document.addEventListener("mousemove", function (event) {
+	clearTimeout(idleTimeout);
+
+	// If view container is not fully visible, fade it in
+	if (zoomLevel.style.opacity !== "1") {
+		viewContainerFadeIn();
+	}
+
+	// Set a new idle timeout
+	idleTimeout = setTimeout(() => {
+		// Fade out the view container after 7 seconds of inactivity
+		viewContainerFadeOut();
+	}, 7000);
+});
+
 settingsButton.addEventListener("click", () => {
-	settingsElem.style.right = "0";
+	settingsElem.style.right = "0px";
 	settingsButton.style.opacity = "0";
 });
 
@@ -395,12 +403,37 @@ function updateLight(intensity) {
 
 updateLight(3.5);
 
-/*
-// Create directional light
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // Reduce intensity
-directionalLight.position.set(1, 1, 1).normalize();
-scene.add(directionalLight);
-*/
+function handleZoom(event) {
+	if (isMouseOverScrollableContent(event)) {
+		return; // Exit the function early if mouse is over scrollable content
+	}
+	// Access the zoom speed from controls.zoomSpeed
+	const zoomAmount = event.deltaY * zoomSpeed; // Use controls.zoomSpeed instead of zoomSpeed
+
+	// Calculate the perspective change based on the zoom amount and perspective factor
+	const perspectiveChange = zoomAmount * perspectiveFactor;
+
+	// Update the perspective by adding the perspective change
+	perspective += perspectiveChange;
+
+	// Clamp the perspective value to ensure it stays within a reasonable range
+	perspective = Math.max(minPerspective, Math.min(maxPerspective, perspective));
+
+	// Update the camera's perspective
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.fov = perspective;
+	camera.updateProjectionMatrix();
+}
+
+function isMouseOverScrollableContent(event) {
+	// Get the target element of the mouse event
+	const target = event.target;
+
+	// Check if the target element or any of its ancestors is the scrollable content
+	return target.closest("#scrollable") !== null;
+}
+
+document.addEventListener("wheel", handleZoom);
 
 // Add mouse controls to the camera
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -419,38 +452,25 @@ const perspectiveFactor = 0.1; // Adjust perspective factor as needed
 const minPerspective = 10; // Adjust minimum perspective value as needed
 const maxPerspective = 90;
 
-function handleZoom(event) {
-	// Access the zoom speed from controls.zoomSpeed
-	const zoomAmount = event.deltaY * zoomSpeed; // Use controls.zoomSpeed instead of zoomSpeed
-
-	// Calculate the perspective change based on the zoom amount and perspective factor
-	const perspectiveChange = zoomAmount * perspectiveFactor;
-
-	// Update the perspective by adding the perspective change
-	perspective += perspectiveChange;
-
-	// Clamp the perspective value to ensure it stays within a reasonable range
-	perspective = Math.max(minPerspective, Math.min(maxPerspective, perspective));
-
-	// Update the camera's perspective
-	camera.aspect = window.innerWidth / window.innerHeight;
-	camera.fov = perspective;
-	camera.updateProjectionMatrix();
-	console.log(perspective);
-}
-
-document.addEventListener("wheel", handleZoom);
-
 // Create a helper object to track the position in front of the camera
 const lightHelper = new THREE.Object3D();
 camera.add(lightHelper);
 
-/*
-// Update the light's position relative to the helper object
-const lightDistance = 1; // Distance from camera to light
-lightHelper.position.set(0, 0, lightDistance);
-directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
-*/
+// Function to create and update the angle indicator
+function createAngleIndicator() {
+	angleIndicator.textContent = "↑"; // Add an arrow on top
+	viewElem.appendChild(angleIndicator);
+
+	// Add click event listener
+	angleIndicator.addEventListener("click", () => {
+		// Reset the camera rotation to its initial state
+		resetCameraRotation();
+	});
+
+	return angleIndicator;
+}
+
+createAngleIndicator();
 
 // Store the initial camera rotation and position
 const initialCameraRotation = camera.rotation.clone();
@@ -486,7 +506,8 @@ function resetCameraRotation() {
 
 		// Update angle indicator rotation based on camera rotation
 		const azimuthalAngle = Math.atan2(camera.position.x, camera.position.z);
-		angleIndicator.style.transform = `translate(-50%, -50%) rotate(${azimuthalAngle}rad)`;
+		const reversedAzimuthalAngle = -azimuthalAngle; // Reverse the azimuthal angle to match the reversed mapping
+		angleIndicator.style.transform = `translate(-50%, -50%) rotate(${reversedAzimuthalAngle}rad)`;
 
 		// If animation is not completed, request the next frame
 		if (elapsedTime < duration) {
@@ -497,23 +518,17 @@ function resetCameraRotation() {
 	// Start the animation
 	updateCameraRotation();
 }
+/*
+// Create directional light
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // Reduce intensity
+directionalLight.position.set(1, 1, 1).normalize();
+scene.add(directionalLight);
 
-// Function to create and update the angle indicator
-function createAngleIndicator() {
-	angleIndicator.textContent = "↑"; // Add an arrow on top
-	viewElem.appendChild(angleIndicator);
-
-	// Add click event listener
-	angleIndicator.addEventListener("click", () => {
-		// Reset the camera rotation to its initial state
-		resetCameraRotation();
-	});
-
-	return angleIndicator;
-}
-
-createAngleIndicator();
-
+// Update the light's position relative to the helper object
+const lightDistance = 1; // Distance from camera to light
+lightHelper.position.set(0, 0, lightDistance);
+directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
+*/
 function animate() {
 	requestAnimationFrame(animate);
 	controls.update();
@@ -523,10 +538,33 @@ function animate() {
 	// Calculate azimuthal angle
 	const azimuthalAngle = Math.atan2(camera.position.x, camera.position.z);
 
-	// Update angle indicator rotation
-	angleIndicator.style.transform = `translate(-50%, -50%) rotate(${azimuthalAngle}rad)`;
+	// Reverse the azimuthal angle to match the reversed mapping
+	const reversedAzimuthalAngle = -azimuthalAngle;
+
+	// Update angle indicator rotation with the reversed angle
+	angleIndicator.style.transform = `translate(-50%, -50%) rotate(${reversedAzimuthalAngle}rad)`;
 }
 animate();
+
+// Global
+
+// Function to toggle fullscreen mode
+function toggleFullscreen() {
+	if (!document.fullscreenElement) {
+		// If not in fullscreen mode, request fullscreen
+		document.documentElement.requestFullscreen();
+		fullscreenButton.classList.add("fullscreen");
+	} else {
+		// If in fullscreen mode, exit fullscreen
+		if (document.exitFullscreen) {
+			fullscreenButton.classList.remove("fullscreen");
+			document.exitFullscreen();
+		}
+	}
+}
+
+// Add event listener for button click
+fullscreenButton.addEventListener("click", toggleFullscreen);
 
 // Refresh the canvas on window resize
 window.addEventListener("resize", function (event) {
@@ -584,8 +622,6 @@ scrollableContent.addEventListener("mousemove", function (event) {
 	scrollableContent.scrollLeft = scrollLeft - walk;
 });
 
-// Global
-
 settingsVolume.addEventListener("input", () => {
 	const volume = settingsVolume.value; // Get the volume value from the range input
 	video.volume = volume; // Set the volume of the video
@@ -596,27 +632,6 @@ settingsAmbient.addEventListener("input", () => {
 	const value = settingsAmbient.value; // Get the ambient value from the range input
 	updateLight(value);
 	settingsAmbientNo.textContent = value; // Update value of the corresponding input
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-	// Get all the <li> elements
-	// Function to change the 360 image
-
-	function checkFirstListItem() {
-		const firstListItem = document.querySelector("#locations ul li:first-child");
-		if (firstListItem) {
-			const fileType = contentArray[0].type;
-			const fileName = contentArray[0].file;
-			console.log("First Type:", fileType);
-			change360Content(fileName, fileType);
-		} else {
-			// Retry after a delay if the first list item is not found
-			setTimeout(checkFirstListItem, 1000); // Retry after 1 second
-		}
-	}
-
-	// Start checking for the first list item
-	checkFirstListItem();
 });
 
 settingsBrightness.addEventListener("input", () => {
@@ -682,5 +697,26 @@ resetButton.addEventListener("click", () => {
 
 closeSettingsButton.addEventListener("click", () => {
 	settingsButton.style.opacity = "1";
-	settingsElem.style.right = "-60%";
+	settingsElem.style.right = "-640px";
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+	// Get all the <li> elements
+	// Function to change the 360 image
+
+	function checkFirstListItem() {
+		const firstListItem = document.querySelector("#locations ul li:first-child");
+		if (firstListItem) {
+			const fileType = contentArray[0].type;
+			const fileName = contentArray[0].file;
+			console.log("First Type:", fileType);
+			change360Content(fileName, fileType);
+		} else {
+			// Retry after a delay if the first list item is not found
+			setTimeout(checkFirstListItem, 1000); // Retry after 1 second
+		}
+	}
+
+	// Start checking for the first list item
+	checkFirstListItem();
 });
