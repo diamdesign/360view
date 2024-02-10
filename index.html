@@ -14,6 +14,11 @@
 			<div class="maplink"><span>Three</span></div>
 			<div class="mapimage"></div>
 		</div>
+		<div id="info">
+			<div id="closeinfobtn"></div>
+			<div id="resizer"></div>
+			<div class="container"></div>
+		</div>
 		<div id="view-container">
 			<div id="angleIndicator"></div>
 
@@ -27,18 +32,18 @@
 				</div>
 				<div class="row">
 					<span>Brightness:</span>
-					<input type="range" min="0.5" max="2" step="0.01" id="brightness" value="1" />
+					<input type="range" min="0" max="2" step="0.01" id="brightness" value="1" />
 					<span id="brightnessNo">1</span>
 				</div>
 				<div class="row">
 					<span>Contrast:</span>
-					<input type="range" min="0.5" max="2" step="0.01" id="contrast" value="1.23" />
-					<span id="contrastNo">1.23</span>
+					<input type="range" min="0" max="2" step="0.01" id="contrast" value="1" />
+					<span id="contrastNo">1</span>
 				</div>
 				<div class="row">
 					<span>Saturation:</span>
-					<input type="range" min="0" max="3" step="0.01" id="saturation" value="1.23" />
-					<span id="saturationNo">1.23</span>
+					<input type="range" min="0" max="2" step="0.01" id="saturation" value="1" />
+					<span id="saturationNo">1</span>
 				</div>
 				<div class="row">
 					<span>Volume:</span>
@@ -53,6 +58,7 @@
 					<input type="range" min="10" max="100" step="0.1" id="zoomlevel" value="75" />
 				</div>
 				<div id="fullscreenbtn"><span>Toggle Fullscreen</span></div>
+				<div id="infobtn">i<span>Toggle Info</span></div>
 				<div id="mapbtn"><span>Toggle Map</span></div>
 				<div id="indicatorbtn"></div>
 				<div class="container" id="scrollable">

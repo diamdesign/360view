@@ -43,6 +43,7 @@ canvas {
 
 .locations .container {
 	z-index: 10;
+
 	position: relative;
 	width: 100%;
 	height: 100%;
@@ -89,7 +90,8 @@ canvas {
 	cursor: pointer;
 }
 
-.locations #indicatorbtn:hover:after {
+.locations #indicatorbtn:hover:after,
+#closeinfobtn:hover:after {
 	opacity: 1;
 }
 
@@ -97,7 +99,7 @@ canvas {
 	rotate: 180deg;
 }
 
-ul {
+.locations ul {
 	min-width: 100%;
 	padding-left: 20px;
 	padding-right: 20px;
@@ -108,7 +110,7 @@ ul {
 	left: 0;
 }
 
-ul li {
+.locations ul li {
 	user-select: none;
 	margin-bottom: 2px;
 	background-color: black;
@@ -131,7 +133,7 @@ ul li {
 	margin: 20px 5px;
 }
 
-ul li img {
+.locations ul li img {
 	user-select: none;
 	display: block;
 	height: 300%;
@@ -139,14 +141,14 @@ ul li img {
 	transition: scale 0.2s ease-in-out;
 }
 
-ul li:hover {
+.locations ul li:hover {
 	color: white;
 	cursor: pointer;
 	animation: flash 0.2s ease-in-out 1 forwards;
 	outline: 4px solid white;
 }
 
-ul li:hover img {
+.locations ul li:hover img {
 	user-select: none;
 	scale: 1.1;
 }
@@ -204,7 +206,7 @@ canvas:active {
 }
 
 canvas {
-	filter: contrast(1.23) brightness(1) saturate(1.23);
+	filter: contrast(1) brightness(1) saturate(1);
 }
 
 #angleIndicator {
@@ -253,7 +255,8 @@ canvas {
 	height: 18px;
 }
 
-#angleIndicator:hover {
+#angleIndicator:hover,
+#closeinfobtn:hover {
 	cursor: pointer;
 	background: black;
 	animation: outlinepush 0.8s ease-out 1 forwards;
@@ -347,6 +350,7 @@ canvas {
 	color: white;
 	background: black !important;
 }
+
 #settings .closebtn {
 	width: 80px;
 	height: 100%;
@@ -479,14 +483,16 @@ input[type="range"]:focus::-moz-range-thumb {
 
 .settingsbtn:hover,
 #fullscreenbtn:hover,
-#mapbtn:hover {
+#mapbtn:hover,
+#infobtn:hover {
 	cursor: pointer;
 	background-color: black;
 	animation: outlinepush 0.8s ease-out 1 forwards;
 }
 
 #fullscreenbtn,
-#mapbtn {
+#mapbtn,
+#infobtn {
 	transition: opacity 1s ease;
 	opacity: 0;
 	content: "";
@@ -501,6 +507,16 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-color: rgba(0, 0, 0, 0.4);
 	border-radius: 100%;
 	z-index: 1000;
+}
+#infobtn {
+	text-align: center;
+	display: none;
+	color: white;
+	font-style: italic;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	line-height: 50px;
+	right: 40px;
+	top: -130px;
 }
 #fullscreenbtn {
 	right: 40px;
@@ -561,10 +577,13 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 #fullscreenbtn span,
-.settingsbtn span {
+.settingsbtn span,
+#infobtn span {
 	position: absolute;
 	opacity: 0;
 	right: 0;
+	font-family: Arial, Helvetica, sans-serif;
+	font-style: normal;
 	overflow: hidden;
 	background: rgba(0, 0, 0, 0.4);
 	color: white;
@@ -595,7 +614,8 @@ input[type="range"]:focus::-moz-range-thumb {
 
 #fullscreenbtn:hover span,
 #mapbtn:hover span,
-.settingsbtn:hover span {
+.settingsbtn:hover span,
+#infobtn:hover span {
 	opacity: 1;
 }
 
@@ -609,4 +629,176 @@ input[type="range"]:focus::-moz-range-thumb {
 	width: 100%;
 	height: 100%;
 	z-index: 200;
+}
+
+#info {
+	display: none;
+	position: fixed;
+	backdrop-filter: blur(32px);
+	top: 0;
+	right: -100%;
+	z-index: 1050;
+	background: rgba(0, 0, 0, 0.85);
+	height: 100%;
+	width: 460px;
+	padding-right: 10px;
+	transition: right 0.8s ease-in-out;
+}
+
+#info #resizer {
+	content: "";
+	position: absolute;
+	left: -4px;
+	top: 0;
+	width: 8px;
+	height: 100%;
+	background: rgba(0, 0, 0, 0);
+}
+
+#info #resizer:after {
+	outline: 2px solid white;
+	position: absolute;
+	content: "";
+	display: none;
+	width: 12px;
+	height: 50px;
+	border-radius: 16px;
+	background: black;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+}
+
+#info #resizer:hover {
+	cursor: w-resize;
+	background: rgba(0, 0, 0, 0.4);
+}
+#info #resizer:hover:after {
+	display: block;
+}
+
+#info .container {
+	scrollbar-width: thin;
+	scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+	width: 100%;
+	height: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding: 20px;
+	color: white;
+	padding-bottom: 40px;
+}
+
+#info .container p {
+	user-select: text;
+	line-height: 24px;
+	margin-bottom: 20px;
+}
+
+#info .container p a {
+	user-select: text;
+	color: white;
+	padding: 4px 16px 4px 6px;
+	border-radius: 4px;
+	background-color: rgba(255, 255, 255, 0.2);
+}
+#info .container p a:after {
+	opacity: 0.5;
+	background-image: url("../img/icon-link.svg");
+	background-repeat: no-repeat;
+	background-position: center right;
+	background-size: 18px;
+	display: inline-block;
+	position: relative;
+	right: -8px;
+	top: 2px;
+	filter: invert(1);
+	content: "";
+	width: 16px;
+	height: 16px;
+}
+#info .container p a:hover {
+	background: white;
+	color: black;
+	text-decoration: none;
+}
+
+#info .container p a:hover:after {
+	filter: invert(0);
+	opacity: 1;
+}
+
+#info .container .button {
+	color: White;
+	text-decoration: none;
+	border-radius: 6px;
+	background: rgba(255, 255, 255, 0.2);
+	padding: 10px 20px;
+	margin-top: 20px;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+#info .container .button:hover {
+	animation: outlinepush 0.8s ease-out 1 forwards;
+	cursor: pointer;
+	filter: invert(1);
+	color: white;
+	background: black !important;
+}
+
+#info .container ul {
+	margin-left: 20px;
+	margin-bottom: 20px;
+}
+#info .container ul li {
+	user-select: text;
+	line-height: 24px;
+}
+
+#info .container img,
+#info .container iframe {
+	width: 100%;
+	object-fit: contain;
+	margin-bottom: 20px;
+}
+
+#info .container hr {
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	margin-bottom: 20px;
+	width: 100%;
+}
+
+#info .container h1 {
+	user-select: text;
+	color: white;
+	font-size: 42px;
+	margin-bottom: 20px;
+}
+#closeinfobtn {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	background: rgba(0, 0, 0, 0.4);
+	width: 42px;
+	height: 42px;
+	border-radius: 100%;
+	z-index: 200;
+	content: "";
+}
+#closeinfobtn:after {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: url("../img/chevron.svg");
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 16px;
+	rotate: 90deg;
+	content: "";
+	display: block;
+	filter: invert(1);
+	opacity: 0.5;
 }

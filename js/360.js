@@ -1,6 +1,100 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
+var contentArray = [
+	{
+		id: 1,
+		type: "image",
+		file: "360.jpg",
+		title: "One",
+		info: '<h1>One</h1><img src="https://picsum.photos/600/300" alt="" /><hr><p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. <a href="#">Molestiae distinctio</a> optio consequatur eaque eos asperiores quibusdam rem exercitationem maiores aliquid sequi, a, quae aliquam expedita. Blanditiis saepe esse dolorum molestias.</p><ul><li>One</li><li>Two</li></ul><hr><img src="https://picsum.photos/601/301" alt="" /><p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Molestiae distinctio optio consequatur eaque eos asperiores quibusdam rem exercitationem maiores aliquid sequi, a, quae aliquam expedita. Blanditiis saepe esse dolorum molestias.</p><a href="#" class="button">Testing</a>',
+	},
+	{
+		id: 2,
+		type: "image",
+		file: "3602.jpg",
+		title: "Two",
+		info: "",
+	},
+	{
+		id: 3,
+		type: "image",
+		file: "3603.jpg",
+		title: "Three",
+		info: "",
+	},
+	{
+		id: 4,
+		type: "image",
+		file: "3604.jpg",
+		title: "Four",
+		info: "",
+	},
+	{
+		id: 5,
+		type: "image",
+		file: "3605.jpg",
+		title: "Five",
+		info: "",
+	},
+	{
+		id: 6,
+		type: "image",
+		file: "3606.jpg",
+		title: "Six",
+		info: "",
+	},
+	{
+		id: 7,
+		type: "image",
+		file: "3607.jpg",
+		title: "Seven",
+		info: "",
+	},
+	{
+		id: 8,
+		type: "video",
+		file: "360_vr_master_series___free_asset_download____bavarian_alps_wimbachklamm (1080p).mp4",
+		title: "Bavarian Alps",
+		info: "",
+	},
+	{
+		id: 9,
+		type: "video",
+		file: "ayutthaya_-_needs_stabilization_and_horizon_correction___360_vr_master_series___free_download (1080p).mp4",
+		title: "Ayutthaya",
+		info: "",
+	},
+	{
+		id: 10,
+		type: "video",
+		file: "ayutthaya_-_easy_tripod_paint___360_vr_master_series___free_download (1080p).mp4",
+		title: "Ayutthaya Two",
+		info: "",
+	},
+	{
+		id: 11,
+		type: "video",
+		file: "360_vr_master_series___free_download___london_park_ducks_swans (1080p).mp4",
+		title: "London Park",
+		info: "",
+	},
+	{
+		id: 12,
+		type: "video",
+		file: "360_vr_master_series___free_download___london_on_tower_bridge (1080p).mp4",
+		title: "London Tower Bridge",
+		info: "",
+	},
+	{
+		id: 13,
+		type: "video",
+		file: "360_vr_master_series___free_download___crystal_shower_falls (1080p).mp4",
+		title: "Crystal Shower Falls",
+		info: "",
+	},
+];
+
 var sceneType = "image";
 
 const viewElem = document.getElementById("view-container");
@@ -11,6 +105,57 @@ const fullscreenButton = document.querySelector("#fullscreenbtn");
 const locationsElem = document.getElementById("locations");
 const angleIndicator = document.getElementById("angleIndicator");
 const locationsIndicatorElem = document.querySelector("#indicatorbtn");
+
+const closeInfoButton = document.querySelector("#closeinfobtn");
+const infoElem = document.querySelector("#info");
+const infoButton = document.querySelector("#infobtn");
+const infoResizer = document.querySelector("#resizer");
+
+// Define the minimum and maximum widths for infoElem
+const minWidth = 460;
+const maxWidth = 1800;
+
+let isResizing = false;
+let startResizeX;
+let startResizeWidth;
+
+// Function to handle mouse down event
+function onResizeDown(event) {
+	isResizing = true;
+	startResizeX = event.clientX;
+	startResizeWidth = parseInt(document.defaultView.getComputedStyle(infoElem).width, 10);
+
+	// Add event listener for mouse move event
+	document.body.addEventListener("mousemove", onResizeMove);
+	// Add event listener for mouse up event
+	document.body.addEventListener("mouseup", onResizeUp);
+}
+
+// Function to handle mouse move event
+function onResizeMove(event) {
+	if (!isResizing) return;
+
+	const deltaX = event.clientX - startResizeX;
+	let newWidth = startResizeWidth - deltaX; // Subtract deltaX instead of adding it
+
+	// Ensure new width is within the allowed range
+	newWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+
+	// Update infoElem width
+	infoElem.style.width = newWidth + "px";
+}
+
+// Function to handle mouse up event
+function onResizeUp() {
+	isResizing = false;
+
+	// Remove event listeners for mouse move and mouse up events
+	document.removeEventListener("mousemove", onResizeMove);
+	document.removeEventListener("mouseup", onResizeUp);
+}
+
+// Add event listener for mouse down event on infoResizer
+infoResizer.addEventListener("mousedown", onResizeDown);
 
 locationsIndicatorElem.addEventListener("click", () => {
 	const scrollableBottom = parseFloat(locationsElem.style.bottom);
@@ -116,87 +261,6 @@ function extractVideoFrame(videoUrl, callback) {
 	};
 }
 
-var contentArray = [
-	{
-		id: 1,
-		type: "image",
-		file: "360.jpg",
-		title: "One",
-	},
-	{
-		id: 2,
-		type: "image",
-		file: "3602.jpg",
-		title: "Two",
-	},
-	{
-		id: 3,
-		type: "image",
-		file: "3603.jpg",
-		title: "Three",
-	},
-	{
-		id: 4,
-		type: "image",
-		file: "3604.jpg",
-		title: "Four",
-	},
-	{
-		id: 5,
-		type: "image",
-		file: "3605.jpg",
-		title: "Five",
-	},
-	{
-		id: 6,
-		type: "image",
-		file: "3606.jpg",
-		title: "Six",
-	},
-	{
-		id: 7,
-		type: "image",
-		file: "3607.jpg",
-		title: "Seven",
-	},
-	{
-		id: 8,
-		type: "video",
-		file: "360_vr_master_series___free_asset_download____bavarian_alps_wimbachklamm (1080p).mp4",
-		title: "Bavarian Alps",
-	},
-	{
-		id: 9,
-		type: "video",
-		file: "ayutthaya_-_needs_stabilization_and_horizon_correction___360_vr_master_series___free_download (1080p).mp4",
-		title: "Ayutthaya",
-	},
-	{
-		id: 10,
-		type: "video",
-		file: "ayutthaya_-_easy_tripod_paint___360_vr_master_series___free_download (1080p).mp4",
-		title: "Ayutthaya Two",
-	},
-	{
-		id: 11,
-		type: "video",
-		file: "360_vr_master_series___free_download___london_park_ducks_swans (1080p).mp4",
-		title: "London Park",
-	},
-	{
-		id: 12,
-		type: "video",
-		file: "360_vr_master_series___free_download___london_on_tower_bridge (1080p).mp4",
-		title: "London Tower Bridge",
-	},
-	{
-		id: 13,
-		type: "video",
-		file: "360_vr_master_series___free_download___crystal_shower_falls (1080p).mp4",
-		title: "Crystal Shower Falls",
-	},
-];
-
 let promises = [];
 
 const locationsUl = locationsElem.querySelector(".container ul");
@@ -285,10 +349,9 @@ Promise.all(promises).then((htmlArray) => {
 			});
 
 			item.classList.add("active");
-			const fileName = item.getAttribute("data-file");
-			const fileType = item.getAttribute("data-type");
+			const contentId = item.getAttribute("data-id");
 			// Call a function to change the 360 content based on the file name and type
-			change360Content(fileName, fileType);
+			change360Content(parseInt(contentId));
 		});
 	});
 });
@@ -300,7 +363,13 @@ const video = document.createElement("video");
 let currentVideoSrc;
 let texture;
 
-function change360Content(fileName, fileType) {
+function change360Content(targetId) {
+	infoElem.style.right = "-100%";
+	let targetObject = contentArray.find((obj) => obj.id === targetId);
+	let fileName = targetObject.file;
+	let fileType = targetObject.type;
+	let fileInfo = targetObject.info;
+
 	if (fileType === "video") {
 		// Check if the videoId is the same as the current video
 		if (currentVideoSrc === fileName) {
@@ -364,6 +433,17 @@ function change360Content(fileName, fileType) {
 		sphere.material.needsUpdate = true;
 	} else {
 		console.log("Invalid file type");
+	}
+
+	if (fileInfo !== "" && fileInfo !== null && fileInfo !== undefined) {
+		infoElem.style.display = "block";
+		infoButton.style.display = "block";
+		infoButton.style.opacity = "1";
+		infoElem.querySelector(".container").innerHTML = fileInfo;
+	} else {
+		infoElem.style.display = "none";
+		infoButton.style.opacity = "0";
+		infoButton.style.display = "none";
 	}
 }
 
@@ -429,8 +509,8 @@ function isMouseOverScrollableContent(event) {
 	// Get the target element of the mouse event
 	const target = event.target;
 
-	// Check if the target element or any of its ancestors is the scrollable content
-	return target.closest("#scrollable") !== null;
+	// Check if the target element or any of its ancestors is the scrollable content or #info
+	return target.closest("#scrollable") !== null || target.closest("#info") !== null;
 }
 
 document.addEventListener("wheel", handleZoom);
@@ -675,7 +755,7 @@ settingsSaturate.addEventListener("input", () => {
 
 resetButton.addEventListener("click", () => {
 	const c = document.getElementsByTagName("canvas")[0];
-	c.style.filter = "contrast(1.23) brightness(1) saturate(1.23)";
+	c.style.filter = "contrast(1) brightness(1) saturate(1)";
 
 	settingsAmbient.value = "3.5";
 	settingsAmbientNo.textContent = "3.5";
@@ -684,11 +764,11 @@ resetButton.addEventListener("click", () => {
 	settingsBrightness.value = "1";
 	settingsBrightnessNo.textContent = "1";
 
-	settingsContrast.value = "1.23";
-	settingsContrastNo.textContent = "1.23";
+	settingsContrast.value = "1";
+	settingsContrastNo.textContent = "1";
 
-	settingsSaturate.value = "1.23";
-	settingsSaturateNo.textContent = "1.23";
+	settingsSaturate.value = "1";
+	settingsSaturateNo.textContent = "1";
 
 	settingsVolume.value = "1";
 	settingsVolumeNo.textContent = "1";
@@ -700,6 +780,16 @@ closeSettingsButton.addEventListener("click", () => {
 	settingsElem.style.right = "-640px";
 });
 
+infoButton.addEventListener("click", () => {
+	infoButton.style.opacity = "0";
+	infoElem.style.right = "0";
+});
+
+closeInfoButton.addEventListener("click", () => {
+	infoButton.style.opacity = "1";
+	infoElem.style.right = "-100%";
+});
+
 document.addEventListener("DOMContentLoaded", function () {
 	// Get all the <li> elements
 	// Function to change the 360 image
@@ -707,10 +797,8 @@ document.addEventListener("DOMContentLoaded", function () {
 	function checkFirstListItem() {
 		const firstListItem = document.querySelector("#locations ul li:first-child");
 		if (firstListItem) {
-			const fileType = contentArray[0].type;
-			const fileName = contentArray[0].file;
-			console.log("First Type:", fileType);
-			change360Content(fileName, fileType);
+			const contentId = contentArray[0].id;
+			change360Content(contentId);
 		} else {
 			// Retry after a delay if the first list item is not found
 			setTimeout(checkFirstListItem, 1000); // Retry after 1 second
