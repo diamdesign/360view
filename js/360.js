@@ -3,7 +3,44 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 var sceneType = "image";
 
-const viewElem = document.querySelector("#view-container");
+const viewElem = document.getElementById("view-container");
+const locationsElem = document.getElementById("locations");
+const angleIndicator = document.getElementById("angleIndicator");
+const locationsIndicatorElem = document.querySelector("#indicatorbtn");
+
+var threshold = 35;
+
+function updateScrollableContentStyle(event) {
+	const mouseY = event.clientY; // Get the vertical position of the mouse
+
+	// Get the height of the viewport
+	const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+	// Get the current style of scrollableContent
+	const scrollableBottom = parseFloat(locationsElem.style.bottom);
+
+	// Check if scrollableContent is at bottom: 0
+	if (scrollableBottom === 0) {
+		threshold = 175;
+	} else {
+		threshold = 35;
+	}
+
+	// Check if the mouse is within the threshold distance from the bottom
+	if (viewportHeight - mouseY < threshold) {
+		locationsIndicatorElem.classList.add("rotate180");
+		locationsElem.style.bottom = "0";
+	} else {
+		locationsElem.style.bottom = "-175px";
+		locationsIndicatorElem.classList.remove("rotate180");
+	}
+}
+
+// Add mousemove event listener to the document
+document.addEventListener("mousemove", function (event) {
+	updateScrollableContentStyle(event);
+});
+
 const scrollableContent = document.querySelector("#scrollable");
 const labelContainerElem = document.querySelector("#labels");
 
@@ -19,8 +56,30 @@ const settingsSaturateNo = document.getElementById("saturationNo");
 const settingsAmbientNo = document.getElementById("ambientNo");
 const settingsVolumeNo = document.getElementById("volumeNo");
 
+const settingsButton = document.querySelector(".settingsbtn");
 const resetButton = document.getElementById("reset");
 const closeSettingsButton = document.querySelector(".closebtn");
+
+function viewContainerFadeIn() {
+	viewElem.style.opacity = "1";
+	locationsElem.style.opacity = "1";
+	angleIndicator.style.opacity = "1";
+	settingsButton.style.opacity = "1";
+}
+
+function viewContainerFadeOut() {
+	viewElem.style.opacity = "0";
+	locationsElem.style.opacity = "0";
+	angleIndicator.style.opacity = "0";
+	settingsButton.style.opacity = "0";
+}
+
+viewContainerFadeIn();
+
+settingsButton.addEventListener("click", () => {
+	settingsElem.style.right = "0";
+	settingsButton.style.opacity = "0";
+});
 
 // Function to extract and display the first frame of the video as an image
 function extractVideoFrame(videoUrl, callback) {
@@ -132,6 +191,26 @@ var contentArray = [
 
 let promises = [];
 
+const locationsUl = locationsElem.querySelector(".container ul");
+contentArray.forEach((item) => {
+	item = "<li></li>";
+	locationsUl.insertAdjacentHTML("afterbegin", item);
+});
+
+let perspective = 75;
+// Set up Three.js scene
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(
+	perspective,
+	window.innerWidth / window.innerHeight,
+	0.1,
+	1000
+);
+const renderer = new THREE.WebGLRenderer({ alpha: false });
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
 // Create a promise for the first item
 let firstPromise = new Promise((resolve) => {
 	let isFirst = true;
@@ -205,15 +284,6 @@ Promise.all(promises).then((htmlArray) => {
 		});
 	});
 });
-
-// Set up Three.js scene
-const scene = new THREE.Scene();
-scene.background = new THREE.Color("black");
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer();
-
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
 
 // Create a video element
 const video = document.createElement("video");
@@ -290,10 +360,20 @@ function change360Content(fileName, fileType) {
 }
 
 // Create a sphere geometry for the 360 photo
-const geometry = new THREE.SphereGeometry(100, 80, 80); // Increase the radius to 10
+const geometry = new THREE.SphereGeometry(360, 180, 180); // Increase the radius to 10
 
+// Create a black texture
+const blackTexture = new THREE.DataTexture(
+	new Uint8Array([0, 0, 0]), // RGB values for black
+	1, // Width
+	1, // Height
+	THREE.RGBFormat // Format
+);
+blackTexture.needsUpdate = true; // Ensure texture is updated
+
+// Create material with the black texture
 const material = new THREE.MeshStandardMaterial({
-	map: texture,
+	map: blackTexture,
 	side: THREE.DoubleSide,
 });
 
@@ -329,10 +409,37 @@ controls.dampingFactor = 0.05;
 controls.rotateSpeed = -1;
 
 // Set camera position
-camera.position.set(0, 0, 1); // Move the camera further from the object
-controls.minDistance = 0.1; // Set a minimum zoom distance that allows zooming in closer
-controls.maxDistance = 50; // Set maximum zoom distance
-controls.zoomSpeed = 10; // Adjust zoom speed
+camera.position.set(-30, 0, 0); // Move the camera further from the object
+controls.minDistance = 30; // Set a minimum zoom distance that allows zooming in closer
+controls.maxDistance = 280; // Set maximum zoom distance
+controls.zoomSpeed = 3; // Adjust zoom speed
+
+const zoomSpeed = 0.1;
+const perspectiveFactor = 0.1; // Adjust perspective factor as needed
+const minPerspective = 10; // Adjust minimum perspective value as needed
+const maxPerspective = 90;
+
+function handleZoom(event) {
+	// Access the zoom speed from controls.zoomSpeed
+	const zoomAmount = event.deltaY * zoomSpeed; // Use controls.zoomSpeed instead of zoomSpeed
+
+	// Calculate the perspective change based on the zoom amount and perspective factor
+	const perspectiveChange = zoomAmount * perspectiveFactor;
+
+	// Update the perspective by adding the perspective change
+	perspective += perspectiveChange;
+
+	// Clamp the perspective value to ensure it stays within a reasonable range
+	perspective = Math.max(minPerspective, Math.min(maxPerspective, perspective));
+
+	// Update the camera's perspective
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.fov = perspective;
+	camera.updateProjectionMatrix();
+	console.log(perspective);
+}
+
+document.addEventListener("wheel", handleZoom);
 
 // Create a helper object to track the position in front of the camera
 const lightHelper = new THREE.Object3D();
@@ -393,8 +500,6 @@ function resetCameraRotation() {
 
 // Function to create and update the angle indicator
 function createAngleIndicator() {
-	const angleIndicator = document.createElement("div");
-	angleIndicator.id = "angleIndicator";
 	angleIndicator.textContent = "↑"; // Add an arrow on top
 	viewElem.appendChild(angleIndicator);
 
@@ -407,7 +512,7 @@ function createAngleIndicator() {
 	return angleIndicator;
 }
 
-const angleIndicator = createAngleIndicator();
+createAngleIndicator();
 
 function animate() {
 	requestAnimationFrame(animate);
@@ -493,41 +598,6 @@ settingsAmbient.addEventListener("input", () => {
 	settingsAmbientNo.textContent = value; // Update value of the corresponding input
 });
 
-var threshold = 40;
-const locationsElem = document.getElementById("locations");
-const locationsIndicatorElem = document.querySelector(".indicator");
-
-function updateScrollableContentStyle(event) {
-	const mouseY = event.clientY; // Get the vertical position of the mouse
-
-	// Get the height of the viewport
-	const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-
-	// Get the current style of scrollableContent
-	const scrollableBottom = parseFloat(locationsElem.style.bottom);
-
-	// Check if scrollableContent is at bottom: 0
-	if (scrollableBottom === 0) {
-		threshold = 175;
-	} else {
-		threshold = 40;
-	}
-
-	// Check if the mouse is within the threshold distance from the bottom
-	if (viewportHeight - mouseY < threshold) {
-		locationsIndicatorElem.classList.add("rotate180");
-		locationsElem.style.bottom = "0";
-	} else {
-		locationsElem.style.bottom = "-175px";
-		locationsIndicatorElem.classList.remove("rotate180");
-	}
-}
-
-// Add mousemove event listener to the document
-document.addEventListener("mousemove", function (event) {
-	updateScrollableContentStyle(event);
-});
-
 document.addEventListener("DOMContentLoaded", function () {
 	// Get all the <li> elements
 	// Function to change the 360 image
@@ -535,8 +605,8 @@ document.addEventListener("DOMContentLoaded", function () {
 	function checkFirstListItem() {
 		const firstListItem = document.querySelector("#locations ul li:first-child");
 		if (firstListItem) {
-			const fileType = firstListItem.getAttribute("data-type");
-			const fileName = firstListItem.getAttribute("data-file");
+			const fileType = contentArray[0].type;
+			const fileName = contentArray[0].file;
 			console.log("First Type:", fileType);
 			change360Content(fileName, fileType);
 		} else {
@@ -611,5 +681,6 @@ resetButton.addEventListener("click", () => {
 });
 
 closeSettingsButton.addEventListener("click", () => {
+	settingsButton.style.opacity = "1";
 	settingsElem.style.right = "-60%";
 });
