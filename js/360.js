@@ -312,6 +312,7 @@ const renderer = new THREE.WebGLRenderer({ alpha: false });
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
 let locationsArray = "";
 
 for (let i = 0; i < contentArray.length; i++) {
@@ -867,7 +868,122 @@ function animate() {
 	// Update angle indicator rotation with the reversed angle
 	angleIndicator.style.transform = `translate(-50%, -50%) rotate(${reversedAzimuthalAngle}rad)`;
 }
-animate();
+
+function draw(xrFrame) {
+	// Update VR controls (if available)
+	if (controls) {
+		controls.update();
+	}
+
+	// Render the scene for VR
+	renderer.render(scene, camera);
+
+	// Calculate azimuthal angle
+	const azimuthalAngle = Math.atan2(camera.position.x, camera.position.z);
+	const reversedAzimuthalAngle = -azimuthalAngle;
+
+	// Update angle indicator rotation with the reversed angle
+	angleIndicator.style.transform = `translate(-50%, -50%) rotate(${reversedAzimuthalAngle}rad)`;
+
+	// Continue rendering in VR
+	xrFrame.session.requestAnimationFrame(draw);
+}
+// Check if VR is supported and start VR session
+if ("xr" in navigator) {
+	console.log("WebXR is supported in this browser.");
+
+	// Use requestDevice or requestSession based on availability
+	if ("requestDevice" in navigator.xr) {
+		// Request XR device
+		navigator.xr
+			.requestDevice()
+			.then((device) => {
+				console.log("XR device obtained:", device);
+
+				// Request XR session
+				device
+					.requestSession({ immersive: true })
+					.then((session) => {
+						console.log("XR session started:", session);
+
+						// Initialize XR WebGL binding
+						const gl = renderer.getContext();
+						const xrLayer = new XRWebGLLayer(session, gl);
+
+						// Set XR render state
+						session.updateRenderState({ baseLayer: xrLayer });
+
+						// Start rendering loop
+						session.requestAnimationFrame(onXRFrame);
+					})
+					.catch((error) => {
+						console.error("Failed to start XR session:", error);
+						// Fallback to animate function if XR session cannot be started
+						animate();
+					});
+			})
+			.catch((error) => {
+				console.error("Failed to obtain XR device:", error);
+				// Fallback to animate function if XR device cannot be obtained
+				animate();
+			});
+	} else if ("requestSession" in navigator.xr) {
+		// Request XR session directly
+		navigator.xr
+			.requestSession("immersive-vr")
+			.then((session) => {
+				console.log("XR session started:", session);
+
+				// Initialize XR WebGL binding
+				const gl = renderer.getContext();
+				const xrLayer = new XRWebGLLayer(session, gl);
+
+				// Set XR render state
+				session.updateRenderState({ baseLayer: xrLayer });
+
+				// Start rendering loop
+				session.requestAnimationFrame(onXRFrame);
+			})
+			.catch((error) => {
+				console.error("Failed to start XR session:", error);
+				// Fallback to animate function if XR session cannot be started
+				animate();
+			});
+	} else {
+		console.error(
+			"WebXR APIs are present, but neither requestDevice nor requestSession methods are available."
+		);
+		// Fallback to animate function if neither requestDevice nor requestSession is available
+		animate();
+	}
+} else {
+	console.log("WebXR not supported in this browser.");
+	// Fallback to animate function if WebXR is not supported
+	animate();
+}
+// Function called on each XR frame
+function onXRFrame(time, xrFrame) {
+	// Get XR viewer pose
+	const viewerPose = xrFrame.getViewerPose();
+
+	if (viewerPose) {
+		// Iterate through XR views
+		const views = viewerPose.views;
+		for (let view of views) {
+			// Set viewport and projection matrix for each view
+			const viewport = xrLayer.getViewport(view);
+			const projectionMatrix = view.projectionMatrix;
+
+			// Render scene for each view
+			renderer.setViewport(viewport.x, viewport.y, viewport.width, viewport.height);
+			renderer.setProjectionMatrix(projectionMatrix);
+			renderer.render(scene, camera);
+		}
+	}
+
+	// Continue rendering loop
+	xrFrame.session.requestAnimationFrame(onXRFrame);
+}
 
 // Global
 
