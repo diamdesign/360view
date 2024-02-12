@@ -959,3 +959,21 @@ input[type="range"]:focus::-moz-range-thumb {
 	padding: 10px 20px;
 	font-size: 2rem;
 }
+
+@media screen and (max-width: 640px) {
+	#caption p {
+		font-size: 1rem;
+	}
+	#locations {
+		height: 135px;
+		bottom: -135px;
+	}
+	.locations .container ul li {
+		min-width: 160px;
+		max-width: 160px;
+	}
+
+	.locations .container ul li div {
+		font-size: 11px;
+	}
+}

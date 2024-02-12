@@ -139,52 +139,67 @@ let startResizeX;
 let startResizeWidth;
 
 // Function to handle mouse down event
+// Function to handle resize down event (mouse or touch)
 function onResizeDown(event) {
 	isResizing = true;
-	startResizeX = event.clientX;
+	startResizeX = event.clientX || event.touches[0].clientX; // Use either clientX or touches array
 	startResizeWidth = parseInt(document.defaultView.getComputedStyle(infoElem).width, 10);
 
-	// Add event listener for mouse move event
+	// Add event listener for mouse move or touch move event
 	document.body.addEventListener("mousemove", onResizeMove);
-	// Add event listener for mouse up event
+	document.body.addEventListener("touchmove", onResizeMove);
+
+	// Add event listener for mouse up or touch end event
 	document.body.addEventListener("mouseup", onResizeUp);
+	document.body.addEventListener("touchend", onResizeUp);
 }
 
-// Function to handle mouse move event
+// Function to handle resize move event (mouse or touch)
 function onResizeMove(event) {
 	if (!isResizing) return;
 
-	const deltaX = event.clientX - startResizeX;
-	let newWidth = startResizeWidth - deltaX; // Subtract deltaX instead of adding it
+	const clientX = event.clientX || event.touches[0].clientX; // Use either clientX or touches array
+	const deltaX = clientX - startResizeX;
+	let newWidth = startResizeWidth - deltaX;
 
-	// Ensure new width is within the allowed range
 	newWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
 
-	// Update infoElem width
 	infoElem.style.width = newWidth + "px";
 }
 
-// Function to handle mouse up event
+// Function to handle resize up event (mouse or touch)
 function onResizeUp() {
 	isResizing = false;
 
-	// Remove event listeners for mouse move and mouse up events
+	// Remove event listeners for mouse move or touch move and mouse up or touch end events
 	document.removeEventListener("mousemove", onResizeMove);
+	document.removeEventListener("touchmove", onResizeMove);
 	document.removeEventListener("mouseup", onResizeUp);
+	document.removeEventListener("touchend", onResizeUp);
 }
 
-// Add event listener for mouse down event on infoResizer
+// Add event listeners for both mouse and touch events on infoResizer
 infoResizer.addEventListener("mousedown", onResizeDown);
+infoResizer.addEventListener("touchstart", onResizeDown);
 
-locationsIndicatorElem.addEventListener("click", () => {
+function showLocationsContent() {
 	const scrollableBottom = parseFloat(locationsElem.style.bottom);
 	if (scrollableBottom === 0) {
-		locationsElem.style.bottom = "-175px";
+		let newHeight = locationsElem.getBoundingClientRect().height;
+		locationsElem.style.bottom = "-" + newHeight + "px";
 		locationsIndicatorElem.classList.remove("rotate180");
 	} else {
 		locationsIndicatorElem.classList.add("rotate180");
 		locationsElem.style.bottom = "0";
 	}
+}
+
+locationsIndicatorElem.addEventListener("click", () => {
+	showLocationsContent();
+});
+
+locationsIndicatorElem.addEventListener("touchstart", () => {
+	showLocationsContent();
 });
 
 const scrollableContent = document.querySelector("#scrollable");
@@ -246,8 +261,7 @@ idleTimeout = setTimeout(() => {
 	viewContainerFadeOut();
 }, 7000);
 
-// Add mousemove event listener to the document
-document.addEventListener("mousemove", function (event) {
+function showHideContent() {
 	clearTimeout(idleTimeout);
 
 	// If view container is not fully visible, fade it in
@@ -260,9 +274,21 @@ document.addEventListener("mousemove", function (event) {
 		// Fade out the view container after 7 seconds of inactivity
 		viewContainerFadeOut();
 	}, 7000);
+}
+// Add mousemove event listener to the document
+document.addEventListener("mousemove", function (event) {
+	showHideContent();
+});
+document.addEventListener("touchmove", function (event) {
+	showHideContent();
 });
 
 settingsButton.addEventListener("click", () => {
+	settingsElem.style.right = "0px";
+	settingsButton.style.opacity = "0";
+});
+
+settingsButton.addEventListener("touchstart", () => {
 	settingsElem.style.right = "0px";
 	settingsButton.style.opacity = "0";
 });
@@ -315,16 +341,24 @@ locationUl.innerHTML = locationsArray;
 
 const listItems = document.querySelectorAll("#locationlist li");
 // Add click event listener to each <li> element
+function activateItem(item) {
+	listItems.forEach((item) => {
+		item.classList.remove("active");
+	});
+
+	item.classList.add("active");
+	const contentId = item.getAttribute("data-id");
+	// Call a function to change the 360 content based on the file name and type
+	change360Content(parseInt(contentId));
+}
+
 listItems.forEach(function (item) {
 	item.addEventListener("click", function () {
-		listItems.forEach((item) => {
-			item.classList.remove("active");
-		});
+		activateItem(item);
+	});
 
-		item.classList.add("active");
-		const contentId = item.getAttribute("data-id");
-		// Call a function to change the 360 content based on the file name and type
-		change360Content(parseInt(contentId));
+	item.addEventListener("touchstart", function () {
+		activateItem(item);
 	});
 });
 
@@ -379,66 +413,69 @@ function change360Content(targetId) {
 			captionInputHTML.innerHTML = html;
 
 			const allCaptions = document.querySelectorAll("#captionselect ul li");
-			allCaptions.forEach((caption) => {
-				caption.addEventListener("click", (event) => {
-					const targetId = event.target.getAttribute("data-id");
-					let targetObj = contentArray.find((obj) => obj.id === parseInt(targetId));
-					// Extract the file name without extension
+			function handleCaptionClick(event) {
+				const targetId = event.target.getAttribute("data-id");
+				let targetObj = contentArray.find((obj) => obj.id === parseInt(targetId));
+				// Extract the file name without extension
+				const fileNameWithoutExtension = targetObj.file.split(".").slice(0, -1).join(".");
 
-					const fileNameWithoutExtension = targetObj.file
-						.split(".")
-						.slice(0, -1)
-						.join(".");
+				const captiontag = event.target.getAttribute("data-caption");
 
-					const captiontag = event.target.getAttribute("data-caption");
-
-					// Construct the new file name with the desired caption
-					const newSRTName = `video/${fileNameWithoutExtension}-${captiontag}.srt`;
-					console.log(newSRTName);
-					captionHTML.style.display = "block";
-					allCaptions.forEach((cap) => {
-						cap.classList.remove("active");
-					});
-					caption.classList.add("active");
-					captionButton.classList.add("on");
-					// Fetch the SRT file and convert it to a blob
-					fetch(newSRTName)
-						.then((response) => response.blob())
-						.then((blob) => {
-							// Pass the blob to the readSRTFile function
-							readSRTFile(blob);
-						})
-						.catch((error) => {
-							console.error("Error fetching or converting SRT file:", error);
-						});
+				// Construct the new file name with the desired caption
+				const newSRTName = `video/${fileNameWithoutExtension}-${captiontag}.srt`;
+				console.log(newSRTName);
+				captionHTML.style.display = "block";
+				allCaptions.forEach((cap) => {
+					cap.classList.remove("active");
 				});
+				event.target.classList.add("active");
+				captionButton.classList.add("on");
+				// Fetch the SRT file and convert it to a blob
+				fetch(newSRTName)
+					.then((response) => response.blob())
+					.then((blob) => {
+						// Pass the blob to the readSRTFile function
+						readSRTFile(blob);
+					})
+					.catch((error) => {
+						console.error("Error fetching or converting SRT file:", error);
+					});
+			}
+
+			allCaptions.forEach((caption) => {
+				caption.addEventListener("click", handleCaptionClick);
+				caption.addEventListener("touchstart", handleCaptionClick);
 			});
 
 			const captionOffButton = document.querySelector("#captionoff");
 
-			captionOffButton.addEventListener("click", () => {
+			function captionToggle() {
 				allCaptions.forEach((cap) => {
 					cap.classList.remove("active");
 				});
 				captionOffButton.classList.add("active");
 				captionButton.classList.remove("on");
 				captionHTML.style.display = "none";
-			});
+			}
+			captionOffButton.addEventListener("click", captionToggle);
+			captionOffButton.addEventListener("touchstart", captionToggle);
 		} else {
 			captionButton.style.display = "none";
 		}
 
 		playVideoButton.classList.add("playing");
 
-		captionButton.addEventListener("click", () => {
+		function showCaptionList() {
 			if (captionList.style.display === "none") {
 				captionList.style.display = "block";
 			} else {
 				captionList.style.display = "none";
 			}
-		});
+		}
+		captionButton.addEventListener("click", showCaptionList);
+		captionButton.addEventListener("touchstart", showCaptionList);
 
-		playVideoButton.addEventListener("click", () => {
+		function playPauseVideo() {
 			if (playVideoButton.classList.contains("playing")) {
 				playVideoButton.classList.remove("playing");
 				video.pause();
@@ -446,9 +483,14 @@ function change360Content(targetId) {
 				playVideoButton.classList.add("playing");
 				video.play();
 			}
-		});
+		}
+
+		playVideoButton.addEventListener("click", playPauseVideo);
+		playVideoButton.addEventListener("touchstart", playPauseVideo);
+
 		const currentTimeHTML = document.querySelector("#currenttime");
 		// Update the range input according to the current time of the video
+
 		video.addEventListener("timeupdate", () => {
 			const currentTimePercentage = video.currentTime / video.duration;
 			videoduration.value = currentTimePercentage.toFixed(2);
@@ -471,6 +513,10 @@ function change360Content(targetId) {
 
 		// Add an event listener to handle seeking when the user clicks or drags on the range input
 		videoduration.addEventListener("mousedown", () => {
+			video.removeEventListener("timeupdate", () => {});
+			changeVideoCurrentTime();
+		});
+		videoduration.addEventListener("touchstart", () => {
 			video.removeEventListener("timeupdate", () => {});
 			changeVideoCurrentTime();
 		});
@@ -842,6 +888,7 @@ function toggleFullscreen() {
 
 // Add event listener for button click
 fullscreenButton.addEventListener("click", toggleFullscreen);
+fullscreenButton.addEventListener("touchstart", toggleFullscreen);
 
 // Refresh the canvas on window resize
 window.addEventListener("resize", function (event) {
@@ -860,10 +907,8 @@ window.addEventListener("resize", function (event) {
 scrollableContent.addEventListener("wheel", function (event) {
 	// Prevent the default scroll behavior
 	event.preventDefault();
-
 	// Calculate the amount to scroll
 	const scrollAmount = event.deltaY;
-
 	// Adjust the scrollLeft property based on the scroll amount
 	scrollableContent.scrollLeft += scrollAmount;
 });
@@ -881,8 +926,22 @@ scrollableContent.addEventListener("mousedown", function (event) {
 	scrollLeft = scrollableContent.scrollLeft;
 	scrollableContent.style.cursor = "grabbing"; // Change cursor style
 });
+scrollableContent.addEventListener("touchstart", function (event) {
+	// Prevent default click behavior when starting drag
+	event.preventDefault();
+
+	isDragging = true;
+	startX = event.pageX - scrollableContent.offsetLeft;
+	scrollLeft = scrollableContent.scrollLeft;
+	scrollableContent.style.cursor = "grabbing"; // Change cursor style
+});
 
 scrollableContent.addEventListener("mouseup", function (event) {
+	isDragging = false;
+	scrollableContent.style.cursor = "grab"; // Restore cursor style
+});
+
+scrollableContent.addEventListener("touchend", function (event) {
 	isDragging = false;
 	scrollableContent.style.cursor = "grab"; // Restore cursor style
 });
@@ -893,6 +952,13 @@ scrollableContent.addEventListener("mouseleave", function (event) {
 });
 
 scrollableContent.addEventListener("mousemove", function (event) {
+	if (!isDragging) return;
+	const x = event.pageX - scrollableContent.offsetLeft;
+	const walk = (x - startX) * 3; // Adjust scroll speed
+	scrollableContent.scrollLeft = scrollLeft - walk;
+});
+
+scrollableContent.addEventListener("touchmove", function (event) {
 	if (!isDragging) return;
 	const x = event.pageX - scrollableContent.offsetLeft;
 	const walk = (x - startX) * 3; // Adjust scroll speed
@@ -950,7 +1016,7 @@ settingsSaturate.addEventListener("input", () => {
 	settingsSaturateNo.textContent = saturation; // Update value of the corresponding input
 });
 
-resetButton.addEventListener("click", () => {
+function resetSettings() {
 	const c = document.getElementsByTagName("canvas")[0];
 	c.style.filter = "contrast(1) brightness(1) saturate(1)";
 
@@ -970,9 +1036,15 @@ resetButton.addEventListener("click", () => {
 	settingsVolume.value = "1";
 	settingsVolumeNo.textContent = "1";
 	video.volume = "1";
-});
+}
+resetButton.addEventListener("click", resetSettings);
+resetButton.addEventListener("touchstart", resetSettings);
 
 closeSettingsButton.addEventListener("click", () => {
+	settingsButton.style.opacity = "1";
+	settingsElem.style.right = "-640px";
+});
+closeSettingsButton.addEventListener("touchstart", () => {
 	settingsButton.style.opacity = "1";
 	settingsElem.style.right = "-640px";
 });
@@ -982,7 +1054,16 @@ infoButton.addEventListener("click", () => {
 	infoElem.style.right = "0";
 });
 
+infoButton.addEventListener("touchstart", () => {
+	infoButton.style.opacity = "0";
+	infoElem.style.right = "0";
+});
+
 closeInfoButton.addEventListener("click", () => {
+	infoButton.style.opacity = "1";
+	infoElem.style.right = "-100%";
+});
+closeInfoButton.addEventListener("touchstart", () => {
 	infoButton.style.opacity = "1";
 	infoElem.style.right = "-100%";
 });
