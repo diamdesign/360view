@@ -152,6 +152,7 @@ function onResizeDown(event) {
 	// Add event listener for mouse up or touch end event
 	document.body.addEventListener("mouseup", onResizeUp);
 	document.body.addEventListener("touchend", onResizeUp);
+	document.body.addEventListener("selectend", onResizeUp);
 }
 
 // Function to handle resize move event (mouse or touch)
@@ -176,11 +177,13 @@ function onResizeUp() {
 	document.removeEventListener("touchmove", onResizeMove);
 	document.removeEventListener("mouseup", onResizeUp);
 	document.removeEventListener("touchend", onResizeUp);
+	document.removeEventListener("selectend", onResizeUp);
 }
 
 // Add event listeners for both mouse and touch events on infoResizer
 infoResizer.addEventListener("mousedown", onResizeDown);
 infoResizer.addEventListener("touchstart", onResizeDown);
+infoResizer.addEventListener("selectstart", onResizeDown);
 
 function showLocationsContent() {
 	const scrollableBottom = parseFloat(locationsElem.style.bottom);
@@ -194,13 +197,9 @@ function showLocationsContent() {
 	}
 }
 
-locationsIndicatorElem.addEventListener("click", () => {
-	showLocationsContent();
-});
-
-locationsIndicatorElem.addEventListener("touchstart", () => {
-	showLocationsContent();
-});
+locationsIndicatorElem.addEventListener("click", showLocationsContent);
+locationsIndicatorElem.addEventListener("touchstart", showLocationsContent);
+locationsIndicatorElem.addEventListener("selectstart", showLocationsContent);
 
 const scrollableContent = document.querySelector("#scrollable");
 const labelContainerElem = document.querySelector("#labels");
@@ -283,15 +282,13 @@ document.addEventListener("touchmove", function (event) {
 	showHideContent();
 });
 
-settingsButton.addEventListener("click", () => {
+function openSettings() {
 	settingsElem.style.right = "0px";
 	settingsButton.style.opacity = "0";
-});
-
-settingsButton.addEventListener("touchstart", () => {
-	settingsElem.style.right = "0px";
-	settingsButton.style.opacity = "0";
-});
+}
+settingsButton.addEventListener("click", openSettings);
+settingsButton.addEventListener("touchstart", openSettings);
+settingsButton.addEventListener("selectstart", openSettings);
 
 const locationsUl = document.querySelector("#locationlist");
 contentArray.forEach((item) => {
@@ -354,13 +351,9 @@ function activateItem(item) {
 }
 
 listItems.forEach(function (item) {
-	item.addEventListener("click", function () {
-		activateItem(item);
-	});
-
-	item.addEventListener("touchstart", function () {
-		activateItem(item);
-	});
+	item.addEventListener("click", activateItem(item));
+	item.addEventListener("touchstart", activateItem(item));
+	item.addEventListener("selectstart", activateItem(item));
 });
 
 // Create a video element
@@ -446,6 +439,7 @@ function change360Content(targetId) {
 			allCaptions.forEach((caption) => {
 				caption.addEventListener("click", handleCaptionClick);
 				caption.addEventListener("touchstart", handleCaptionClick);
+				caption.addEventListener("selectstart", handleCaptionClick);
 			});
 
 			const captionOffButton = document.querySelector("#captionoff");
@@ -460,6 +454,7 @@ function change360Content(targetId) {
 			}
 			captionOffButton.addEventListener("click", captionToggle);
 			captionOffButton.addEventListener("touchstart", captionToggle);
+			captionOffButton.addEventListener("selectstart", captionToggle);
 		} else {
 			captionButton.style.display = "none";
 		}
@@ -475,6 +470,7 @@ function change360Content(targetId) {
 		}
 		captionButton.addEventListener("click", showCaptionList);
 		captionButton.addEventListener("touchstart", showCaptionList);
+		captionButton.addEventListener("selectstart", showCaptionList);
 
 		function playPauseVideo() {
 			if (playVideoButton.classList.contains("playing")) {
@@ -488,6 +484,7 @@ function change360Content(targetId) {
 
 		playVideoButton.addEventListener("click", playPauseVideo);
 		playVideoButton.addEventListener("touchstart", playPauseVideo);
+		playVideoButton.addEventListener("selectstart", playPauseVideo);
 
 		const currentTimeHTML = document.querySelector("#currenttime");
 		// Update the range input according to the current time of the video
@@ -513,14 +510,13 @@ function change360Content(targetId) {
 		videoduration.addEventListener("input", changeVideoCurrentTime);
 
 		// Add an event listener to handle seeking when the user clicks or drags on the range input
-		videoduration.addEventListener("mousedown", () => {
+		function changeVideoTime() {
 			video.removeEventListener("timeupdate", () => {});
 			changeVideoCurrentTime();
-		});
-		videoduration.addEventListener("touchstart", () => {
-			video.removeEventListener("timeupdate", () => {});
-			changeVideoCurrentTime();
-		});
+		}
+		videoduration.addEventListener("mousedown", changeVideoTime);
+		videoduration.addEventListener("touchstart", changeVideoTime);
+		videoduration.addEventListener("selectstart", changeVideoTime);
 
 		function formatTime(seconds) {
 			const hours = Math.floor(seconds / 3600);
@@ -1005,6 +1001,7 @@ function toggleFullscreen() {
 // Add event listener for button click
 fullscreenButton.addEventListener("click", toggleFullscreen);
 fullscreenButton.addEventListener("touchstart", toggleFullscreen);
+fullscreenButton.addEventListener("selectstart", toggleFullscreen);
 
 // Refresh the canvas on window resize
 window.addEventListener("resize", function (event) {
