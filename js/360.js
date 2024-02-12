@@ -445,6 +445,11 @@ function change360Content(targetId) {
 		infoButton.style.opacity = "0";
 		infoButton.style.display = "none";
 	}
+
+	const vectarget = new THREE.Vector3(10, 10, -10); // Adjust the target position as needed
+	// Set the camera to look at the target point
+	camera.lookAt(vectarget);
+	camera.updateProjectionMatrix();
 }
 
 // Create a sphere geometry for the 360 photo
@@ -522,7 +527,15 @@ controls.dampingFactor = 0.05;
 controls.rotateSpeed = -1;
 
 // Set camera position
-camera.position.set(-30, 0, 0); // Move the camera further from the object
+camera.position.set(0, 0, 0);
+camera.rotation.order = "YXZ"; // Move the camera further from the object
+// Create a target point to look at, which is slightly ahead of the camera's position
+// Function to reset the camera rotation and position to its initial state
+const newPos = new THREE.Vector3(0, 0, 0); // Default position
+const newRot = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 150, 0)); // Default rotation
+
+resetCameraRotation(newPos, newRot);
+
 controls.minDistance = 30; // Set a minimum zoom distance that allows zooming in closer
 controls.maxDistance = 280; // Set maximum zoom distance
 controls.zoomSpeed = 3; // Adjust zoom speed
@@ -531,10 +544,6 @@ const zoomSpeed = 0.1;
 const perspectiveFactor = 0.1; // Adjust perspective factor as needed
 const minPerspective = 10; // Adjust minimum perspective value as needed
 const maxPerspective = 90;
-
-// Create a helper object to track the position in front of the camera
-const lightHelper = new THREE.Object3D();
-camera.add(lightHelper);
 
 // Function to create and update the angle indicator
 function createAngleIndicator() {
@@ -557,13 +566,16 @@ const initialCameraRotation = camera.rotation.clone();
 const initialCameraPosition = camera.position.clone();
 
 // Function to reset the camera rotation and position to its initial state
-function resetCameraRotation() {
+const defaultPosition = new THREE.Vector3(0, 0, 0); // Default position
+const defaultRotation = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, 0)); // Default rotation
+
+function resetCameraRotation(position = defaultPosition, rotation = defaultRotation) {
 	const initialRotation = new THREE.Quaternion().setFromEuler(camera.rotation.clone());
-	const targetRotation = new THREE.Quaternion().setFromEuler(initialCameraRotation.clone());
+	const targetRotation = new THREE.Quaternion().setFromEuler(rotation);
 
 	// Interpolate between the current position and the initial position
 	const initialPos = camera.position.clone();
-	const targetPos = initialCameraPosition.clone();
+	const targetPos = position.clone();
 
 	const duration = 1000; // Duration of the animation in milliseconds
 	const startTime = performance.now(); // Get the start time of the animation
@@ -598,17 +610,23 @@ function resetCameraRotation() {
 	// Start the animation
 	updateCameraRotation();
 }
+
 /*
 // Create directional light
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // Reduce intensity
 directionalLight.position.set(1, 1, 1).normalize();
 scene.add(directionalLight);
 
+// Create a helper object to track the position in front of the camera
+const lightHelper = new THREE.Object3D();
+camera.add(lightHelper);
+
 // Update the light's position relative to the helper object
 const lightDistance = 1; // Distance from camera to light
 lightHelper.position.set(0, 0, lightDistance);
 directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 */
+
 function animate() {
 	requestAnimationFrame(animate);
 	controls.update();
