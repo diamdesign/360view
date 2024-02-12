@@ -935,6 +935,11 @@ window.addEventListener("resize", function (event) {
 
 	// Render the scene
 	renderer.render(scene, camera);
+
+	if (locationsElem.style.bottom !== 0) {
+		let newHeight = locationsElem.getBoundingClientRect().height;
+		locationsElem.style.bottom = "-" + newHeight + "px";
+	}
 });
 
 scrollableContent.addEventListener("wheel", function (event) {
@@ -1094,11 +1099,13 @@ infoButton.addEventListener("touchstart", () => {
 
 closeInfoButton.addEventListener("click", () => {
 	infoButton.style.opacity = "1";
-	infoElem.style.right = "-100%";
+	infoElem.style.right = "-460px";
+	infoElem.style.width = "460px";
 });
 closeInfoButton.addEventListener("touchstart", () => {
 	infoButton.style.opacity = "1";
-	infoElem.style.right = "-100%";
+	infoElem.style.right = "-460px";
+	infoElem.style.width = "460px";
 });
 
 document.addEventListener("DOMContentLoaded", function () {

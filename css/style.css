@@ -673,7 +673,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	position: fixed;
 	backdrop-filter: blur(32px);
 	top: 0;
-	right: -100%;
+	right: -460px;
 	z-index: 1050;
 	background: rgba(0, 0, 0, 0.85);
 	height: 100%;
