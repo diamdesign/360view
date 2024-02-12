@@ -310,6 +310,181 @@ const renderer = new THREE.WebGLRenderer({ alpha: false });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// Create a video element
+const video = document.createElement("video");
+
+// Initialize currentVideoSrc with the URL of the initial video
+let currentVideoSrc;
+let texture;
+
+// Create a sphere geometry for the 360 photo
+const geometry = new THREE.SphereGeometry(360, 180, 180); // Increase the radius to 10
+
+// Create a black texture
+const blackTexture = new THREE.DataTexture(
+	new Uint8Array([0, 0, 0]), // RGB values for black
+	1, // Width
+	1, // Height
+	THREE.RGBFormat // Format
+);
+blackTexture.needsUpdate = true; // Ensure texture is updated
+
+// Create material with the black texture
+const material = new THREE.MeshStandardMaterial({
+	map: blackTexture,
+	side: THREE.DoubleSide,
+});
+
+const sphere = new THREE.Mesh(geometry, material);
+scene.add(sphere);
+
+let ambientIntensity = 4;
+let ambientLight;
+// Function to update ambient light intensity
+function updateLight(intensity) {
+	ambientIntensity = intensity;
+
+	if (ambientLight) {
+		scene.remove(ambientLight); // Remove existing ambient light from the scene
+	}
+	ambientLight = new THREE.AmbientLight(0xffffff, intensity); // Create new ambient light
+	scene.add(ambientLight); // Add new ambient light to the scene
+}
+
+updateLight(3.5);
+
+function animate() {
+	requestAnimationFrame(animate);
+	controls.update();
+	// directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
+	renderer.render(scene, camera);
+
+	// Calculate azimuthal angle
+	const azimuthalAngle = Math.atan2(camera.position.x, camera.position.z);
+
+	// Reverse the azimuthal angle to match the reversed mapping
+	const reversedAzimuthalAngle = -azimuthalAngle;
+
+	// Update angle indicator rotation with the reversed angle
+	angleIndicator.style.transform = `translate(-50%, -50%) rotate(${reversedAzimuthalAngle}rad)`;
+}
+
+function draw(xrFrame) {
+	// Update VR controls (if available)
+	if (controls) {
+		controls.update();
+	}
+
+	// Render the scene for VR
+	renderer.render(scene, camera);
+
+	// Calculate azimuthal angle
+	const azimuthalAngle = Math.atan2(camera.position.x, camera.position.z);
+	const reversedAzimuthalAngle = -azimuthalAngle;
+
+	// Update angle indicator rotation with the reversed angle
+	angleIndicator.style.transform = `translate(-50%, -50%) rotate(${reversedAzimuthalAngle}rad)`;
+
+	// Continue rendering in VR
+	xrFrame.session.requestAnimationFrame(draw);
+}
+// Check if VR is supported and start VR session
+if ("xr" in navigator) {
+	console.log("WebXR is supported in this browser.");
+
+	// Use requestDevice or requestSession based on availability
+	if ("requestDevice" in navigator.xr) {
+		// Request XR device
+		navigator.xr
+			.requestDevice()
+			.then((device) => {
+				console.log("XR device obtained:", device);
+
+				// Request XR session
+				device
+					.requestSession({ immersive: true })
+					.then((session) => {
+						console.log("XR session started:", session);
+
+						// Initialize XR WebGL binding
+						const gl = renderer.getContext();
+						const xrLayer = new XRWebGLLayer(session, gl);
+
+						// Set XR render state
+						session.updateRenderState({ baseLayer: xrLayer });
+
+						// Start rendering loop
+						session.requestAnimationFrame(onXRFrame);
+					})
+					.catch((error) => {
+						console.error("Failed to start XR session:", error);
+						// Fallback to animate function if XR session cannot be started
+						animate();
+					});
+			})
+			.catch((error) => {
+				console.error("Failed to obtain XR device:", error);
+				// Fallback to animate function if XR device cannot be obtained
+				animate();
+			});
+	} else if ("requestSession" in navigator.xr) {
+		// Request XR session directly
+		navigator.xr
+			.requestSession("immersive-vr")
+			.then((session) => {
+				console.log("XR session started:", session);
+
+				// Initialize XR WebGL binding
+				const gl = renderer.getContext();
+				const xrLayer = new XRWebGLLayer(session, gl);
+
+				// Set XR render state
+				session.updateRenderState({ baseLayer: xrLayer });
+
+				// Start rendering loop
+				session.requestAnimationFrame(onXRFrame);
+			})
+			.catch((error) => {
+				console.error("Failed to start XR session:", error);
+				// Fallback to animate function if XR session cannot be started
+				animate();
+			});
+	} else {
+		console.error(
+			"WebXR APIs are present, but neither requestDevice nor requestSession methods are available."
+		);
+		// Fallback to animate function if neither requestDevice nor requestSession is available
+		animate();
+	}
+} else {
+	console.log("WebXR not supported in this browser.");
+	// Fallback to animate function if WebXR is not supported
+	animate();
+}
+// Function called on each XR frame
+function onXRFrame(time, xrFrame) {
+	// Get XR viewer pose
+	const viewerPose = xrFrame.getViewerPose();
+
+	if (viewerPose) {
+		// Iterate through XR views
+		const views = viewerPose.views;
+		for (let view of views) {
+			// Set viewport and projection matrix for each view
+			const viewport = xrLayer.getViewport(view);
+			const projectionMatrix = view.projectionMatrix;
+
+			// Render scene for each view
+			renderer.setViewport(viewport.x, viewport.y, viewport.width, viewport.height);
+			renderer.setProjectionMatrix(projectionMatrix);
+			renderer.render(scene, camera);
+		}
+	}
+
+	// Continue rendering loop
+	xrFrame.session.requestAnimationFrame(onXRFrame);
+}
+
 let locationsArray = "";
 
 for (let i = 0; i < contentArray.length; i++) {
@@ -340,8 +515,8 @@ locationUl.innerHTML = locationsArray;
 const listItems = document.querySelectorAll("#locationlist li");
 // Add click event listener to each <li> element
 function activateItem(item) {
-	listItems.forEach((item) => {
-		item.classList.remove("active");
+	listItems.forEach((listItem) => {
+		listItem.classList.remove("active");
 	});
 
 	item.classList.add("active");
@@ -350,18 +525,17 @@ function activateItem(item) {
 	change360Content(parseInt(contentId));
 }
 
-listItems.forEach(function (item) {
-	item.addEventListener("click", activateItem(item));
-	item.addEventListener("touchstart", activateItem(item));
-	item.addEventListener("selectstart", activateItem(item));
+listItems.forEach((item) => {
+	item.addEventListener("click", function () {
+		activateItem(item);
+	});
+	item.addEventListener("touchstart", function () {
+		activateItem(item);
+	});
+	item.addEventListener("selectstart", function () {
+		activateItem(item);
+	});
 });
-
-// Create a video element
-const video = document.createElement("video");
-
-// Initialize currentVideoSrc with the URL of the initial video
-let currentVideoSrc;
-let texture;
 
 function change360Content(targetId) {
 	infoElem.style.right = "-100%";
@@ -589,42 +763,6 @@ function change360Content(targetId) {
 	camera.updateProjectionMatrix();
 }
 
-// Create a sphere geometry for the 360 photo
-const geometry = new THREE.SphereGeometry(360, 180, 180); // Increase the radius to 10
-
-// Create a black texture
-const blackTexture = new THREE.DataTexture(
-	new Uint8Array([0, 0, 0]), // RGB values for black
-	1, // Width
-	1, // Height
-	THREE.RGBFormat // Format
-);
-blackTexture.needsUpdate = true; // Ensure texture is updated
-
-// Create material with the black texture
-const material = new THREE.MeshStandardMaterial({
-	map: blackTexture,
-	side: THREE.DoubleSide,
-});
-
-const sphere = new THREE.Mesh(geometry, material);
-scene.add(sphere);
-
-let ambientIntensity = 4;
-let ambientLight;
-// Function to update ambient light intensity
-function updateLight(intensity) {
-	ambientIntensity = intensity;
-
-	if (ambientLight) {
-		scene.remove(ambientLight); // Remove existing ambient light from the scene
-	}
-	ambientLight = new THREE.AmbientLight(0xffffff, intensity); // Create new ambient light
-	scene.add(ambientLight); // Add new ambient light to the scene
-}
-
-updateLight(3.5);
-
 function handleZoom(event) {
 	if (isMouseOverScrollableContent(event)) {
 		return; // Exit the function early if mouse is over scrollable content
@@ -645,91 +783,6 @@ function handleZoom(event) {
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.fov = perspective;
 	camera.updateProjectionMatrix();
-}
-
-// SRT Stuff
-
-function readSRTFile(file) {
-	const reader = new FileReader();
-	reader.onload = function (event) {
-		const captions = parseSRT(event.target.result);
-		// Assuming captions is an array of objects with 'start', 'end', and 'text' properties
-		console.log(captions);
-		// You can store the captions array or use it directly
-		displayCaption(captions);
-	};
-	reader.readAsText(file);
-}
-function parseSRT(data) {
-	const lines = data.trim().split(/\r?\n/); // Split the data into lines
-	const captions = [];
-	let caption = {};
-
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i].trim();
-
-		if (!line) {
-			// Skip empty lines
-			continue;
-		}
-
-		if (!caption.id) {
-			// If caption ID is not set, expect the ID line
-			caption.id = parseInt(line);
-		} else if (!caption.start) {
-			// If start time is not set, expect the time range line
-			const timeParts = line.split(" --> ");
-			if (timeParts.length === 2) {
-				caption.start = srtTimeToSeconds(timeParts[0]);
-				caption.end = srtTimeToSeconds(timeParts[1]);
-			} else {
-				// If time range line does not contain start and end times, skip caption
-				caption = {};
-				continue;
-			}
-		} else if (!caption.text) {
-			// If text is not set, expect the caption text line
-			caption.text = line;
-		} else {
-			// If all properties are set, push the current caption object to captions array and reset caption object
-			captions.push(caption);
-			caption = {};
-		}
-	}
-
-	console.log(captions);
-	return captions;
-}
-
-function srtTimeToSeconds(timeString) {
-	console.log(timeString);
-	const [hh, mm, ssAndMs] = timeString.split(":").map(parseFloat);
-	let [ss, ms] = [0, 0]; // Initialize seconds and milliseconds
-
-	if (typeof ssAndMs === "string" && ssAndMs.includes(",")) {
-		// Check if the timeString contains milliseconds
-		const splitTime = ssAndMs.split(",");
-		ss = parseFloat(splitTime[0]); // Extract seconds
-		ms = parseFloat(splitTime[1]); // Extract milliseconds
-	} else {
-		ss = parseFloat(ssAndMs); // If no milliseconds or not a string, directly assign seconds
-	}
-
-	return hh * 3600 + mm * 60 + ss + ms / 1000; // Convert milliseconds to seconds
-}
-
-function displayCaption(captions) {
-	video.addEventListener("timeupdate", function () {
-		const currentTime = video.currentTime;
-		const captionElement = document.getElementById("caption");
-		for (const caption of captions) {
-			if (currentTime >= caption.start && currentTime <= caption.end) {
-				captionElement.innerHTML = `<p>${caption.text}</p>`;
-				return;
-			}
-		}
-		captionElement.innerHTML = "";
-	});
 }
 
 function isMouseOverScrollableContent(event) {
@@ -849,140 +902,7 @@ lightHelper.position.set(0, 0, lightDistance);
 directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 */
 
-function animate() {
-	requestAnimationFrame(animate);
-	controls.update();
-	// directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
-	renderer.render(scene, camera);
-
-	// Calculate azimuthal angle
-	const azimuthalAngle = Math.atan2(camera.position.x, camera.position.z);
-
-	// Reverse the azimuthal angle to match the reversed mapping
-	const reversedAzimuthalAngle = -azimuthalAngle;
-
-	// Update angle indicator rotation with the reversed angle
-	angleIndicator.style.transform = `translate(-50%, -50%) rotate(${reversedAzimuthalAngle}rad)`;
-}
-
-function draw(xrFrame) {
-	// Update VR controls (if available)
-	if (controls) {
-		controls.update();
-	}
-
-	// Render the scene for VR
-	renderer.render(scene, camera);
-
-	// Calculate azimuthal angle
-	const azimuthalAngle = Math.atan2(camera.position.x, camera.position.z);
-	const reversedAzimuthalAngle = -azimuthalAngle;
-
-	// Update angle indicator rotation with the reversed angle
-	angleIndicator.style.transform = `translate(-50%, -50%) rotate(${reversedAzimuthalAngle}rad)`;
-
-	// Continue rendering in VR
-	xrFrame.session.requestAnimationFrame(draw);
-}
-// Check if VR is supported and start VR session
-if ("xr" in navigator) {
-	console.log("WebXR is supported in this browser.");
-
-	// Use requestDevice or requestSession based on availability
-	if ("requestDevice" in navigator.xr) {
-		// Request XR device
-		navigator.xr
-			.requestDevice()
-			.then((device) => {
-				console.log("XR device obtained:", device);
-
-				// Request XR session
-				device
-					.requestSession({ immersive: true })
-					.then((session) => {
-						console.log("XR session started:", session);
-
-						// Initialize XR WebGL binding
-						const gl = renderer.getContext();
-						const xrLayer = new XRWebGLLayer(session, gl);
-
-						// Set XR render state
-						session.updateRenderState({ baseLayer: xrLayer });
-
-						// Start rendering loop
-						session.requestAnimationFrame(onXRFrame);
-					})
-					.catch((error) => {
-						console.error("Failed to start XR session:", error);
-						// Fallback to animate function if XR session cannot be started
-						animate();
-					});
-			})
-			.catch((error) => {
-				console.error("Failed to obtain XR device:", error);
-				// Fallback to animate function if XR device cannot be obtained
-				animate();
-			});
-	} else if ("requestSession" in navigator.xr) {
-		// Request XR session directly
-		navigator.xr
-			.requestSession("immersive-vr")
-			.then((session) => {
-				console.log("XR session started:", session);
-
-				// Initialize XR WebGL binding
-				const gl = renderer.getContext();
-				const xrLayer = new XRWebGLLayer(session, gl);
-
-				// Set XR render state
-				session.updateRenderState({ baseLayer: xrLayer });
-
-				// Start rendering loop
-				session.requestAnimationFrame(onXRFrame);
-			})
-			.catch((error) => {
-				console.error("Failed to start XR session:", error);
-				// Fallback to animate function if XR session cannot be started
-				animate();
-			});
-	} else {
-		console.error(
-			"WebXR APIs are present, but neither requestDevice nor requestSession methods are available."
-		);
-		// Fallback to animate function if neither requestDevice nor requestSession is available
-		animate();
-	}
-} else {
-	console.log("WebXR not supported in this browser.");
-	// Fallback to animate function if WebXR is not supported
-	animate();
-}
-// Function called on each XR frame
-function onXRFrame(time, xrFrame) {
-	// Get XR viewer pose
-	const viewerPose = xrFrame.getViewerPose();
-
-	if (viewerPose) {
-		// Iterate through XR views
-		const views = viewerPose.views;
-		for (let view of views) {
-			// Set viewport and projection matrix for each view
-			const viewport = xrLayer.getViewport(view);
-			const projectionMatrix = view.projectionMatrix;
-
-			// Render scene for each view
-			renderer.setViewport(viewport.x, viewport.y, viewport.width, viewport.height);
-			renderer.setProjectionMatrix(projectionMatrix);
-			renderer.render(scene, camera);
-		}
-	}
-
-	// Continue rendering loop
-	xrFrame.session.requestAnimationFrame(onXRFrame);
-}
-
 // Global
-
 // Function to toggle fullscreen mode
 function toggleFullscreen() {
 	if (!document.fullscreenElement) {
@@ -1199,3 +1119,85 @@ document.addEventListener("DOMContentLoaded", function () {
 	// Start checking for the first list item
 	checkFirstListItem();
 });
+
+// SRT Stuff
+function readSRTFile(file) {
+	const reader = new FileReader();
+	reader.onload = function (event) {
+		const captions = parseSRT(event.target.result);
+		// Assuming captions is an array of objects with 'start', 'end', and 'text' properties
+		console.log(captions);
+		// You can store the captions array or use it directly
+		displayCaption(captions);
+	};
+	reader.readAsText(file);
+}
+function parseSRT(data) {
+	const lines = data.trim().split(/\r?\n/); // Split the data into lines
+	const captions = [];
+	let caption = {};
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i].trim();
+
+		if (!line) {
+			// Skip empty lines
+			continue;
+		}
+
+		if (!caption.id) {
+			// If caption ID is not set, expect the ID line
+			caption.id = parseInt(line);
+		} else if (!caption.start) {
+			// If start time is not set, expect the time range line
+			const timeParts = line.split(" --> ");
+			if (timeParts.length === 2) {
+				caption.start = srtTimeToSeconds(timeParts[0]);
+				caption.end = srtTimeToSeconds(timeParts[1]);
+			} else {
+				// If time range line does not contain start and end times, skip caption
+				caption = {};
+				continue;
+			}
+		} else if (!caption.text) {
+			// If text is not set, expect the caption text line
+			caption.text = line;
+		} else {
+			// If all properties are set, push the current caption object to captions array and reset caption object
+			captions.push(caption);
+			caption = {};
+		}
+	}
+
+	console.log(captions);
+	return captions;
+}
+function srtTimeToSeconds(timeString) {
+	console.log(timeString);
+	const [hh, mm, ssAndMs] = timeString.split(":").map(parseFloat);
+	let [ss, ms] = [0, 0]; // Initialize seconds and milliseconds
+
+	if (typeof ssAndMs === "string" && ssAndMs.includes(",")) {
+		// Check if the timeString contains milliseconds
+		const splitTime = ssAndMs.split(",");
+		ss = parseFloat(splitTime[0]); // Extract seconds
+		ms = parseFloat(splitTime[1]); // Extract milliseconds
+	} else {
+		ss = parseFloat(ssAndMs); // If no milliseconds or not a string, directly assign seconds
+	}
+
+	return hh * 3600 + mm * 60 + ss + ms / 1000; // Convert milliseconds to seconds
+}
+function displayCaption(captions) {
+	video.addEventListener("timeupdate", function () {
+		const currentTime = video.currentTime;
+		const captionElement = document.getElementById("caption");
+		for (const caption of captions) {
+			if (currentTime >= caption.start && currentTime <= caption.end) {
+				captionElement.innerHTML = `<p>${caption.text}</p>`;
+				return;
+			}
+		}
+		captionElement.innerHTML = "";
+	});
+}
