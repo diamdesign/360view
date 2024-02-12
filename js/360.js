@@ -55,42 +55,54 @@ var contentArray = [
 		id: 8,
 		type: "video",
 		file: "360_vr_master_series___free_asset_download____bavarian_alps_wimbachklamm (1080p).mp4",
+		duration: "2:00",
 		title: "Bavarian Alps",
+		captions: ["Swedish", "English"],
 		info: "",
 	},
 	{
 		id: 9,
 		type: "video",
 		file: "ayutthaya_-_needs_stabilization_and_horizon_correction___360_vr_master_series___free_download (1080p).mp4",
+		duration: "0:30",
 		title: "Ayutthaya",
+		captions: "",
 		info: "",
 	},
 	{
 		id: 10,
 		type: "video",
 		file: "ayutthaya_-_easy_tripod_paint___360_vr_master_series___free_download (1080p).mp4",
+		duration: "0:25",
 		title: "Ayutthaya Two",
+		captions: "",
 		info: "",
 	},
 	{
 		id: 11,
 		type: "video",
 		file: "360_vr_master_series___free_download___london_park_ducks_swans (1080p).mp4",
+		duration: "1:05",
 		title: "London Park",
+		captions: "",
 		info: "",
 	},
 	{
 		id: 12,
 		type: "video",
 		file: "360_vr_master_series___free_download___london_on_tower_bridge (1080p).mp4",
+		duration: "0:29",
 		title: "London Tower Bridge",
+		captions: "",
 		info: "",
 	},
 	{
 		id: 13,
 		type: "video",
 		file: "360_vr_master_series___free_download___crystal_shower_falls (1080p).mp4",
+		duration: "2:00",
 		title: "Crystal Shower Falls",
+		captions: "",
 		info: "",
 	},
 ];
@@ -110,6 +122,13 @@ const closeInfoButton = document.querySelector("#closeinfobtn");
 const infoElem = document.querySelector("#info");
 const infoButton = document.querySelector("#infobtn");
 const infoResizer = document.querySelector("#resizer");
+
+const videoplayer = document.querySelector("#videoplayer");
+const playVideoButton = document.querySelector("#playvideo");
+const videoduration = document.querySelector("#videoduration");
+const captionHTML = document.querySelector("#caption");
+const captionButton = document.querySelector("#captionselect");
+const captionList = document.querySelector("#captionselect ul");
 
 // Define the minimum and maximum widths for infoElem
 const minWidth = 460;
@@ -207,6 +226,20 @@ function viewContainerFadeOut() {
 
 viewContainerFadeIn();
 
+document.addEventListener("keydown", (e) => {
+	if (e.key === "h" || e.key === "H") {
+		const one = document.querySelector("#view-container");
+		const two = document.querySelector("#outside");
+		if (one.style.display === "none") {
+			one.style.display = "block";
+			two.style.display = "block";
+		} else {
+			one.style.display = "none";
+			two.style.display = "none";
+		}
+	}
+});
+
 let idleTimeout;
 idleTimeout = setTimeout(() => {
 	// Fade out the view container after 7 seconds of inactivity
@@ -234,36 +267,7 @@ settingsButton.addEventListener("click", () => {
 	settingsButton.style.opacity = "0";
 });
 
-// Function to extract and display the first frame of the video as an image
-function extractVideoFrame(videoUrl, callback) {
-	var video = document.createElement("video");
-	video.crossOrigin = "anonymous"; // Allow cross-origin access to video
-	video.src = "video/" + videoUrl;
-
-	video.onloadedmetadata = function () {
-		// Set the playback time to 10 seconds
-		video.currentTime = 10; // Adjust as needed
-
-		video.onseeked = function () {
-			// Capture the frame at the current time (10 seconds)
-			var canvas = document.createElement("canvas");
-			canvas.width = video.videoWidth;
-			canvas.height = video.videoHeight;
-			var ctx = canvas.getContext("2d");
-			ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-			// Convert the canvas to a data URL (JPEG format)
-			var imageUrl = canvas.toDataURL("image/jpeg"); // Specify JPEG format
-
-			// Call the callback function with the data URL
-			callback(imageUrl);
-		};
-	};
-}
-
-let promises = [];
-
-const locationsUl = locationsElem.querySelector(".container ul");
+const locationsUl = document.querySelector("#locationlist");
 contentArray.forEach((item) => {
 	item = "<li></li>";
 	locationsUl.insertAdjacentHTML("afterbegin", item);
@@ -282,77 +286,45 @@ const renderer = new THREE.WebGLRenderer({ alpha: false });
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+let locationsArray = "";
 
-// Create a promise for the first item
-let firstPromise = new Promise((resolve) => {
-	let isFirst = true;
-	if (contentArray[0].type === "video") {
+for (let i = 0; i < contentArray.length; i++) {
+	const content = contentArray[i];
+	let activeClass = i === 0 && content.type === "video" ? "active" : "";
+	let imageUrl = content.file.replace(/\.\w+$/, ".jpg");
+	if (content.type === "video") {
 		sceneType = "video";
-		extractVideoFrame(contentArray[0].file, function (imageUrl) {
-			let activeClass = isFirst ? "active" : "";
-			let itemHtml = `<li class="${activeClass}" data-file="${contentArray[0].file}" data-id="${contentArray[0].id}" data-type="${contentArray[0].type}">
-                                <span class="icon-video"></span>
-                                <div>${contentArray[0].title}</div>
-                                <img src="${imageUrl}" alt="" />
-                            </li>`;
-			isFirst = false; // Set isFirst to false after the first iteration
-			resolve(itemHtml);
-		});
+		let itemHtml = `<li class="${activeClass}" data-file="${content.file}" data-id="${content.id}" data-type="${content.type}">
+                            <span class="icon-video">${content.duration}</span>
+                            <div>${content.title}</div>
+                            <img src="video/${imageUrl}" alt="" />
+                        </li>`;
+		locationsArray += itemHtml;
 	} else {
 		sceneType = "image";
-		let activeClass = isFirst ? "active" : "";
-		let itemHtml = `<li class="${activeClass}" data-file="${contentArray[0].file}" data-id="${contentArray[0].id}" data-type="${contentArray[0].type}">
-                            <div>${contentArray[0].title}</div>
-                            <img src="img/${contentArray[0].file}" alt="" />
+		let itemHtml = `<li class="${activeClass}" data-file="${content.file}" data-id="${content.id}" data-type="${content.type}">
+                            <div>${content.title}</div>
+                            <img src="img/${content.file}" alt="" />
                         </li>`;
-		isFirst = false; // Set isFirst to false after the first iteration
-		resolve(itemHtml);
+		locationsArray += itemHtml;
 	}
-});
-
-promises.push(firstPromise); // Push the first promise
-
-// Create promises for the remaining items
-for (let i = 1; i < contentArray.length; i++) {
-	let promise = new Promise((resolve) => {
-		if (contentArray[i].type === "video") {
-			extractVideoFrame(contentArray[i].file, function (imageUrl) {
-				let itemHtml = `<li data-file="${contentArray[i].file}" data-id="${contentArray[i].id}" data-type="${contentArray[i].type}">
-                                    <span class="icon-video"></span>
-                                    <div>${contentArray[i].title}</div>
-                                    <img src="${imageUrl}" alt="" />
-                                </li>`;
-				resolve(itemHtml);
-			});
-		} else {
-			let itemHtml = `<li data-file="${contentArray[i].file}" data-id="${contentArray[i].id}" data-type="${contentArray[i].type}">
-                                <div>${contentArray[i].title}</div>
-                                <img src="img/${contentArray[i].file}" alt="" />
-                            </li>`;
-			resolve(itemHtml);
-		}
-	});
-	promises.push(promise);
 }
 
-Promise.all(promises).then((htmlArray) => {
-	let locationHtml = htmlArray.join("");
-	const locationElem = document.querySelector("#locations ul");
-	locationElem.innerHTML = locationHtml;
+const locationUl = document.querySelector("#locationlist");
+locationUl.innerHTML = locationsArray;
 
-	const listItems = document.querySelectorAll("#locations li");
-	// Add click event listener to each <li> element
-	listItems.forEach(function (item) {
-		item.addEventListener("click", function () {
-			listItems.forEach((item) => {
-				item.classList.remove("active");
-			});
-
-			item.classList.add("active");
-			const contentId = item.getAttribute("data-id");
-			// Call a function to change the 360 content based on the file name and type
-			change360Content(parseInt(contentId));
+const listItems = document.querySelectorAll("#locationlist li");
+// Add click event listener to each <li> element
+listItems.forEach(function (item) {
+	item.addEventListener("click", function () {
+		listItems.forEach((item) => {
+			item.classList.remove("active");
 		});
+
+		item.classList.add("active");
+		const contentId = item.getAttribute("data-id");
+		// Call a function to change the 360 content based on the file name and type
+		change360Content(parseInt(contentId));
 	});
 });
 
@@ -376,6 +348,7 @@ function change360Content(targetId) {
 			return; // No need to change the video if it's the same
 		}
 		sceneType = "video";
+
 		// Remove the previous texture
 		sphere.material.map = null;
 		// Pause and remove the current video
@@ -394,6 +367,127 @@ function change360Content(targetId) {
 		// Update the current video source
 		currentVideoSrc = "video/" + fileName;
 
+		// Check for captions
+		if (targetObject.captions !== "") {
+			captionButton.style.display = "block";
+			const captionInputHTML = document.querySelector("#captionselect ul");
+			let html = "";
+			targetObject.captions.forEach((caption) => {
+				html += `<li data-caption="${caption}" data-id="${targetObject.id}">${caption}</li>`;
+			});
+			html += '<li id="captionoff" class="active">Captions off</li>';
+			captionInputHTML.innerHTML = html;
+
+			const allCaptions = document.querySelectorAll("#captionselect ul li");
+			allCaptions.forEach((caption) => {
+				caption.addEventListener("click", (event) => {
+					const targetId = event.target.getAttribute("data-id");
+					let targetObj = contentArray.find((obj) => obj.id === parseInt(targetId));
+					// Extract the file name without extension
+
+					const fileNameWithoutExtension = targetObj.file
+						.split(".")
+						.slice(0, -1)
+						.join(".");
+
+					const captiontag = event.target.getAttribute("data-caption");
+
+					// Construct the new file name with the desired caption
+					const newSRTName = `video/${fileNameWithoutExtension}-${captiontag}.srt`;
+					console.log(newSRTName);
+					captionHTML.style.display = "block";
+					allCaptions.forEach((cap) => {
+						cap.classList.remove("active");
+					});
+					caption.classList.add("active");
+					captionButton.classList.add("on");
+					// Fetch the SRT file and convert it to a blob
+					fetch(newSRTName)
+						.then((response) => response.blob())
+						.then((blob) => {
+							// Pass the blob to the readSRTFile function
+							readSRTFile(blob);
+						})
+						.catch((error) => {
+							console.error("Error fetching or converting SRT file:", error);
+						});
+				});
+			});
+
+			const captionOffButton = document.querySelector("#captionoff");
+
+			captionOffButton.addEventListener("click", () => {
+				allCaptions.forEach((cap) => {
+					cap.classList.remove("active");
+				});
+				captionOffButton.classList.add("active");
+				captionButton.classList.remove("on");
+				captionHTML.style.display = "none";
+			});
+		} else {
+			captionButton.style.display = "none";
+		}
+
+		playVideoButton.classList.add("playing");
+
+		captionButton.addEventListener("click", () => {
+			if (captionList.style.display === "none") {
+				captionList.style.display = "block";
+			} else {
+				captionList.style.display = "none";
+			}
+		});
+
+		playVideoButton.addEventListener("click", () => {
+			if (playVideoButton.classList.contains("playing")) {
+				playVideoButton.classList.remove("playing");
+				video.pause();
+			} else {
+				playVideoButton.classList.add("playing");
+				video.play();
+			}
+		});
+		const currentTimeHTML = document.querySelector("#currenttime");
+		// Update the range input according to the current time of the video
+		video.addEventListener("timeupdate", () => {
+			const currentTimePercentage = video.currentTime / video.duration;
+			videoduration.value = currentTimePercentage.toFixed(2);
+			const currentTime = video.currentTime;
+			const formattedTime = formatTime(currentTime);
+			currentTimeHTML.textContent = formattedTime;
+		});
+
+		// Function to handle changing the current time of the video when the range input is changed
+		function changeVideoCurrentTime() {
+			const currentTimePercentage = parseFloat(videoduration.value);
+			video.currentTime = currentTimePercentage * video.duration;
+			const currentTime = video.currentTime;
+			const formattedTime = formatTime(currentTime);
+			currentTimeHTML.textContent = formattedTime;
+		}
+
+		// Add an event listener to the range input to update the video current time when changed
+		videoduration.addEventListener("input", changeVideoCurrentTime);
+
+		// Add an event listener to handle seeking when the user clicks or drags on the range input
+		videoduration.addEventListener("mousedown", () => {
+			video.removeEventListener("timeupdate", () => {});
+			changeVideoCurrentTime();
+		});
+
+		function formatTime(seconds) {
+			const hours = Math.floor(seconds / 3600);
+			const minutes = Math.floor((seconds % 3600) / 60);
+			const remainingSeconds = Math.floor(seconds % 60);
+
+			const formattedHours = hours.toString().padStart(2, "0");
+			const formattedMinutes = minutes.toString().padStart(2, "0");
+			const formattedSeconds = remainingSeconds.toString().padStart(2, "0");
+
+			return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+		}
+
+		videoplayer.style.display = "flex";
 		// Create a texture from the video element
 		texture = new THREE.VideoTexture(video);
 		texture.encoding = THREE.LinearEncoding;
@@ -408,7 +502,7 @@ function change360Content(targetId) {
 		sphere.material.needsUpdate = true;
 	} else if (fileType === "image") {
 		sceneType = "image";
-
+		videoplayer.style.display = "none";
 		// Remove the previous texture
 		sphere.material.map = null;
 		// Create a black texture
@@ -508,6 +602,91 @@ function handleZoom(event) {
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.fov = perspective;
 	camera.updateProjectionMatrix();
+}
+
+// SRT Stuff
+
+function readSRTFile(file) {
+	const reader = new FileReader();
+	reader.onload = function (event) {
+		const captions = parseSRT(event.target.result);
+		// Assuming captions is an array of objects with 'start', 'end', and 'text' properties
+		console.log(captions);
+		// You can store the captions array or use it directly
+		displayCaption(captions);
+	};
+	reader.readAsText(file);
+}
+function parseSRT(data) {
+	const lines = data.trim().split(/\r?\n/); // Split the data into lines
+	const captions = [];
+	let caption = {};
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i].trim();
+
+		if (!line) {
+			// Skip empty lines
+			continue;
+		}
+
+		if (!caption.id) {
+			// If caption ID is not set, expect the ID line
+			caption.id = parseInt(line);
+		} else if (!caption.start) {
+			// If start time is not set, expect the time range line
+			const timeParts = line.split(" --> ");
+			if (timeParts.length === 2) {
+				caption.start = srtTimeToSeconds(timeParts[0]);
+				caption.end = srtTimeToSeconds(timeParts[1]);
+			} else {
+				// If time range line does not contain start and end times, skip caption
+				caption = {};
+				continue;
+			}
+		} else if (!caption.text) {
+			// If text is not set, expect the caption text line
+			caption.text = line;
+		} else {
+			// If all properties are set, push the current caption object to captions array and reset caption object
+			captions.push(caption);
+			caption = {};
+		}
+	}
+
+	console.log(captions);
+	return captions;
+}
+
+function srtTimeToSeconds(timeString) {
+	console.log(timeString);
+	const [hh, mm, ssAndMs] = timeString.split(":").map(parseFloat);
+	let [ss, ms] = [0, 0]; // Initialize seconds and milliseconds
+
+	if (typeof ssAndMs === "string" && ssAndMs.includes(",")) {
+		// Check if the timeString contains milliseconds
+		const splitTime = ssAndMs.split(",");
+		ss = parseFloat(splitTime[0]); // Extract seconds
+		ms = parseFloat(splitTime[1]); // Extract milliseconds
+	} else {
+		ss = parseFloat(ssAndMs); // If no milliseconds or not a string, directly assign seconds
+	}
+
+	return hh * 3600 + mm * 60 + ss + ms / 1000; // Convert milliseconds to seconds
+}
+
+function displayCaption(captions) {
+	video.addEventListener("timeupdate", function () {
+		const currentTime = video.currentTime;
+		const captionElement = document.getElementById("caption");
+		for (const caption of captions) {
+			if (currentTime >= caption.start && currentTime <= caption.end) {
+				captionElement.innerHTML = `<p>${caption.text}</p>`;
+				return;
+			}
+		}
+		captionElement.innerHTML = "";
+	});
 }
 
 function isMouseOverScrollableContent(event) {
@@ -813,7 +992,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	// Function to change the 360 image
 
 	function checkFirstListItem() {
-		const firstListItem = document.querySelector("#locations ul li:first-child");
+		const firstListItem = document.querySelector("#locations .container ul li:first-child");
 		if (firstListItem) {
 			const contentId = contentArray[0].id;
 			change360Content(contentId);

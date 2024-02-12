@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Video Screenshot Extractor</title>
+	</head>
+	<body>
+		<input type="file" accept="video/*" id="videoInput" />
+		<button onclick="extractScreenshot()">Extract Screenshot</button>
+		<canvas style="display: none" id="canvas"></canvas>
+
+		<script>
+			function extractScreenshot() {
+				var videoInput = document.getElementById("videoInput");
+				var videoFile = videoInput.files[0];
+				var videoUrl = URL.createObjectURL(videoFile);
+
+				var video = document.createElement("video");
+				video.src = videoUrl;
+				video.onloadeddata = function () {
+					video.currentTime = 10; // Set the time to 10 seconds
+					video.onseeked = function () {
+						var canvas = document.getElementById("canvas");
+						canvas.width = video.videoWidth;
+						canvas.height = video.videoHeight;
+						var ctx = canvas.getContext("2d");
+						ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+						var screenshotDataUrl = canvas.toDataURL("image/jpeg");
+						var link = document.createElement("a");
+						link.href = screenshotDataUrl;
+						link.download = videoFile.name.replace(/\.\w+$/, "") + "_screenshot.jpg";
+						link.click();
+
+						URL.revokeObjectURL(videoUrl);
+					};
+				};
+			}
+		</script>
+	</body>
+</html>

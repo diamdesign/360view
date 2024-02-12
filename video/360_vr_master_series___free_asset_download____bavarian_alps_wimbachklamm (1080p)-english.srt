@@ -1,0 +1,96 @@
+1
+00:00:01,000 --> 00:00:05,000
+Hey there, how's it going?
+
+2
+00:00:05,000 --> 00:00:10,000
+Not too bad, just hanging out.
+
+3
+00:00:10,000 --> 00:00:15,000
+Cool, have you seen any good movies lately?
+
+4
+00:00:15,000 --> 00:00:20,000
+Yeah, I watched a really good one last night.
+
+5
+00:00:20,000 --> 00:00:25,000
+Nice, what was it about?
+
+6
+00:00:25,000 --> 00:00:30,000
+It was a thriller about a detective solving a murder mystery.
+
+7
+00:00:30,000 --> 00:00:35,000
+That sounds intriguing, I'll have to check it out.
+
+8
+00:00:35,000 --> 00:00:40,000
+Definitely worth watching if you're into suspenseful movies.
+
+9
+00:00:40,000 --> 00:00:45,000
+I'll add it to my list, thanks for the recommendation.
+
+10
+00:00:45,000 --> 00:00:50,000
+No problem, let me know what you think after you watch it.
+
+11
+00:00:50,000 --> 00:00:55,000
+Will do, catch you later!
+
+12
+00:00:55,000 --> 00:01:00,000
+See you later, have a great day!
+
+13
+00:01:00,000 --> 00:01:05,000
+Hey, do you have any plans for the weekend?
+
+14
+00:01:05,000 --> 00:01:10,000
+Not yet, I'm still figuring out what to do.
+
+15
+00:01:10,000 --> 00:01:15,000
+We should go hiking, the weather is supposed to be nice.
+
+16
+00:01:15,000 --> 00:01:20,000
+That sounds like a great idea, I could use some fresh air.
+
+17
+00:01:20,000 --> 00:01:25,000
+Awesome, I'll look up some trails and let you know.
+
+18
+00:01:25,000 --> 00:01:30,000
+Sounds like a plan, thanks for organizing!
+
+19
+00:01:30,000 --> 00:01:35,000
+No problem, it'll be fun to explore new trails together.
+
+20
+00:01:35,000 --> 00:01:40,000
+Definitely, can't wait to hit the trails!
+
+21
+00:01:40,000 --> 00:01:45,000
+It's going to be epic, see you then!
+
+22
+00:01:45,000 --> 00:01:50,000
+See you soon, take care!
+
+23
+00:01:50,000 --> 00:01:55,000
+Hey, did you hear about the new restaurant downtown?
+
+24
+00:01:55,000 --> 00:02:00,000
+Yeah, I heard it's supposed to be really good.
+

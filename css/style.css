@@ -99,7 +99,7 @@ canvas {
 	rotate: 180deg;
 }
 
-.locations ul {
+.locations .container ul {
 	min-width: 100%;
 	padding-left: 20px;
 	padding-right: 20px;
@@ -110,7 +110,7 @@ canvas {
 	left: 0;
 }
 
-.locations ul li {
+.locations .container ul li {
 	user-select: none;
 	margin-bottom: 2px;
 	background-color: black;
@@ -133,7 +133,7 @@ canvas {
 	margin: 20px 5px;
 }
 
-.locations ul li img {
+.locations .container ul li img {
 	user-select: none;
 	display: block;
 	height: 300%;
@@ -141,14 +141,14 @@ canvas {
 	transition: scale 0.2s ease-in-out;
 }
 
-.locations ul li:hover {
+.locations .container ul li:hover {
 	color: white;
 	cursor: pointer;
 	animation: flash 0.2s ease-in-out 1 forwards;
 	outline: 4px solid white;
 }
 
-.locations ul li:hover img {
+.locations .container ul li:hover img {
 	user-select: none;
 	scale: 1.1;
 }
@@ -166,7 +166,7 @@ canvas {
 	}
 }
 
-ul li div {
+.locations .container ul li div {
 	z-index: 10;
 	position: absolute;
 	bottom: 0;
@@ -184,11 +184,11 @@ ul li div {
 	background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), transparent);
 }
 
-ul li:hover div {
+.locations .container ul li:hover div {
 	display: flex;
 }
 
-ul li.active div {
+.locations .container ul li.active div {
 	display: flex;
 }
 
@@ -212,7 +212,7 @@ canvas {
 #angleIndicator {
 	position: fixed;
 	top: 40px;
-	right: 0px;
+	right: -10px;
 	display: flex;
 	align-items: flex-start;
 	justify-content: center;
@@ -319,20 +319,26 @@ canvas {
 }
 
 .icon-video {
-	background-color: white;
 	position: absolute;
 	top: 10px;
 	right: 10px;
 	content: "";
 	display: block;
-	background-image: url("../img/icon-play.svg");
-	background-position: center center;
+	background-image: url(../img/icon-play.svg);
+	background-position: left center;
 	background-repeat: no-repeat;
 	background-size: 24px;
 	z-index: 1;
-	width: 21px;
+	/* width: 71px; */
+	background-color: white;
 	height: 21px;
+	padding-left: 28px;
+	line-height: 21px;
+	padding-right: 8px;
+	color: black;
+	text-align: right;
 	border-radius: 4px;
+	filter: invert(1);
 }
 
 #reset {
@@ -454,7 +460,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-size: 18px;
 	position: fixed;
 	top: 15px;
-	right: 85px;
+	right: 75px;
 	display: flex;
 	align-items: flex-start;
 	justify-content: center;
@@ -484,7 +490,8 @@ input[type="range"]:focus::-moz-range-thumb {
 .settingsbtn:hover,
 #fullscreenbtn:hover,
 #mapbtn:hover,
-#infobtn:hover {
+#infobtn:hover,
+#logo:hover {
 	cursor: pointer;
 	background-color: black;
 	animation: outlinepush 0.8s ease-out 1 forwards;
@@ -492,7 +499,8 @@ input[type="range"]:focus::-moz-range-thumb {
 
 #fullscreenbtn,
 #mapbtn,
-#infobtn {
+#infobtn,
+#logo {
 	transition: opacity 1s ease;
 	opacity: 0;
 	content: "";
@@ -508,6 +516,21 @@ input[type="range"]:focus::-moz-range-thumb {
 	border-radius: 100%;
 	z-index: 1000;
 }
+
+#logo {
+	content: "";
+	top: 15px;
+	left: 15px;
+	z-index: 2000;
+	display: block;
+	opacity: 1;
+	overflow: hidden;
+}
+
+#logo div,
+#logo div img {
+	width: 100%;
+}
 #infobtn {
 	text-align: center;
 	display: none;
@@ -515,11 +538,11 @@ input[type="range"]:focus::-moz-range-thumb {
 	font-style: italic;
 	font-family: Georgia, "Times New Roman", Times, serif;
 	line-height: 50px;
-	right: 40px;
+	right: 25px;
 	top: -130px;
 }
 #fullscreenbtn {
-	right: 40px;
+	right: 25px;
 }
 
 #fullscreenbtn:after {
@@ -545,7 +568,7 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 #mapbtn {
-	left: 40px;
+	left: 25px;
 }
 
 #mapbtn:after {
@@ -568,18 +591,19 @@ input[type="range"]:focus::-moz-range-thumb {
 	opacity: 0;
 	position: absolute;
 	z-index: 10;
-	top: -196px;
-	left: -36px;
+	top: -140px;
+	left: -1px;
 }
 #zoombtn input {
 	rotate: -90deg;
-	width: 200px;
+	width: 100px;
 }
 
 #fullscreenbtn span,
 .settingsbtn span,
 #infobtn span,
-#mapbtn span {
+#mapbtn span,
+#logo span {
 	position: absolute;
 	opacity: 0;
 	right: 0;
@@ -600,7 +624,8 @@ input[type="range"]:focus::-moz-range-thumb {
 	z-index: -1;
 }
 
-#mapbtn span {
+#mapbtn span,
+#logo span {
 	left: 0;
 	right: auto;
 	padding-right: 20px;
@@ -624,7 +649,8 @@ input[type="range"]:focus::-moz-range-thumb {
 #fullscreenbtn:hover span,
 #mapbtn:hover span,
 .settingsbtn:hover span,
-#infobtn:hover span {
+#infobtn:hover span,
+#logo:hover span {
 	display: inline-block;
 	animation: expandWidth 0.1s 1 forwards;
 	opacity: 1;
@@ -812,4 +838,124 @@ input[type="range"]:focus::-moz-range-thumb {
 	display: block;
 	filter: invert(1);
 	opacity: 0.5;
+}
+
+#videoplayer {
+	left: 50%;
+	position: absolute;
+	height: 60px;
+	padding-left: 20px;
+	padding-right: 20px;
+	border-radius: 12px;
+	top: -120px;
+	transition: bottom 0.4s ease-in-out, opacity 1s ease;
+	display: none;
+	justify-content: center;
+	list-style: none;
+	background: rgba(0, 0, 0, 0.4);
+	z-index: 1000;
+	width: 50%;
+	min-width: 220px;
+	max-width: 60%;
+	transform: translateX(-50%);
+}
+
+#captionselect {
+	display: none;
+	float: left;
+	background-image: url("../img/icon-ccoff.svg");
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 32px;
+	width: 60px;
+	height: 60px;
+	filter: invert(1);
+	position: relative;
+}
+
+.on {
+	background-image: url("../img/icon-ccon.svg") !important;
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 32px;
+}
+
+#captionselect:hover {
+	cursor: pointer;
+}
+
+#captionselect ul {
+	display: none;
+	position: absolute;
+	bottom: 100%;
+	right: 0;
+	list-style: none;
+	background: white;
+	border-radius: 8px;
+}
+#captionselect ul li {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	display: block;
+	padding: 10px 20px;
+	border-left: 6px solid transparent;
+	white-space: nowrap;
+	color: gray;
+}
+
+#captionselect ul li:hover {
+	color: black;
+	cursor: pointer;
+}
+
+#captionselect ul .active {
+	background: rgb(220, 220, 220);
+	border-left: 6px solid black;
+	color: black;
+}
+
+#playvideo {
+	background-image: url("../img/icon-playbig.svg");
+	background-position: center center;
+	background-size: 28px;
+	background-repeat: no-repeat;
+	display: block;
+	content: "";
+	width: 60px;
+	height: 60px;
+	float: left;
+	filter: invert(1);
+	margin-right: 10px;
+}
+
+#playvideo:hover {
+	cursor: pointer;
+}
+
+.playing {
+	background-image: url("../img/icon-pause.svg") !important;
+}
+
+#currenttime {
+	line-height: 60px;
+	color: white;
+	margin-left: 10px;
+	margin-right: 10px;
+	min-width: 65px;
+}
+#caption {
+	position: fixed;
+	bottom: 40px;
+	left: 50%;
+	transform: translateX(-50%);
+	background: rgba(0, 0, 0, 0.8);
+	color: white;
+	min-width: 320px;
+	max-width: 80%;
+	z-index: 100;
+}
+
+#caption p {
+	text-align: center;
+	padding: 10px 20px;
+	font-size: 2rem;
 }

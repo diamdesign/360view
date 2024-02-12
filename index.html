@@ -8,17 +8,24 @@
 		<title>360 View</title>
 	</head>
 	<body>
-		<div id="map">
-			<div class="maplink"><span>One</span></div>
-			<div class="maplink"><span>Two</span></div>
-			<div class="maplink"><span>Three</span></div>
-			<div class="mapimage"></div>
+		<div id="outside">
+			<div id="logo">
+				<div><img src="img/splogo.png" alt="" /></div>
+				<span>Powered by Snälla Pojkar</span>
+			</div>
+			<div id="map">
+				<div class="maplink"><span>One</span></div>
+				<div class="maplink"><span>Two</span></div>
+				<div class="maplink"><span>Three</span></div>
+				<div class="mapimage"></div>
+			</div>
+			<div id="info">
+				<div id="closeinfobtn"></div>
+				<div id="resizer"></div>
+				<div class="container"></div>
+			</div>
 		</div>
-		<div id="info">
-			<div id="closeinfobtn"></div>
-			<div id="resizer"></div>
-			<div class="container"></div>
-		</div>
+		<div id="caption"></div>
 		<div id="view-container">
 			<div id="angleIndicator"></div>
 
@@ -54,6 +61,16 @@
 				<div id="reset" class="button">Reset</div>
 			</div>
 			<div class="locations" id="locations">
+				<div id="videoplayer">
+					<div id="playvideo"></div>
+					<input type="range" min="0" max="1" id="videoduration" value="0" step="0.01" />
+					<div id="currenttime"></div>
+					<div id="captionselect">
+						<ul>
+							<li id="captionoff" class="active">Captions off</li>
+						</ul>
+					</div>
+				</div>
 				<div id="zoombtn">
 					<input type="range" min="10" max="100" step="0.1" id="zoomlevel" value="75" />
 				</div>
@@ -62,7 +79,7 @@
 				<div id="mapbtn"><span class="hint">Toggle Map</span></div>
 				<div id="indicatorbtn"></div>
 				<div class="container" id="scrollable">
-					<ul></ul>
+					<ul id="locationlist"></ul>
 				</div>
 			</div>
 			<div id="labels"></div>
