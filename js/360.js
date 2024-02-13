@@ -107,6 +107,50 @@ var contentArray = [
 	},
 ];
 
+// Function to test internet speed
+function testInternetSpeed() {
+	return new Promise((resolve, reject) => {
+		const imageAddr = "img/360-low.jpg"; // A sample image URL
+		const downloadSize = 63633; // Size of the test image in bytes (adjust as needed)
+		const startTime = new Date().getTime();
+
+		const image = new Image();
+		image.onload = function () {
+			const endTime = new Date().getTime();
+			const duration = (endTime - startTime) / 1000; // Duration in seconds
+			const bitsLoaded = downloadSize * 8;
+			const speedBps = (bitsLoaded / duration).toFixed(2);
+			const speedKbps = (speedBps / 1024).toFixed(2); // Speed in Kilobits per second
+			resolve(speedKbps);
+		};
+		image.onerror = function (err) {
+			reject(err);
+		};
+		image.src = imageAddr + "?n=" + Math.random(); // Prevent caching
+	});
+}
+
+var highSpeed = false;
+// Perform internet speed test on page load
+window.addEventListener("load", function () {
+	testInternetSpeed()
+		.then((speedKbps) => {
+			console.log("Internet speed:", speedKbps, "Kbps");
+			if (speedKbps >= 1000) {
+				console.log("High-speed connection detected. Load high-quality.");
+				// Load high-quality video
+				highSpeed = true;
+			} else {
+				console.log("Low-speed connection detected. Load low-quality.");
+				// Load low-quality video
+				highSpeed = false;
+			}
+		})
+		.catch((err) => {
+			console.error("Error testing internet speed:", err);
+		});
+});
+
 var sceneType = "image";
 
 const viewElem = document.getElementById("view-container");
@@ -198,8 +242,8 @@ function showLocationsContent() {
 }
 
 locationsIndicatorElem.addEventListener("click", showLocationsContent);
-locationsIndicatorElem.addEventListener("touchstart", showLocationsContent);
-locationsIndicatorElem.addEventListener("selectstart", showLocationsContent);
+locationsIndicatorElem.addEventListener("touchend", showLocationsContent);
+locationsIndicatorElem.addEventListener("selectend", showLocationsContent);
 
 const scrollableContent = document.querySelector("#scrollable");
 const labelContainerElem = document.querySelector("#labels");
@@ -493,17 +537,19 @@ for (let i = 0; i < contentArray.length; i++) {
 	let imageUrl = content.file.replace(/\.\w+$/, ".jpg");
 	if (content.type === "video") {
 		sceneType = "video";
+		const fileNameWithoutExtension = imageUrl.split(".").slice(0, -1).join(".");
 		let itemHtml = `<li class="${activeClass}" data-file="${content.file}" data-id="${content.id}" data-type="${content.type}">
                             <span class="icon-video">${content.duration}</span>
                             <div>${content.title}</div>
-                            <img src="video/${imageUrl}" alt="" />
+                            <img src="video/${fileNameWithoutExtension}.jpg" alt="" />
                         </li>`;
 		locationsArray += itemHtml;
 	} else {
 		sceneType = "image";
+		const fileNameWithoutExtension = content.file.split(".").slice(0, -1).join(".");
 		let itemHtml = `<li class="${activeClass}" data-file="${content.file}" data-id="${content.id}" data-type="${content.type}">
                             <div>${content.title}</div>
-                            <img src="img/${content.file}" alt="" />
+                            <img src="img/${fileNameWithoutExtension}-low.jpg" alt="" />
                         </li>`;
 		locationsArray += itemHtml;
 	}
@@ -529,10 +575,10 @@ listItems.forEach((item) => {
 	item.addEventListener("click", function () {
 		activateItem(item);
 	});
-	item.addEventListener("touchstart", function () {
+	item.addEventListener("touchend", function () {
 		activateItem(item);
 	});
-	item.addEventListener("selectstart", function () {
+	item.addEventListener("selectend", function () {
 		activateItem(item);
 	});
 });
@@ -549,7 +595,9 @@ function change360Content(targetId) {
 		if (currentVideoSrc === fileName) {
 			return; // No need to change the video if it's the same
 		}
+
 		sceneType = "video";
+		let videoFile = fileName;
 
 		// Remove the previous texture
 		sphere.material.map = null;
@@ -558,8 +606,37 @@ function change360Content(targetId) {
 		video.src = "";
 		currentVideoSrc = "";
 
+		// Define the preloadHighQualityVideo function outside the condition
+		function preloadHighQualityVideo(video, highQualitySrc) {
+			const highQualityVideo = document.createElement("video");
+			highQualityVideo.src = "video/" + highQualitySrc;
+			highQualityVideo.addEventListener("canplay", function () {
+				const intervalId = setInterval(function () {
+					if (highQualityVideo.readyState === 4) {
+						// Video is fully buffered, stop the interval and execute the callback
+						clearInterval(intervalId);
+
+						video.pause();
+						let currTime = video.currentTime;
+						video.src = "";
+						video.src = highQualityVideo.src;
+						video.currentTime = currTime;
+						video.play();
+						console.log("High-quality video loaded and switched.");
+					}
+				}, 100);
+			});
+		}
+
+		// Extract the file name without extension
+		const fileNameWithoutExtension = targetObject.file.split(".").slice(0, -1).join(".");
+		if (!highSpeed) {
+			videoFile = fileNameWithoutExtension + "-low.mp4";
+			// Function to preload high-quality video
+			preloadHighQualityVideo(video, fileName);
+		}
 		// Update the src attribute of the video element
-		video.src = "video/" + fileName;
+		video.src = "video/" + videoFile;
 		video.load();
 		video.crossOrigin = "anonymous";
 		video.loop = true;
@@ -567,7 +644,7 @@ function change360Content(targetId) {
 		video.play();
 
 		// Update the current video source
-		currentVideoSrc = "video/" + fileName;
+		currentVideoSrc = "video/" + videoFile;
 
 		// Check for captions
 		if (targetObject.captions !== "") {
@@ -581,13 +658,13 @@ function change360Content(targetId) {
 			captionInputHTML.innerHTML = html;
 
 			const allCaptions = document.querySelectorAll("#captionselect ul li");
+
 			function handleCaptionClick(event) {
 				const targetId = event.target.getAttribute("data-id");
 				let targetObj = contentArray.find((obj) => obj.id === parseInt(targetId));
-				// Extract the file name without extension
-				const fileNameWithoutExtension = targetObj.file.split(".").slice(0, -1).join(".");
 
 				const captiontag = event.target.getAttribute("data-caption");
+				const fileNameWithoutExtension = targetObj.file.split(".").slice(0, -1).join(".");
 
 				// Construct the new file name with the desired caption
 				const newSRTName = `video/${fileNameWithoutExtension}-${captiontag}.srt`;
@@ -692,6 +769,7 @@ function change360Content(targetId) {
 		videoduration.addEventListener("touchstart", changeVideoTime);
 		videoduration.addEventListener("selectstart", changeVideoTime);
 
+		// Format time for video
 		function formatTime(seconds) {
 			const hours = Math.floor(seconds / 3600);
 			const minutes = Math.floor((seconds % 3600) / 60);
@@ -728,20 +806,64 @@ function change360Content(targetId) {
 		video.src = "";
 		currentVideoSrc = "";
 
-		// Load the new image based on the fileName
+		// Define a function to preload high-quality image
+		function preloadHighQualityImage(highQualityFileName, callback) {
+			// Create an image element
+			const img = new Image();
+
+			// Set the source of the image to the high-quality file
+			img.src = highQualityFileName;
+
+			// Set up event listener for when the image is fully loaded
+			img.onload = function () {
+				// Once the high-quality image is fully loaded, execute the callback function
+				// Create a THREE texture using the loaded image
+				const texture = new THREE.Texture(img);
+				texture.needsUpdate = true; // Ensure the texture is marked as updated
+
+				// Configure texture properties if needed
+				texture.wrapS = THREE.RepeatWrapping;
+				texture.repeat.x = -1; // Flip texture horizontally
+				texture.mapping = THREE.UVMapping; // Apply UV mapping
+				texture.encoding = THREE.sRGBEncoding; // Set texture encoding to sRGB
+				texture.gammaFactor = 2.2; // Adjust gamma correction (e.g., 2.2 for typical images)
+
+				// Execute the callback function with the loaded texture
+				callback(texture);
+			};
+		}
+
+		// Extract the file name without extension
+		const fileNameWithoutExtension = targetObject.file.split(".").slice(0, -1).join(".");
+		let imageFile = "img/" + fileName;
+		if (!highSpeed) {
+			imageFile = "img/" + fileNameWithoutExtension + "-low.jpg";
+		}
+
+		// Load the low-quality image
 		const loader = new THREE.TextureLoader();
-		const newTexture = loader.load(`img/${fileName}`, function (texture) {
+		const newTexture = loader.load(`${imageFile}`, function (texture) {
 			texture.wrapS = THREE.RepeatWrapping;
 			texture.repeat.x = -1; // Flip texture horizontally
 			texture.mapping = THREE.UVMapping; // Apply UV mapping
 			texture.encoding = THREE.sRGBEncoding; // Set texture encoding to sRGB
 			texture.gammaFactor = 2.2; // Adjust gamma correction (e.g., 2.2 for typical images)
 		});
-
-		// Assuming sphere is the mesh representing the 360 image
-		// Update the texture of the sphere mesh
+		// Once the low-quality image is loaded and processed, here you can do additional operations
+		// For example, update the texture of a sphere mesh with the low-quality texture
 		sphere.material.map = newTexture;
 		sphere.material.needsUpdate = true;
+
+		// Preload high-quality image if necessary
+		if (!highSpeed) {
+			let highQualityFileName = "img/" + fileName;
+			preloadHighQualityImage(highQualityFileName, function (highQualityTexture) {
+				// Once the high-quality image is loaded and processed, here you can do additional operations
+				// For example, update the texture of a sphere mesh with the high-quality texture
+				sphere.material.map = highQualityTexture;
+				sphere.material.needsUpdate = true;
+			});
+		}
 	} else {
 		console.log("Invalid file type");
 	}
@@ -974,33 +1096,27 @@ scrollableContent.addEventListener("touchstart", function (event) {
 	scrollableContent.style.cursor = "grabbing"; // Change cursor style
 });
 
-scrollableContent.addEventListener("mouseup", function (event) {
+function restoreCursor() {
 	isDragging = false;
 	scrollableContent.style.cursor = "grab"; // Restore cursor style
-});
+}
+scrollableContent.addEventListener("mouseup", restoreCursor);
+scrollableContent.addEventListener("touchend", restoreCursor);
+scrollableContent.addEventListener("mouseleave", restoreCursor);
 
-scrollableContent.addEventListener("touchend", function (event) {
-	isDragging = false;
-	scrollableContent.style.cursor = "grab"; // Restore cursor style
-});
-
-scrollableContent.addEventListener("mouseleave", function (event) {
-	isDragging = false;
-	scrollableContent.style.cursor = "grab"; // Restore cursor style
-});
-
-scrollableContent.addEventListener("mousemove", function (event) {
+function scrollLocation(event) {
 	if (!isDragging) return;
 	const x = event.pageX - scrollableContent.offsetLeft;
 	const walk = (x - startX) * 3; // Adjust scroll speed
 	scrollableContent.scrollLeft = scrollLeft - walk;
+}
+
+scrollableContent.addEventListener("mousemove", (event) => {
+	scrollLocation(event);
 });
 
-scrollableContent.addEventListener("touchmove", function (event) {
-	if (!isDragging) return;
-	const x = event.pageX - scrollableContent.offsetLeft;
-	const walk = (x - startX) * 3; // Adjust scroll speed
-	scrollableContent.scrollLeft = scrollLeft - walk;
+scrollableContent.addEventListener("touchmove", (event) => {
+	scrollLocation(event);
 });
 
 settingsVolume.addEventListener("input", () => {
@@ -1077,36 +1193,34 @@ function resetSettings() {
 }
 resetButton.addEventListener("click", resetSettings);
 resetButton.addEventListener("touchstart", resetSettings);
+resetButton.addEventListener("selectstart", resetSettings);
 
-closeSettingsButton.addEventListener("click", () => {
+function closeSettings() {
 	settingsButton.style.opacity = "1";
 	settingsElem.style.right = "-640px";
-});
-closeSettingsButton.addEventListener("touchstart", () => {
-	settingsButton.style.opacity = "1";
-	settingsElem.style.right = "-640px";
-});
+}
+closeSettingsButton.addEventListener("click", closeSettings);
+closeSettingsButton.addEventListener("touchstart", closeSettings);
+closeSettingsButton.addEventListener("selectstart", closeSettings);
 
-infoButton.addEventListener("click", () => {
+function openInfo() {
 	infoButton.style.opacity = "0";
 	infoElem.style.right = "0";
-});
+}
 
-infoButton.addEventListener("touchstart", () => {
-	infoButton.style.opacity = "0";
-	infoElem.style.right = "0";
-});
+infoButton.addEventListener("click", openInfo);
+infoButton.addEventListener("touchstart", openInfo);
+infoButton.addEventListener("selectstart", openInfo);
 
-closeInfoButton.addEventListener("click", () => {
+function closeInfo() {
 	infoButton.style.opacity = "1";
 	infoElem.style.right = "-460px";
 	infoElem.style.width = "460px";
-});
-closeInfoButton.addEventListener("touchstart", () => {
-	infoButton.style.opacity = "1";
-	infoElem.style.right = "-460px";
-	infoElem.style.width = "460px";
-});
+}
+
+closeInfoButton.addEventListener("click", closeInfo);
+closeInfoButton.addEventListener("touchstart", closeInfo);
+closeInfoButton.addEventListener("selectstart", closeInfo);
 
 document.addEventListener("DOMContentLoaded", function () {
 	// Get all the <li> elements
