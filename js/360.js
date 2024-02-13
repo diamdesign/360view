@@ -675,6 +675,7 @@ function change360Content(targetId) {
 				});
 				event.target.classList.add("active");
 				captionButton.classList.add("on");
+
 				// Fetch the SRT file and convert it to a blob
 				fetch(newSRTName)
 					.then((response) => response.blob())
@@ -885,12 +886,15 @@ function change360Content(targetId) {
 	camera.updateProjectionMatrix();
 }
 
+const initialZoomLevel = parseFloat(zoomLevelInput.value);
+
 function handleZoom(event) {
+	// Access the zoom speed from controls.zoomSpeed
+	const zoomAmount = event.deltaY * zoomSpeed; // Use controls.zoomSpeed instead of zoomSpeed
+
 	if (isMouseOverScrollableContent(event)) {
 		return; // Exit the function early if mouse is over scrollable content
 	}
-	// Access the zoom speed from controls.zoomSpeed
-	const zoomAmount = event.deltaY * zoomSpeed; // Use controls.zoomSpeed instead of zoomSpeed
 
 	// Calculate the perspective change based on the zoom amount and perspective factor
 	const perspectiveChange = zoomAmount * perspectiveFactor;
@@ -905,17 +909,49 @@ function handleZoom(event) {
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.fov = perspective;
 	camera.updateProjectionMatrix();
+
+	// Update the input range value to reflect the new zoom level if needed
+
+	zoomLevelInput.value = (perspective - 10) / (90 - 10); // Map perspective value to range 0 to 1
 }
 
 function isMouseOverScrollableContent(event) {
-	// Get the target element of the mouse event
-	const target = event.target;
+	// Check if event is defined and not null
+	if (event && event.target) {
+		// Get the target element of the mouse event
+		const target = event.target;
 
-	// Check if the target element or any of its ancestors is the scrollable content or #info
-	return target.closest("#scrollable") !== null || target.closest("#info") !== null;
+		// Check if the target element or any of its ancestors is the scrollable content or #info
+		return target.closest("#scrollable") !== null || target.closest("#info") !== null;
+	} else {
+		// If event is undefined or null, return false
+		return false;
+	}
 }
 
 document.addEventListener("wheel", handleZoom);
+// Define initialZoomLevel with the initial value of your input range
+
+// Add event listener to the input range
+zoomLevelInput.addEventListener("input", function () {
+	// Get the zoom level from the input range value (between 0 and 1)
+	const zoomLevel = parseFloat(zoomLevelInput.value);
+
+	// Calculate the new perspective value (camera.fov) based on the zoom level
+	const newFov = 10 + zoomLevel * 80; // Interpolating between 10 (zoomed in) and 90 (zoomed out)
+
+	// Get maxDistance and minDistance from controls
+	const maxDistance = controls.maxDistance;
+	const minDistance = controls.minDistance;
+
+	// Calculate the new maxDistance based on the zoom level
+	const newMaxDistance = minDistance + zoomLevel * (maxDistance - minDistance);
+
+	// Update the camera's parameters
+	camera.fov = newFov;
+	camera.maxDistance = newMaxDistance;
+	camera.updateProjectionMatrix();
+});
 
 // Add mouse controls to the camera
 const controls = new OrbitControls(camera, renderer.domElement);

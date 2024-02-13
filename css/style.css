@@ -595,7 +595,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	left: -1px;
 }
 #zoombtn input {
-	rotate: -90deg;
+	rotate: -270deg;
 	width: 100px;
 }
 
