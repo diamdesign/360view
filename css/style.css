@@ -190,6 +190,7 @@ canvas {
 
 .locations .container ul li.active div {
 	display: flex;
+	border-bottom: 3px solid royalblue;
 }
 
 canvas:hover {

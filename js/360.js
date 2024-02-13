@@ -1294,6 +1294,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		if (firstListItem) {
 			const contentId = contentArray[0].id;
 			change360Content(contentId);
+			firstListItem.classList.add("active");
 		} else {
 			// Retry after a delay if the first list item is not found
 			setTimeout(checkFirstListItem, 1000); // Retry after 1 second
@@ -1403,9 +1404,16 @@ mapArray[0].links.forEach((maplink) => {
 const mapLinks = document.querySelectorAll(".maplink");
 mapLinks.forEach((link) => {
 	link.addEventListener("click", (event) => {
-		const contentId = event.target.getAttribute("data-id");
+		const contentId = parseInt(event.target.getAttribute("data-id"));
 		map.style.display = "none";
-		change360Content(parseInt(contentId));
+		listItems.forEach((listItem) => {
+			listItem.classList.remove("active");
+		});
+
+		const activeListItem = document.querySelector(`#locations [data-id="${contentId}"]`);
+		activeListItem.classList.add("active");
+
+		change360Content(contentId);
 	});
 });
 
