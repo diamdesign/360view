@@ -1,6 +1,32 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
+var mapArray = [
+	{
+		file: "map.png",
+		links: [
+			{
+				name: "Bedroom",
+				top: 20,
+				left: 80,
+				link: 2,
+			},
+			{
+				name: "Kitchen",
+				top: 70,
+				left: 50,
+				link: 3,
+			},
+			{
+				name: "Outside",
+				top: 50,
+				left: 10,
+				link: 4,
+			},
+		],
+	},
+];
+
 var contentArray = [
 	{
 		id: 1,
@@ -1098,6 +1124,7 @@ window.addEventListener("resize", function (event) {
 		let newHeight = locationsElem.getBoundingClientRect().height;
 		locationsElem.style.bottom = "-" + newHeight + "px";
 	}
+	updateMapLinkPosition();
 });
 
 scrollableContent.addEventListener("wheel", function (event) {
@@ -1358,3 +1385,66 @@ function displayCaption(captions) {
 		captionElement.innerHTML = "";
 	});
 }
+const map = document.getElementById("map");
+const mapImage = document.getElementById("mapimage");
+const mapImg = document.getElementById("mapimg");
+
+mapImg.src = "img/" + mapArray[0].file; // Set the source attribute for the image
+
+mapArray[0].links.forEach((maplink) => {
+	// Adjust to access the first element of mapArray
+	let textrightClass = maplink.left > 50 ? " linktextleft" : ""; // Conditionally add 'textright' class
+	let html = `<div class="maplink ${textrightClass}" data-id="${maplink.link}" style="top: ${maplink.top}%; left: ${maplink.left}%">
+            <span>${maplink.name}</span>
+        </div>`;
+	mapImage.insertAdjacentHTML("beforeend", html); // Adjust to add HTML at the end of mapImage
+});
+
+const mapLinks = document.querySelectorAll(".maplink");
+mapLinks.forEach((link) => {
+	link.addEventListener("click", (event) => {
+		const contentId = event.target.getAttribute("data-id");
+		map.style.display = "none";
+		change360Content(parseInt(contentId));
+	});
+});
+
+function updateMapLinkPosition() {
+	mapImage.style.width = "100%";
+	mapImage.style.height = "100%";
+	const containerWidth = mapImage.clientWidth;
+	const containerHeight = mapImage.clientHeight;
+
+	const imgWidth = mapImg.naturalWidth;
+	const imgHeight = mapImg.naturalHeight;
+
+	let displayWidth, displayHeight;
+
+	// Calculate the displayed size of the image
+	if (containerWidth / containerHeight < imgWidth / imgHeight) {
+		displayWidth = containerWidth;
+		displayHeight = (containerWidth / imgWidth) * imgHeight;
+	} else {
+		displayHeight = containerHeight;
+		displayWidth = (containerHeight / imgHeight) * imgWidth;
+	}
+
+	// Set the width and height of #mapimage to match the image dimensions
+	mapImage.style.width = displayWidth + "px";
+	mapImage.style.height = displayHeight + "px";
+}
+
+function toggleMap() {
+	if (map.style.display === "none") {
+		map.style.display = "flex";
+		updateMapLinkPosition();
+	} else {
+		map.style.display = "none";
+	}
+}
+
+mapButton.addEventListener("click", toggleMap);
+mapButton.addEventListener("touchstart", toggleMap);
+mapButton.addEventListener("selectstart", toggleMap);
+
+updateMapLinkPosition();
