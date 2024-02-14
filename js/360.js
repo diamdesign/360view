@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 
 var mapArray = [
 	{
@@ -36,23 +37,20 @@ var contentArray = [
 		info: '<h1>One</h1><img src="https://picsum.photos/600/300" alt="" /><hr><p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. <a href="#">Molestiae distinctio</a> optio consequatur eaque eos asperiores quibusdam rem exercitationem maiores aliquid sequi, a, quae aliquam expedita. Blanditiis saepe esse dolorum molestias.</p><ul><li>One</li><li>Two</li></ul><hr><img src="https://picsum.photos/601/301" alt="" /><p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Molestiae distinctio optio consequatur eaque eos asperiores quibusdam rem exercitationem maiores aliquid sequi, a, quae aliquam expedita. Blanditiis saepe esse dolorum molestias.</p><a href="#" class="button">Testing</a>',
 		markers: [
 			{
-				name: "Some place",
-				yaw: -1,
-				pitch: 0,
+				name: "Some info here",
+				position: { x: 10, y: 0, z: 360 },
 				info: '<h1>One</h1><img src="https://picsum.photos/600/300" alt="" /><hr><p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. <a href="#">Molestiae distinctio</a> optio consequatur eaque eos asperiores quibusdam rem exercitationem maiores aliquid sequi, a, quae aliquam expedita. Blanditiis saepe esse dolorum molestias.</p><ul><li>One</li><li>Two</li></ul><hr><img src="https://picsum.photos/601/301" alt="" /><p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Molestiae distinctio optio consequatur eaque eos asperiores quibusdam rem exercitationem maiores aliquid sequi, a, quae aliquam expedita. Blanditiis saepe esse dolorum molestias.</p><a href="#" class="button">Testing</a>',
 				link: "",
 			},
 			{
-				name: "Link to next",
-				yaw: 1,
-				pitch: 0,
-				info: "<p>Just some text to test</p>",
+				name: "Link to next scene",
+				position: { x: -5, y: 0, z: -360 },
+				info: "",
 				link: 2,
 			},
 			{
 				name: "DIAM",
-				yaw: 10,
-				pitch: 0,
+				position: { x: 20, y: -10, z: 360 },
 				info: "",
 				link: "https://diam.se",
 			},
@@ -394,16 +392,26 @@ contentArray.forEach((item) => {
 let perspective = 75;
 // Set up Three.js scene
 const scene = new THREE.Scene();
+
 const camera = new THREE.PerspectiveCamera(
 	perspective,
 	window.innerWidth / window.innerHeight,
 	0.1,
 	1000
 );
+
 const renderer = new THREE.WebGLRenderer({ alpha: false });
 
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x000000);
 document.body.appendChild(renderer.domElement);
+
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(window.innerWidth, window.innerHeight);
+labelRenderer.domElement.style.position = "absolute";
+labelRenderer.domElement.style.top = "0px";
+labelRenderer.domElement.style.pointerEvents = "none";
+document.body.appendChild(labelRenderer.domElement);
 
 // Create a video element
 const video = document.createElement("video");
@@ -433,6 +441,9 @@ const material = new THREE.MeshStandardMaterial({
 const sphere = new THREE.Mesh(geometry, material);
 scene.add(sphere);
 
+const root = new THREE.Group();
+scene.add(root);
+
 let ambientIntensity = 4;
 let ambientLight;
 // Function to update ambient light intensity
@@ -448,12 +459,18 @@ function updateLight(intensity) {
 
 updateLight(3.5);
 
+function render() {
+	// Render the scene
+	renderer.render(scene, camera);
+	labelRenderer.render(scene, camera);
+}
+
 function animate() {
 	requestAnimationFrame(animate);
 	controls.update();
 
 	// directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
-	renderer.render(scene, camera);
+	render();
 
 	// Calculate azimuthal angle
 	const azimuthalAngle = Math.atan2(camera.position.x, camera.position.z);
@@ -636,6 +653,7 @@ listItems.forEach((item) => {
 });
 
 function change360Content(targetId) {
+	labelContainerElem.innerHTML = "";
 	infoElem.style.right = "-100%";
 	let targetObject = contentArray.find((obj) => obj.id === targetId);
 	let fileName = targetObject.file;
@@ -696,7 +714,7 @@ function change360Content(targetId) {
 		video.play();
 
 		// Update the current video source
-		currentVideoSrc = "video/" + videoFile;
+		currentVideoSrc = fileName;
 
 		// Check for captions
 		if (targetObject.captions !== "") {
@@ -934,7 +952,7 @@ function change360Content(targetId) {
 
 	camera.updateProjectionMatrix();
 	markerData = targetObject.markers;
-	createMarkers(camera, markerData);
+	createMarkers(markerData);
 }
 
 const initialZoomLevel = parseFloat(zoomLevelInput.value);
@@ -1006,14 +1024,16 @@ zoomLevelInput.addEventListener("input", function () {
 
 // Add mouse controls to the camera
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.enablePan = false;
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.rotateSpeed = -1;
+controls.autoRotate = false;
+controls.autoRotateSpeed *= 0.25;
 
 // Set camera position
 camera.position.set(0, 0, 0);
-camera.rotation.order = "YXZ"; // Move the camera further from the object
-// Create a target point to look at, which is slightly ahead of the camera's position
+camera.rotation.order = "YXZ";
 // Function to reset the camera rotation and position to its initial state
 const newPos = new THREE.Vector3(0, 0, 0); // Default position
 const newRot = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 150, 0)); // Default rotation
@@ -1140,10 +1160,11 @@ window.addEventListener("resize", function (event) {
 
 	// Update renderer size
 	renderer.setSize(window.innerWidth, window.innerHeight);
+	labelRenderer.setSize(window.innerWidth, window.innerHeight);
+
 	renderer.setPixelRatio(window.devicePixelRatio);
 
-	// Render the scene
-	renderer.render(scene, camera);
+	render();
 
 	if (locationsElem.style.bottom !== 0) {
 		let newHeight = locationsElem.getBoundingClientRect().height;
@@ -1318,7 +1339,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		const firstListItem = document.querySelector("#locations .container ul li:first-child");
 		if (firstListItem) {
 			const contentId = contentArray[0].id;
-			change360Content(contentId);
+			change360Content(parseInt(contentId));
 			firstListItem.classList.add("active");
 		} else {
 			// Retry after a delay if the first list item is not found
@@ -1438,7 +1459,7 @@ mapLinks.forEach((link) => {
 		const activeListItem = document.querySelector(`#locations [data-id="${contentId}"]`);
 		activeListItem.classList.add("active");
 
-		change360Content(contentId);
+		change360Content(parseInt(contentId));
 	});
 });
 
@@ -1482,33 +1503,16 @@ mapButton.addEventListener("selectstart", toggleMap);
 
 updateMapLinkPosition();
 
-function createMarkers(camera, markerData) {
-	const container = document.getElementById("labels");
-
+function createMarkers(markerData) {
 	markerData.forEach((data) => {
-		const { name, yaw, pitch, info, link } = data;
+		const { name, position, info, link } = data;
 
-		// Convert yaw and pitch to radians
-		const yawRad = THREE.MathUtils.degToRad(yaw);
-		const pitchRad = THREE.MathUtils.degToRad(pitch);
-
-		// Calculate marker position on sphere
-		const radius = 360; // Adjust this based on your scene
-		const x = radius * Math.sin(yawRad) * Math.cos(pitchRad);
-		const y = radius * Math.sin(pitchRad);
-		const z = radius * Math.cos(yawRad) * Math.cos(pitchRad);
+		// Create a THREE.Vector3 instance from the position object
+		const positionVector = new THREE.Vector3(position.x, position.y, position.z);
 
 		// Create marker element
 		const marker = document.createElement("a");
 		marker.className = "marker";
-		marker.dataset.yaw = "";
-		marker.dataset.pitch = "";
-		// Check if initial yaw and pitch are not already set
-		if (!marker.dataset.initialYaw || !marker.dataset.initialPitch) {
-			// Set initial yaw and pitch in dataset attributes
-			marker.dataset.initialYaw = yaw.toString();
-			marker.dataset.initialPitch = pitch.toString();
-		}
 
 		if (typeof link === "string" && link !== "") {
 			marker.href = link;
@@ -1527,71 +1531,54 @@ function createMarkers(camera, markerData) {
 		marker.innerHTML = html;
 		let markerContainer = marker.querySelector(".marker-container");
 		markerContainer.insertAdjacentHTML("afterbegin", info);
+		// Create CSS2DObject for marker/label
+		const cssObject = new CSS2DObject(marker);
+		cssObject.position.copy(positionVector);
 
+		// Add CSS2DObject to the label renderer's scene
+		root.add(cssObject);
+		/* 
 		// Initial positioning
 		updateMarkerPosition(marker, camera, x, y, z);
 
 		// Append marker to container
 		container.appendChild(marker);
+		*/
 	});
 
-	controls.addEventListener("change", function () {
-		// Get the camera's rotation angles
-		const yaw = camera.rotation.y * THREE.MathUtils.RAD2DEG;
-		const pitch = camera.rotation.x * THREE.MathUtils.RAD2DEG;
+	/*
+	// Add event listener for camera controls change event
+	controls.addEventListener("change", () => updateMarkerPositions(camera));
 
-		// Update marker positions
-		const markers = document.querySelectorAll(".marker");
-		markers.forEach((marker) => {
-			// Get the initial yaw and pitch values from the marker's dataset
-			const initialYaw = parseFloat(marker.dataset.initialYaw);
-			const initialPitch = parseFloat(marker.dataset.initialPitch);
+	// Add event listener for zoom event
+	controls.addEventListener("zoom", () => updateMarkerPositions(camera));
+	*/
+}
 
-			// Calculate the new yaw and pitch based on the camera's rotation
-			let newYaw = initialYaw - yaw;
-			let newPitch = initialPitch + pitch;
+/*
+// Function to update marker positions based on camera movements
+function updateMarkerPositions(camera) {
+	// Iterate through all CSS2DObjects in the labelRenderer's scene
+	labelRenderer.scene.children.forEach((object) => {
+		// Check if the object is an instance of CSS2DObject
+		if (object instanceof CSS2DObject) {
+			// Retrieve the marker's position from its associated CSS2DObject
+			const position = object.position;
 
-			// Normalize yaw to keep it within the range [-180, 180]
-			newYaw = ((newYaw + 180) % 360) - 180;
+			// Calculate the position relative to the camera
+			const markerPosition = position.clone().sub(camera.position);
 
-			// Convert the new yaw and pitch to radians
-			const newYawRad = THREE.MathUtils.degToRad(newYaw);
-			const newPitchRad = THREE.MathUtils.degToRad(newPitch);
+			// Project marker position onto screen coordinates
+			const vector = markerPosition.project(camera);
 
-			// Recalculate marker position on the sphere
-			const radius = 360; // Adjust this based on your scene
-			const x = radius * Math.sin(newYawRad) * Math.cos(newPitchRad);
-			const y = radius * Math.sin(newPitchRad);
-			const z = radius * Math.cos(newYawRad) * Math.cos(newPitchRad);
+			// Calculate screen coordinates
+			const xScreen = ((vector.x + 1) / 2) * window.innerWidth;
+			const yScreen = (-(vector.y - 1) / 2) * window.innerHeight;
 
-			// Update marker position
-			updateMarkerPosition(marker, camera, x, y, z);
-		});
+			// Update the position of the CSS2DObject in the DOM
+			object.element.style.left = xScreen + "px";
+			object.element.style.top = yScreen + "px";
+		}
 	});
 }
-
-function updateMarkerPosition(marker, camera, x, y, z) {
-	// Get camera rotation
-	const cameraRotation = camera.rotation.clone();
-
-	// Calculate marker position relative to the camera
-	const markerPosition = new THREE.Vector3(x, y, z);
-	markerPosition.applyAxisAngle(new THREE.Vector3(0, 0, 1), cameraRotation.z);
-	markerPosition.applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraRotation.y);
-	markerPosition.applyAxisAngle(new THREE.Vector3(1, 0, 0), cameraRotation.x);
-
-	// Project marker position to screen coordinates
-	const vector = markerPosition.project(camera);
-
-	// Calculate screen coordinates
-	const xScreen = ((vector.x + 1) / 2) * window.innerWidth;
-	const yScreen = (-(vector.y - 1) / 2) * window.innerHeight;
-
-	// Translate marker to screen coordinates
-	marker.style.left = xScreen + "px";
-	marker.style.top = yScreen + "px";
-
-	// Update yaw and pitch in dataset attributes
-	marker.dataset.yaw = xScreen.toString();
-	marker.dataset.pitch = yScreen.toString();
-}
+*/
