@@ -1493,7 +1493,7 @@ function createMarkers(camera, markerData) {
 		const pitchRad = THREE.MathUtils.degToRad(pitch);
 
 		// Calculate marker position on sphere
-		const radius = 360; // Adjust this based on your scene
+		const radius = 100; // Adjust this based on your scene
 		const x = radius * Math.sin(yawRad) * Math.cos(pitchRad);
 		const y = radius * Math.sin(pitchRad);
 		const z = radius * Math.cos(yawRad) * Math.cos(pitchRad);
@@ -1501,14 +1501,6 @@ function createMarkers(camera, markerData) {
 		// Create marker element
 		const marker = document.createElement("a");
 		marker.className = "marker";
-		marker.dataset.yaw = "";
-		marker.dataset.pitch = "";
-		// Check if initial yaw and pitch are not already set
-		if (!marker.dataset.initialYaw || !marker.dataset.initialPitch) {
-			// Set initial yaw and pitch in dataset attributes
-			marker.dataset.initialYaw = yaw.toString();
-			marker.dataset.initialPitch = pitch.toString();
-		}
 
 		if (typeof link === "string" && link !== "") {
 			marker.href = link;
@@ -1535,36 +1527,21 @@ function createMarkers(camera, markerData) {
 		container.appendChild(marker);
 	});
 
-	controls.addEventListener("change", function () {
-		// Get the camera's rotation angles
-		const yaw = camera.rotation.y * THREE.MathUtils.RAD2DEG;
-		const pitch = camera.rotation.x * THREE.MathUtils.RAD2DEG;
+	// Update marker positions on camera change
+	camera.addEventListener("change", function () {
+		markerData.forEach((data) => {
+			const { yaw, pitch } = data;
+			const yawRad = THREE.MathUtils.degToRad(yaw);
+			const pitchRad = THREE.MathUtils.degToRad(pitch);
 
-		// Update marker positions
-		const markers = document.querySelectorAll(".marker");
-		markers.forEach((marker) => {
-			// Get the initial yaw and pitch values from the marker's dataset
-			const initialYaw = parseFloat(marker.dataset.initialYaw);
-			const initialPitch = parseFloat(marker.dataset.initialPitch);
-
-			// Calculate the new yaw and pitch based on the camera's rotation
-			let newYaw = initialYaw - yaw;
-			let newPitch = initialPitch + pitch;
-
-			// Normalize yaw to keep it within the range [-180, 180]
-			newYaw = ((newYaw + 180) % 360) - 180;
-
-			// Convert the new yaw and pitch to radians
-			const newYawRad = THREE.MathUtils.degToRad(newYaw);
-			const newPitchRad = THREE.MathUtils.degToRad(newPitch);
-
-			// Recalculate marker position on the sphere
-			const radius = 360; // Adjust this based on your scene
-			const x = radius * Math.sin(newYawRad) * Math.cos(newPitchRad);
-			const y = radius * Math.sin(newPitchRad);
-			const z = radius * Math.cos(newYawRad) * Math.cos(newPitchRad);
+			// Recalculate marker position on sphere
+			const radius = 100; // Adjust this based on your scene
+			const x = radius * Math.sin(yawRad) * Math.cos(pitchRad);
+			const y = radius * Math.sin(pitchRad);
+			const z = radius * Math.cos(yawRad) * Math.cos(pitchRad);
 
 			// Update marker position
+			const marker = document.querySelector(".marker");
 			updateMarkerPosition(marker, camera, x, y, z);
 		});
 	});
@@ -1590,8 +1567,4 @@ function updateMarkerPosition(marker, camera, x, y, z) {
 	// Translate marker to screen coordinates
 	marker.style.left = xScreen + "px";
 	marker.style.top = yScreen + "px";
-
-	// Update yaw and pitch in dataset attributes
-	marker.dataset.yaw = xScreen.toString();
-	marker.dataset.pitch = yScreen.toString();
 }

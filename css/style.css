@@ -374,7 +374,7 @@ canvas {
 	right: 0%;
 	top: 50%;
 	content: "";
-	background: url("/img/chevron.svg");
+	background: url("../img/chevron.svg");
 	transform-origin: top center;
 	background-size: 16px;
 	background-repeat: no-repeat;
@@ -493,7 +493,8 @@ input[type="range"]:focus::-moz-range-thumb {
 #mapbtn:hover,
 #infobtn:hover,
 #logo:hover,
-.maplink:hover {
+.maplink:hover,
+.marker:hover {
 	cursor: pointer;
 	background-color: black;
 	animation: outlinepush 0.8s ease-out 1 forwards;
@@ -503,7 +504,8 @@ input[type="range"]:focus::-moz-range-thumb {
 #mapbtn,
 #infobtn,
 #logo,
-.maplink {
+.maplink,
+.marker {
 	transition: opacity 1s ease;
 	opacity: 0;
 	content: "";
@@ -608,7 +610,8 @@ input[type="range"]:focus::-moz-range-thumb {
 #infobtn span,
 #mapbtn span,
 #logo span,
-.maplink span {
+.maplink span,
+.marker span {
 	position: absolute;
 	opacity: 0;
 	right: 0;
@@ -631,7 +634,8 @@ input[type="range"]:focus::-moz-range-thumb {
 
 #mapbtn span,
 #logo span,
-.maplink span {
+.maplink span,
+.marker span {
 	left: 0;
 	right: auto;
 	padding-right: 20px;
@@ -664,7 +668,8 @@ input[type="range"]:focus::-moz-range-thumb {
 .settingsbtn:hover span,
 #infobtn:hover span,
 #logo:hover span,
-.maplink:hover span {
+.maplink:hover span,
+.marker:hover span {
 	display: inline-block;
 	animation: expandWidth 0.1s 1 forwards;
 	opacity: 1;
@@ -1028,4 +1033,72 @@ input[type="range"]:focus::-moz-range-thumb {
 	.locations .container ul li div {
 		font-size: 11px;
 	}
+}
+
+#labels {
+	z-index: 1;
+	position: fixed;
+}
+.marker {
+	background-color: rgba(0, 0, 0, 0.8);
+	opacity: 1;
+}
+
+.marker-container {
+	display: none;
+	width: 300px;
+	max-height: 400px;
+	overflow-y: auto;
+	background: rgba(0, 0, 0, 0.6);
+	overflow-x: hidden;
+}
+
+.marker img {
+	width: 100%;
+}
+
+.infodot {
+	background: rgba(255, 255, 255, 0.8);
+}
+
+.extlink:after {
+	width: 100%;
+	height: 100%;
+	content: "";
+	display: block;
+	position: absolute;
+	background-image: url("../img/icon-link.svg");
+	background-size: 28px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	filter: invert(1);
+}
+
+.intlink:after {
+	width: 100%;
+	height: 100%;
+	content: "";
+	display: block;
+	position: absolute;
+	background-image: url("../img/chevron.svg");
+	background-size: 21px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	filter: invert(1);
+}
+
+.infodot:after {
+	width: 100%;
+	height: 100%;
+	content: "";
+	display: block;
+	position: absolute;
+	background-image: url("../img/icon-text.svg");
+	background-size: 28px;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+.infodot:hover:after {
+	filter: invert(1);
 }
