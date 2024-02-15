@@ -599,6 +599,7 @@ if ("xr" in navigator) {
 	// Fallback to animate function if WebXR is not supported
 	animate();
 }
+
 // Function called on each XR frame
 function onXRFrame(time, xrFrame) {
 	// Get XR viewer pose
@@ -623,8 +624,10 @@ function onXRFrame(time, xrFrame) {
 	xrFrame.session.requestAnimationFrame(onXRFrame);
 }
 
-let locationsArray = "";
+// Set the locations html
+let locationsHtml = "";
 
+// For loop the locations list with contentArray information
 for (let i = 0; i < contentArray.length; i++) {
 	const content = contentArray[i];
 	let activeClass = i === 0 && content.type === "video" ? "active" : "";
@@ -637,7 +640,7 @@ for (let i = 0; i < contentArray.length; i++) {
                             <div>${content.title}</div>
                             <img src="video/${fileNameWithoutExtension}.jpg" alt="" />
                         </li>`;
-		locationsArray += itemHtml;
+		locationsHtml += itemHtml;
 	} else {
 		sceneType = "image";
 		const fileNameWithoutExtension = content.file.split(".").slice(0, -1).join(".");
@@ -645,15 +648,17 @@ for (let i = 0; i < contentArray.length; i++) {
                             <div>${content.title}</div>
                             <img src="img/${fileNameWithoutExtension}-low.jpg" alt="" />
                         </li>`;
-		locationsArray += itemHtml;
+		locationsHtml += itemHtml;
 	}
 }
 
+// Insert the locations list to HTML
 const locationUl = document.querySelector("#locationlist");
-locationUl.innerHTML = locationsArray;
+locationUl.innerHTML = locationsHtml;
 
 const listItems = document.querySelectorAll("#locationlist li");
-// Add click event listener to each <li> element
+
+// Function to set active in list and update scene
 function activateItem(item) {
 	listItems.forEach((listItem) => {
 		listItem.classList.remove("active");
@@ -665,6 +670,7 @@ function activateItem(item) {
 	change360Content(parseInt(contentId));
 }
 
+// Add click event listener to each <li> element
 listItems.forEach((item) => {
 	item.addEventListener("click", function () {
 		activateItem(item);
@@ -677,6 +683,7 @@ listItems.forEach((item) => {
 	});
 });
 
+// Function to update scene with image or video
 function change360Content(targetId) {
 	labelContainerElem.innerHTML = "";
 	infoElem.style.right = "-600px";
@@ -980,8 +987,10 @@ function change360Content(targetId) {
 	createMarkers(markerData);
 }
 
+// Define initialZoomLevel with the initial value of your input range
 const initialZoomLevel = parseFloat(zoomLevelInput.value);
 
+// Function to handle zoom, with fov and range handler
 function handleZoom(event) {
 	if (isMouseOverScrollableContent(event)) {
 		return; // Exit the function early if mouse is over scrollable content
@@ -1013,6 +1022,7 @@ function handleZoom(event) {
 	zoomLevelInput.value = (perspective - 10) / (90 - 10); // Map perspective value to range 0 to 1
 }
 
+// Check so that the zoom doesnt work when mouse is over certain elements
 function isMouseOverScrollableContent(event) {
 	// Check if event is defined and not null
 	if (event && event.target) {
@@ -1027,8 +1037,8 @@ function isMouseOverScrollableContent(event) {
 	}
 }
 
+// Add eventlistener for mouse wheel to handle zoom
 document.addEventListener("wheel", handleZoom);
-// Define initialZoomLevel with the initial value of your input range
 
 // Add event listener to the input range
 zoomLevelInput.addEventListener("input", function () {
@@ -1053,6 +1063,8 @@ zoomLevelInput.addEventListener("input", function () {
 
 // Add mouse controls to the camera
 const controls = new OrbitControls(camera, renderer.domElement);
+
+// Other controls settings
 controls.enablePan = false;
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
