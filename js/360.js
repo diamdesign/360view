@@ -202,6 +202,7 @@ window.addEventListener("load", function () {
 
 var sceneType = "image";
 
+// Get all elements into variables
 const viewElem = document.getElementById("view-container");
 const zoomLevel = document.querySelector("#zoombtn");
 const zoomLevelInput = document.querySelector("#zoomlevel");
@@ -223,6 +224,25 @@ const captionHTML = document.querySelector("#caption");
 const captionButton = document.querySelector("#captionselect");
 const captionList = document.querySelector("#captionselect ul");
 
+const scrollableContent = document.querySelector("#scrollable");
+const labelContainerElem = document.querySelector("#labels");
+
+const settingsElem = document.querySelector("#settings");
+const settingsBrightness = document.getElementById("brightness");
+const settingsContrast = document.getElementById("contrast");
+const settingsSaturate = document.getElementById("saturation");
+const settingsAmbient = document.getElementById("ambient");
+const settingsVolume = document.getElementById("volume");
+const settingsBrightnessNo = document.getElementById("brightnessNo");
+const settingsContrastNo = document.getElementById("contrastNo");
+const settingsSaturateNo = document.getElementById("saturationNo");
+const settingsAmbientNo = document.getElementById("ambientNo");
+const settingsVolumeNo = document.getElementById("volumeNo");
+
+const settingsButton = document.querySelector(".settingsbtn");
+const resetButton = document.getElementById("reset");
+const closeSettingsButton = document.querySelector(".closebtn");
+
 // Define the minimum and maximum widths for infoElem
 const minWidth = 460;
 const maxWidth = 1800;
@@ -231,7 +251,6 @@ let isResizing = false;
 let startResizeX;
 let startResizeWidth;
 
-// Function to handle mouse down event
 // Function to handle resize down event (mouse or touch)
 function onResizeDown(event) {
 	isResizing = true;
@@ -278,6 +297,7 @@ infoResizer.addEventListener("mousedown", onResizeDown);
 infoResizer.addEventListener("touchstart", onResizeDown);
 infoResizer.addEventListener("selectstart", onResizeDown);
 
+// Function to show and hide locations list
 function showLocationsContent() {
 	const scrollableBottom = parseFloat(locationsElem.style.bottom);
 	if (scrollableBottom === 0) {
@@ -290,28 +310,10 @@ function showLocationsContent() {
 	}
 }
 
+// Event listener for showing and hiding locations list
 locationsIndicatorElem.addEventListener("click", showLocationsContent);
 locationsIndicatorElem.addEventListener("touchstart", showLocationsContent);
 locationsIndicatorElem.addEventListener("selectend", showLocationsContent);
-
-const scrollableContent = document.querySelector("#scrollable");
-const labelContainerElem = document.querySelector("#labels");
-
-const settingsElem = document.querySelector("#settings");
-const settingsBrightness = document.getElementById("brightness");
-const settingsContrast = document.getElementById("contrast");
-const settingsSaturate = document.getElementById("saturation");
-const settingsAmbient = document.getElementById("ambient");
-const settingsVolume = document.getElementById("volume");
-const settingsBrightnessNo = document.getElementById("brightnessNo");
-const settingsContrastNo = document.getElementById("contrastNo");
-const settingsSaturateNo = document.getElementById("saturationNo");
-const settingsAmbientNo = document.getElementById("ambientNo");
-const settingsVolumeNo = document.getElementById("volumeNo");
-
-const settingsButton = document.querySelector(".settingsbtn");
-const resetButton = document.getElementById("reset");
-const closeSettingsButton = document.querySelector(".closebtn");
 
 function viewContainerFadeIn() {
 	locationsElem.style.opacity = "1";
