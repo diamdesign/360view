@@ -286,7 +286,7 @@ canvas {
 	border-bottom-right-radius: 0;
 	top: 50%;
 	transform: translateY(-50%);
-	width: 640px;
+	max-width: 640px;
 }
 
 #settings .row {
@@ -730,7 +730,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	position: fixed;
 	backdrop-filter: blur(32px);
 	top: 0;
-	right: -460px;
+	right: -600px;
 	z-index: 1050;
 	background: rgba(0, 0, 0, 0.85);
 	height: 100%;

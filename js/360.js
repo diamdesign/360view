@@ -244,7 +244,7 @@ function onResizeDown(event) {
 
 	// Add event listener for mouse up or touch end event
 	document.body.addEventListener("mouseup", onResizeUp);
-	document.body.addEventListener("touchend", onResizeUp);
+	document.body.addEventListener("touchstart", onResizeUp);
 	document.body.addEventListener("selectend", onResizeUp);
 }
 
@@ -269,7 +269,7 @@ function onResizeUp() {
 	document.removeEventListener("mousemove", onResizeMove);
 	document.removeEventListener("touchmove", onResizeMove);
 	document.removeEventListener("mouseup", onResizeUp);
-	document.removeEventListener("touchend", onResizeUp);
+	document.removeEventListener("touchstart", onResizeUp);
 	document.removeEventListener("selectend", onResizeUp);
 }
 
@@ -291,7 +291,7 @@ function showLocationsContent() {
 }
 
 locationsIndicatorElem.addEventListener("click", showLocationsContent);
-locationsIndicatorElem.addEventListener("touchend", showLocationsContent);
+locationsIndicatorElem.addEventListener("touchstart", showLocationsContent);
 locationsIndicatorElem.addEventListener("selectend", showLocationsContent);
 
 const scrollableContent = document.querySelector("#scrollable");
@@ -644,7 +644,7 @@ listItems.forEach((item) => {
 	item.addEventListener("click", function () {
 		activateItem(item);
 	});
-	item.addEventListener("touchend", function () {
+	item.addEventListener("touchstart", function () {
 		activateItem(item);
 	});
 	item.addEventListener("selectend", function () {
@@ -654,7 +654,7 @@ listItems.forEach((item) => {
 
 function change360Content(targetId) {
 	labelContainerElem.innerHTML = "";
-	infoElem.style.right = "-100%";
+	infoElem.style.right = "-600px";
 	let targetObject = contentArray.find((obj) => obj.id === targetId);
 	let fileName = targetObject.file;
 	let fileType = targetObject.type;
@@ -958,12 +958,16 @@ function change360Content(targetId) {
 const initialZoomLevel = parseFloat(zoomLevelInput.value);
 
 function handleZoom(event) {
-	// Access the zoom speed from controls.zoomSpeed
-	const zoomAmount = event.deltaY * zoomSpeed; // Use controls.zoomSpeed instead of zoomSpeed
-
 	if (isMouseOverScrollableContent(event)) {
 		return; // Exit the function early if mouse is over scrollable content
 	}
+	// Access the zoom speed from controls.zoomSpeed
+	const zoomAmount = event.deltaY * zoomSpeed; // Use controls.zoomSpeed instead of zoomSpeed
+
+	const distanceToTarget = -controls.object.position.length();
+
+	// Adjust the rotation speed based on the distance to the target
+	controls.rotateSpeed = distanceToTarget * 0.005;
 
 	// Calculate the perspective change based on the zoom amount and perspective factor
 	const perspectiveChange = zoomAmount * perspectiveFactor;
@@ -1210,7 +1214,7 @@ function restoreCursor() {
 	scrollableContent.style.cursor = "grab"; // Restore cursor style
 }
 scrollableContent.addEventListener("mouseup", restoreCursor);
-scrollableContent.addEventListener("touchend", restoreCursor);
+scrollableContent.addEventListener("touchstart", restoreCursor);
 scrollableContent.addEventListener("mouseleave", restoreCursor);
 
 function scrollLocation(event) {
@@ -1323,7 +1327,7 @@ infoButton.addEventListener("selectstart", openInfo);
 
 function closeInfo() {
 	infoButton.style.opacity = "1";
-	infoElem.style.right = "-460px";
+	infoElem.style.right = "-600px";
 	infoElem.style.width = "460px";
 }
 
