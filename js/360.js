@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 
+// Array for Map view
 var mapArray = [
 	{
 		file: "map.png",
@@ -28,6 +29,7 @@ var mapArray = [
 	},
 ];
 
+// Array for Locations list
 var contentArray = [
 	{
 		id: 1,
@@ -154,9 +156,11 @@ var contentArray = [
 	},
 ];
 
+// Array for markers/labels update per each image/video
 var markerData = [];
 
 // Function to test internet speed
+var highSpeed = false;
 function testInternetSpeed() {
 	return new Promise((resolve, reject) => {
 		const imageAddr = "img/360-low.jpg"; // A sample image URL
@@ -179,7 +183,6 @@ function testInternetSpeed() {
 	});
 }
 
-var highSpeed = false;
 // Perform internet speed test on page load
 window.addEventListener("load", function () {
 	testInternetSpeed()
@@ -243,10 +246,11 @@ const settingsButton = document.querySelector(".settingsbtn");
 const resetButton = document.getElementById("reset");
 const closeSettingsButton = document.querySelector(".closebtn");
 
-// Define the minimum and maximum widths for infoElem
+// Define the minimum and maximum widths for infoElem (Information popup)
 const minWidth = 460;
 const maxWidth = 1800;
 
+// Define resizing variables for infoElem
 let isResizing = false;
 let startResizeX;
 let startResizeWidth;
@@ -315,6 +319,7 @@ locationsIndicatorElem.addEventListener("click", showLocationsContent);
 locationsIndicatorElem.addEventListener("touchstart", showLocationsContent);
 locationsIndicatorElem.addEventListener("selectend", showLocationsContent);
 
+// Function to show and hide UI
 function viewContainerFadeIn() {
 	locationsElem.style.opacity = "1";
 	angleIndicator.style.opacity = "1";
@@ -333,8 +338,10 @@ function viewContainerFadeOut() {
 	fullscreenButton.style.opacity = "0";
 }
 
+// Start by showing the UI
 viewContainerFadeIn();
 
+// Hide all UI elements even if you look around (CC still visible)
 document.addEventListener("keydown", (e) => {
 	if (e.key === "h" || e.key === "H") {
 		const one = document.querySelector("#view-container");
@@ -349,12 +356,14 @@ document.addEventListener("keydown", (e) => {
 	}
 });
 
+// Hide UI after 7 seconds inactivity
 let idleTimeout;
 idleTimeout = setTimeout(() => {
 	// Fade out the view container after 7 seconds of inactivity
 	viewContainerFadeOut();
 }, 7000);
 
+// Function to show/hide UI
 function showHideContent() {
 	clearTimeout(idleTimeout);
 
@@ -369,7 +378,7 @@ function showHideContent() {
 		viewContainerFadeOut();
 	}, 7000);
 }
-// Add mousemove event listener to the document
+// Show UI if mousemove/touchmove
 document.addEventListener("mousemove", function (event) {
 	showHideContent();
 });
@@ -377,10 +386,13 @@ document.addEventListener("touchmove", function (event) {
 	showHideContent();
 });
 
+// Function to open settings
 function openSettings() {
 	settingsElem.style.right = "0px";
 	settingsButton.style.opacity = "0";
 }
+
+// Add eventlistners to open settings
 settingsButton.addEventListener("click", openSettings);
 settingsButton.addEventListener("touchstart", openSettings);
 settingsButton.addEventListener("selectstart", openSettings);
@@ -391,10 +403,11 @@ contentArray.forEach((item) => {
 	locationsUl.insertAdjacentHTML("afterbegin", item);
 });
 
+// Perspective start at 75
 let perspective = 75;
+
 // Set up Three.js scene
 const scene = new THREE.Scene();
-
 const camera = new THREE.PerspectiveCamera(
 	perspective,
 	window.innerWidth / window.innerHeight,
@@ -403,11 +416,11 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 const renderer = new THREE.WebGLRenderer({ alpha: false });
-
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x000000);
 document.body.appendChild(renderer.domElement);
 
+// Setup CSS2DRenderer
 const labelRenderer = new CSS2DRenderer();
 labelRenderer.setSize(window.innerWidth, window.innerHeight);
 labelRenderer.domElement.style.position = "absolute";
@@ -415,11 +428,13 @@ labelRenderer.domElement.style.top = "0px";
 labelRenderer.domElement.style.pointerEvents = "none";
 document.body.appendChild(labelRenderer.domElement);
 
-// Create a video element
+// Create a video element for video content
 const video = document.createElement("video");
 
 // Initialize currentVideoSrc with the URL of the initial video
 let currentVideoSrc;
+
+// Initialize texture for the texture to update on the sphere
 let texture;
 
 // Create a sphere geometry for the 360 photo
@@ -440,12 +455,15 @@ const material = new THREE.MeshStandardMaterial({
 	side: THREE.DoubleSide,
 });
 
+// Create a sphere and add it to the scene
 const sphere = new THREE.Mesh(geometry, material);
 scene.add(sphere);
 
+// Create a group to add labels/markers into, and add it to the scene
 const root = new THREE.Group();
 scene.add(root);
 
+// Set and add the ambient light
 let ambientIntensity = 4;
 let ambientLight;
 // Function to update ambient light intensity
@@ -459,14 +477,17 @@ function updateLight(intensity) {
 	scene.add(ambientLight); // Add new ambient light to the scene
 }
 
+// Set current 3.5 ambient light intensity
 updateLight(3.5);
 
+// Function for rendering the scene
 function render() {
 	// Render the scene
 	renderer.render(scene, camera);
 	labelRenderer.render(scene, camera);
 }
 
+// Function to animate it all
 function animate() {
 	requestAnimationFrame(animate);
 	controls.update();
@@ -484,6 +505,7 @@ function animate() {
 	angleIndicator.style.transform = `translate(-50%, -50%) rotate(${reversedAzimuthalAngle}rad)`;
 }
 
+// Function for VR to animate (Work in progress)
 function draw(xrFrame) {
 	// Update VR controls (if available)
 	if (controls) {
@@ -503,7 +525,8 @@ function draw(xrFrame) {
 	// Continue rendering in VR
 	xrFrame.session.requestAnimationFrame(draw);
 }
-// Check if VR is supported and start VR session
+
+// Check if VR is supported and start VR session, if no VR then he uses animate()
 if ("xr" in navigator) {
 	console.log("WebXR is supported in this browser.");
 
