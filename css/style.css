@@ -15,6 +15,7 @@ html {
 	height: 100%;
 	overflow: hidden;
 }
+
 canvas {
 	background-color: black;
 	background-image: url("../img/introloadersafe.webp");
@@ -493,6 +494,8 @@ input[type="range"]:focus::-moz-range-thumb {
 #fullscreenbtn:hover,
 #mapbtn:hover,
 #infobtn:hover,
+#likebtn:hover,
+#commentbtn:hover,
 #logo:hover,
 .maplink:hover,
 .marker:hover {
@@ -504,6 +507,8 @@ input[type="range"]:focus::-moz-range-thumb {
 #fullscreenbtn,
 #mapbtn,
 #infobtn,
+#commentbtn,
+#likebtn,
 #logo,
 .maplink,
 .marker {
@@ -547,6 +552,76 @@ input[type="range"]:focus::-moz-range-thumb {
 	right: 25px;
 	top: -130px;
 }
+#commentbtn {
+	text-align: center;
+	display: block;
+	right: 25px;
+	top: -210px;
+}
+
+#commentbtn .amount {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	bottom: -20px;
+	color: white;
+	font-size: 14px;
+	filter: drop-shadow(0 1px 4px black);
+	text-align: center;
+}
+
+#commentbtn:after {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: url("../img/icon-comment.svg");
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 24px;
+	filter: invert(1);
+}
+
+#likebtn {
+	text-align: center;
+	display: block;
+	right: 25px;
+	top: -290px;
+}
+
+#likebtn .amount {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	bottom: -20px;
+	color: white;
+	font-size: 14px;
+	filter: drop-shadow(0 1px 4px black);
+	text-align: center;
+}
+
+#likebtn:after {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: url("../img/icon-heart.svg");
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 24px;
+	filter: invert(1);
+}
+
+.liked {
+	background-color: rgba(233, 15, 15, 0.979) !important;
+}
+
 #fullscreenbtn {
 	right: 25px;
 }
@@ -606,13 +681,15 @@ input[type="range"]:focus::-moz-range-thumb {
 	width: 100px;
 }
 
-#fullscreenbtn span,
-.settingsbtn span,
-#infobtn span,
-#mapbtn span,
-#logo span,
-.maplink span,
-.marker span {
+#fullscreenbtn .hint,
+#commentbtn .hint,
+#likebtn .hint,
+.settingsbtn .hint,
+#infobtn .hint,
+#mapbtn .hint,
+#logo .hint,
+.maplink .hint,
+.marker .hint {
 	position: absolute;
 	opacity: 0;
 	right: 0;
@@ -633,17 +710,17 @@ input[type="range"]:focus::-moz-range-thumb {
 	z-index: -1;
 }
 
-#mapbtn span,
-#logo span,
-.maplink span,
-.marker span {
+#mapbtn .hint,
+#logo .hint,
+.maplink .hint,
+.marker .hint {
 	left: 0;
 	right: auto;
 	padding-right: 20px;
 	padding-left: 60px;
 }
 
-.linktextleft span {
+.linktextleft .hint {
 	left: auto;
 	right: 0;
 	padding-right: 60px;
@@ -664,13 +741,15 @@ input[type="range"]:focus::-moz-range-thumb {
 	}
 }
 
-#fullscreenbtn:hover span,
-#mapbtn:hover span,
-.settingsbtn:hover span,
-#infobtn:hover span,
-#logo:hover span,
-.maplink:hover span,
-.marker:hover span {
+#fullscreenbtn:hover .hint,
+#mapbtn:hover .hint,
+#commentbtn:hover .hint,
+#likebtn:hover .hint,
+.settingsbtn:hover .hint,
+#infobtn:hover .hint,
+#logo:hover .hint,
+.maplink:hover .hint,
+.marker:hover .hint {
 	display: inline-block;
 	animation: expandWidth 0.1s 1 forwards;
 	opacity: 1;
@@ -1107,6 +1186,39 @@ input[type="range"]:focus::-moz-range-thumb {
 .infodot {
 	background: rgba(255, 255, 255, 0.8);
 }
+.infodot:before {
+	transform-origin: top left;
+	display: block;
+	content: "";
+	width: 50px;
+	height: 50px;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	border-radius: 50px;
+	border: 6px solid white;
+	animation: infodot 1s ease-out infinite;
+	position: absolute;
+}
+
+.infodot:hover:before {
+	animation: none;
+	border: none;
+}
+@keyframes infodot {
+	0% {
+		opacity: 1;
+		scale: 1;
+	}
+	60% {
+		opacity: 0;
+		scale: 1.2;
+	}
+	100% {
+		opacity: 0;
+		scale: 1.25;
+	}
+}
 
 .extlink:after {
 	width: 100%;
@@ -1146,6 +1258,10 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-position: center center;
 }
 
+.infodot:hover {
+	background-color: white;
+}
 .infodot:hover:after {
-	filter: invert(1);
+	background-color: white;
+	border-radius: 100%;
 }

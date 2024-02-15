@@ -36,6 +36,19 @@ var contentArray = [
 		type: "image",
 		file: "360.jpg",
 		title: "One",
+		likes: 1423524,
+		comments: [
+			{
+				profilename: "Artist84",
+				comment: "This is awesome",
+				date: "2024-10-10 20:32:42",
+			},
+			{
+				profilename: "ThunderBolt",
+				comment: "ROCKING!",
+				date: "2024-10-10 20:32:52",
+			},
+		],
 		info: '<h1>One</h1><img src="https://picsum.photos/600/300" alt="" /><hr><p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. <a href="#">Molestiae distinctio</a> optio consequatur eaque eos asperiores quibusdam rem exercitationem maiores aliquid sequi, a, quae aliquam expedita. Blanditiis saepe esse dolorum molestias.</p><ul><li>One</li><li>Two</li></ul><hr><img src="https://picsum.photos/601/301" alt="" /><p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Molestiae distinctio optio consequatur eaque eos asperiores quibusdam rem exercitationem maiores aliquid sequi, a, quae aliquam expedita. Blanditiis saepe esse dolorum molestias.</p><a href="#" class="button">Testing</a>',
 		markers: [
 			{
@@ -220,6 +233,9 @@ const infoElem = document.querySelector("#info");
 const infoButton = document.querySelector("#infobtn");
 const infoResizer = document.querySelector("#resizer");
 
+const likeButton = document.querySelector("#likebtn");
+const commentButton = document.querySelector("#commentbtn");
+
 const videoplayer = document.querySelector("#videoplayer");
 const playVideoButton = document.querySelector("#playvideo");
 const videoduration = document.querySelector("#videoduration");
@@ -327,6 +343,8 @@ function viewContainerFadeIn() {
 	zoomLevel.style.opacity = "1";
 	mapButton.style.opacity = "1";
 	fullscreenButton.style.opacity = "1";
+	likeButton.style.opacity = "1";
+	commentButton.style.opacity = "1";
 }
 
 function viewContainerFadeOut() {
@@ -336,6 +354,8 @@ function viewContainerFadeOut() {
 	zoomLevel.style.opacity = "0";
 	mapButton.style.opacity = "0";
 	fullscreenButton.style.opacity = "0";
+	likeButton.style.opacity = "0";
+	commentButton.style.opacity = "1";
 }
 
 // Start by showing the UI
@@ -686,7 +706,7 @@ listItems.forEach((item) => {
 // Function to update scene with image or video
 function change360Content(targetId) {
 	labelContainerElem.innerHTML = "";
-	infoElem.style.right = "-600px";
+	infoElem.classList.remove("infoshow");
 	let targetObject = contentArray.find((obj) => obj.id === targetId);
 	let fileName = targetObject.file;
 	let fileType = targetObject.type;
@@ -972,10 +992,10 @@ function change360Content(targetId) {
 	}
 
 	if (fileInfo !== "" && fileInfo !== null && fileInfo !== undefined) {
+		infoElem.querySelector(".container").innerHTML = fileInfo;
 		infoElem.style.display = "block";
 		infoButton.style.display = "block";
 		infoButton.style.opacity = "1";
-		infoElem.querySelector(".container").innerHTML = fileInfo;
 	} else {
 		infoElem.style.display = "none";
 		infoButton.style.opacity = "0";
@@ -1368,7 +1388,7 @@ closeSettingsButton.addEventListener("selectstart", closeSettings);
 
 function openInfo() {
 	infoButton.style.opacity = "0";
-	infoElem.style.right = "0";
+	infoElem.classList.add("infoshow");
 }
 
 infoButton.addEventListener("click", openInfo);
@@ -1377,7 +1397,7 @@ infoButton.addEventListener("selectstart", openInfo);
 
 function closeInfo() {
 	infoButton.style.opacity = "1";
-	infoElem.style.right = "-600px";
+	infoElem.classList.remove("infoshow");
 	infoElem.style.width = "460px";
 }
 
@@ -1496,7 +1516,7 @@ mapArray[0].links.forEach((maplink) => {
 	// Adjust to access the first element of mapArray
 	let textrightClass = maplink.left > 50 ? " linktextleft" : ""; // Conditionally add 'textright' class
 	let html = `<div class="maplink ${textrightClass}" data-id="${maplink.link}" style="top: ${maplink.top}%; left: ${maplink.left}%">
-            <span>${maplink.name}</span>
+            <span class="hint">${maplink.name}</span>
         </div>`;
 	mapImage.insertAdjacentHTML("beforeend", html); // Adjust to add HTML at the end of mapImage
 });
@@ -1585,7 +1605,7 @@ async function createMarkers(markerData) {
 			marker.classList.add("infodot");
 		}
 
-		let html = `<span>${name}</span><div class="marker-container"></div>`;
+		let html = `<span class="hint">${name}</span><div class="marker-container"></div>`;
 		marker.innerHTML = html;
 		let markerContainer = marker.querySelector(".marker-container");
 		markerContainer.insertAdjacentHTML("afterbegin", info);
@@ -1630,13 +1650,16 @@ async function createMarkers(markerData) {
 	markerInfoLabels.forEach((link) => {
 		link.addEventListener("click", (e) => {
 			e.preventDefault();
+			let hint = link.querySelector(".hint");
 			let content = link.querySelector(".marker-container");
 			let computedStyle = getComputedStyle(content);
 
 			if (computedStyle.display === "none") {
 				content.style.display = "block";
+				hint.style.display = "none";
 			} else {
 				content.style.display = "none";
+				hint.style.display = "block";
 			}
 		});
 	});
