@@ -1040,17 +1040,29 @@ input[type="range"]:focus::-moz-range-thumb {
 	position: fixed;
 }
 .marker {
+	pointer-events: all !important;
 	background-color: rgba(0, 0, 0, 0.8);
 	opacity: 1;
+	z-index: 9999;
 }
 
 .marker-container {
+	color: white;
+	text-decoration: none;
+	font-size: 14px;
 	display: none;
 	width: 300px;
 	max-height: 400px;
 	overflow-y: auto;
-	background: rgba(0, 0, 0, 0.6);
+	background: rgba(0, 0, 0, 0.75);
+	backdrop-filter: blur(20px);
 	overflow-x: hidden;
+	left: 50px;
+	position: absolute;
+	padding: 20px;
+	border-radius: 8px;
+	scrollbar-width: thin;
+	scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
 }
 
 .marker img {

@@ -984,7 +984,14 @@ function change360Content(targetId) {
 
 	camera.updateProjectionMatrix();
 	markerData = targetObject.markers;
-	createMarkers(markerData);
+
+	// Remove all markers/labels
+	root.clear();
+
+	console.log(markerData);
+	if (markerData !== "" && markerData !== null && markerData !== undefined) {
+		createMarkers(markerData);
+	}
 }
 
 // Define initialZoomLevel with the initial value of your input range
@@ -1030,7 +1037,11 @@ function isMouseOverScrollableContent(event) {
 		const target = event.target;
 
 		// Check if the target element or any of its ancestors is the scrollable content or #info
-		return target.closest("#scrollable") !== null || target.closest("#info") !== null;
+		return (
+			target.closest("#scrollable") !== null ||
+			target.closest("#info") !== null ||
+			target.closest(".marker-container") !== null
+		);
 	} else {
 		// If event is undefined or null, return false
 		return false;
@@ -1576,28 +1587,55 @@ function createMarkers(markerData) {
 		marker.innerHTML = html;
 		let markerContainer = marker.querySelector(".marker-container");
 		markerContainer.insertAdjacentHTML("afterbegin", info);
+
 		// Create CSS2DObject for marker/label
 		const cssObject = new CSS2DObject(marker);
 		cssObject.position.copy(positionVector);
 
-		// Add CSS2DObject to the label renderer's scene
+		// Add CSS2DObject to the label renderer's scene (Root is a group)
 		root.add(cssObject);
-		/* 
-		// Initial positioning
-		updateMarkerPosition(marker, camera, x, y, z);
-
-		// Append marker to container
-		container.appendChild(marker);
-		*/
 	});
 
-	/*
-	// Add event listener for camera controls change event
-	controls.addEventListener("change", () => updateMarkerPositions(camera));
+	// Check if marker elements with specified classes are available in the DOM
+	const checkElements = () => {
+		const markerInternalLinks = document.querySelectorAll(".intlink");
+		const markerInfoLabels = document.querySelectorAll(".infodot");
 
-	// Add event listener for zoom event
-	controls.addEventListener("zoom", () => updateMarkerPositions(camera));
-	*/
+		if (markerInternalLinks.length > 0 && markerInfoLabels.length > 0) {
+			// Add event listeners to marker elements
+			markerInternalLinks.forEach((link) => {
+				link.addEventListener("click", (e) => {
+					e.preventDefault();
+					console.log("click");
+					const contentId = link.getAttribute("data-id");
+					change360Content(parseInt(contentId));
+				});
+			});
+
+			markerInfoLabels.forEach((link) => {
+				link.addEventListener("click", (e) => {
+					e.preventDefault();
+					console.log("click");
+					let content = link.querySelector(".marker-container");
+					let computedStyle = getComputedStyle(content);
+
+					if (computedStyle.display === "none") {
+						content.style.display = "block";
+					} else {
+						content.style.display = "none";
+					}
+				});
+			});
+
+			console.log("Event listeners added to markers.");
+		} else {
+			// If elements are not yet available, wait and check again
+			setTimeout(checkElements, 100);
+		}
+	};
+
+	// Start checking for marker elements
+	checkElements();
 }
 
 /*
