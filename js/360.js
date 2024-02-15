@@ -1504,6 +1504,7 @@ mapLinks.forEach((link) => {
 	});
 });
 
+// Function to update the map link positions depending on the image size
 function updateMapLinkPosition() {
 	mapImage.style.width = "100%";
 	mapImage.style.height = "100%";
@@ -1529,6 +1530,7 @@ function updateMapLinkPosition() {
 	mapImage.style.height = displayHeight + "px";
 }
 
+// Function to toggle map
 function toggleMap() {
 	if (map.style.display === "none") {
 		map.style.display = "flex";
@@ -1538,12 +1540,14 @@ function toggleMap() {
 	}
 }
 
+// Add eventlistener for toggle map
 mapButton.addEventListener("click", toggleMap);
 mapButton.addEventListener("touchstart", toggleMap);
 mapButton.addEventListener("selectstart", toggleMap);
 
 updateMapLinkPosition();
 
+// Function to create labels/markers
 function createMarkers(markerData) {
 	markerData.forEach((data) => {
 		const { name, position, info, link } = data;
