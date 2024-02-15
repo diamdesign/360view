@@ -990,7 +990,10 @@ function change360Content(targetId) {
 
 	console.log(markerData);
 	if (markerData !== "" && markerData !== null && markerData !== undefined) {
-		createMarkers(markerData);
+		// Call createMarkers function asynchronously
+		createMarkers(markerData).then(() => {
+			console.log("Markers created and event listeners added.");
+		});
 	}
 }
 
@@ -1559,7 +1562,7 @@ mapButton.addEventListener("selectstart", toggleMap);
 updateMapLinkPosition();
 
 // Function to create labels/markers
-function createMarkers(markerData) {
+async function createMarkers(markerData) {
 	markerData.forEach((data) => {
 		const { name, position, info, link } = data;
 
@@ -1596,46 +1599,52 @@ function createMarkers(markerData) {
 		root.add(cssObject);
 	});
 
-	// Check if marker elements with specified classes are available in the DOM
-	const checkElements = () => {
-		const markerInternalLinks = document.querySelectorAll(".intlink");
-		const markerInfoLabels = document.querySelectorAll(".infodot");
-
-		if (markerInternalLinks.length > 0 && markerInfoLabels.length > 0) {
-			// Add event listeners to marker elements
-			markerInternalLinks.forEach((link) => {
-				link.addEventListener("click", (e) => {
-					e.preventDefault();
-					console.log("click");
-					const contentId = link.getAttribute("data-id");
-					change360Content(parseInt(contentId));
-				});
-			});
-
-			markerInfoLabels.forEach((link) => {
-				link.addEventListener("click", (e) => {
-					e.preventDefault();
-					console.log("click");
-					let content = link.querySelector(".marker-container");
-					let computedStyle = getComputedStyle(content);
-
-					if (computedStyle.display === "none") {
-						content.style.display = "block";
-					} else {
-						content.style.display = "none";
-					}
-				});
-			});
-
-			console.log("Event listeners added to markers.");
-		} else {
-			// If elements are not yet available, wait and check again
-			setTimeout(checkElements, 100);
-		}
+	// Define a function to wait for marker elements
+	const waitForMarkerElements = () => {
+		return new Promise((resolve) => {
+			const interval = setInterval(() => {
+				const markerInternalLinks = document.querySelectorAll(".intlink");
+				const markerInfoLabels = document.querySelectorAll(".infodot");
+				if (markerInternalLinks.length > 0 && markerInfoLabels.length > 0) {
+					clearInterval(interval); // Stop the interval
+					resolve(); // Resolve the promise
+				}
+			}, 100);
+		});
 	};
 
-	// Start checking for marker elements
-	checkElements();
+	// Wait for marker elements
+	await waitForMarkerElements();
+
+	// Once marker elements are available, add event listeners
+	const markerInternalLinks = document.querySelectorAll(".intlink");
+	const markerInfoLabels = document.querySelectorAll(".infodot");
+
+	markerInternalLinks.forEach((link) => {
+		link.addEventListener("click", (e) => {
+			e.preventDefault();
+			console.log("click");
+			const contentId = link.getAttribute("data-id");
+			change360Content(parseInt(contentId));
+		});
+	});
+
+	markerInfoLabels.forEach((link) => {
+		link.addEventListener("click", (e) => {
+			e.preventDefault();
+			console.log("click");
+			let content = link.querySelector(".marker-container");
+			let computedStyle = getComputedStyle(content);
+
+			if (computedStyle.display === "none") {
+				content.style.display = "block";
+			} else {
+				content.style.display = "none";
+			}
+		});
+	});
+
+	console.log("Event listeners added to markers.");
 }
 
 /*
