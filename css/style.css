@@ -274,7 +274,8 @@ canvas {
 
 #settings {
 	color: rgba(255, 255, 255, 0.6);
-	background: rgba(0, 0, 0, 0.6);
+	background-color: rgba(0, 0, 0, 0.6);
+	backdrop-filter: blur(20px);
 	border-radius: 12px;
 	position: fixed;
 	z-index: 1001;
@@ -783,20 +784,23 @@ input[type="range"]:focus::-moz-range-thumb {
 	padding-bottom: 40px;
 }
 
-#info .container p {
+#info .container p,
+.marker-container p {
 	user-select: text;
 	line-height: 24px;
 	margin-bottom: 20px;
 }
 
-#info .container p a {
+#info .container p a,
+.marker-container p a {
 	user-select: text;
 	color: white;
 	padding: 4px 16px 4px 6px;
 	border-radius: 4px;
 	background-color: rgba(255, 255, 255, 0.2);
 }
-#info .container p a:after {
+#info .container p a:after,
+.marker-container p a:after {
 	opacity: 0.5;
 	background-image: url("../img/icon-link.svg");
 	background-repeat: no-repeat;
@@ -811,29 +815,53 @@ input[type="range"]:focus::-moz-range-thumb {
 	width: 16px;
 	height: 16px;
 }
-#info .container p a:hover {
+#info .container p a:hover,
+.marker-container p a:hover {
 	background: white;
 	color: black;
 	text-decoration: none;
 }
 
-#info .container p a:hover:after {
+#info .container p a:hover:after,
+.marker-container p a:hover:after {
 	filter: invert(0);
 	opacity: 1;
 }
 
-#info .container .button {
+#info .container .button,
+.marker-container .button {
 	color: White;
 	text-decoration: none;
 	border-radius: 6px;
-	background: rgba(255, 255, 255, 0.2);
+	background-color: rgba(255, 255, 255, 0.2);
 	padding: 10px 20px;
 	margin-top: 20px;
 	text-align: center;
 	margin-bottom: 20px;
+	position: relative;
 }
 
-#info .container .button:hover {
+[data-id].button {
+	padding: 10px 40px 10px 20px;
+}
+
+[data-id].button:after {
+	display: block;
+	filter: invert(1);
+	content: "";
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	right: 10px;
+	top: 10px;
+	rotate: 90deg;
+	background-image: url("../img/chevron.svg");
+	background-position: center center;
+	background-size: 14px;
+}
+
+#info .container .button:hover,
+.marker-container .button:hover {
 	animation: outlinepush 0.8s ease-out 1 forwards;
 	cursor: pointer;
 	filter: invert(1);
@@ -841,29 +869,35 @@ input[type="range"]:focus::-moz-range-thumb {
 	background: black !important;
 }
 
-#info .container ul {
+#info .container ul,
+.marker-container ul {
 	margin-left: 20px;
 	margin-bottom: 20px;
 }
-#info .container ul li {
+#info .container ul li,
+.marker-container ul li {
 	user-select: text;
 	line-height: 24px;
 }
 
 #info .container img,
-#info .container iframe {
+#info .container iframe,
+.marker-container img,
+.marker-container iframe {
 	width: 100%;
 	object-fit: contain;
 	margin-bottom: 20px;
 }
 
-#info .container hr {
+#info .container hr,
+.marker-container hr {
 	border: 1px solid rgba(255, 255, 255, 0.2);
 	margin-bottom: 20px;
 	width: 100%;
 }
 
-#info .container h1 {
+#info .container h1,
+.marker-container h1 {
 	user-select: text;
 	color: white;
 	font-size: 42px;
@@ -1051,18 +1085,19 @@ input[type="range"]:focus::-moz-range-thumb {
 	text-decoration: none;
 	font-size: 14px;
 	display: none;
-	width: 300px;
-	max-height: 400px;
+	width: 360px;
+	max-height: 520px;
 	overflow-y: auto;
 	background: rgba(0, 0, 0, 0.75);
 	backdrop-filter: blur(20px);
 	overflow-x: hidden;
-	left: 50px;
+	left: 60px;
 	position: absolute;
 	padding: 20px;
 	border-radius: 8px;
 	scrollbar-width: thin;
 	scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+	padding-bottom: 40px;
 }
 
 .marker img {

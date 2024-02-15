@@ -1577,11 +1577,11 @@ async function createMarkers(markerData) {
 			marker.target = "_blank";
 			marker.classList.add("extlink");
 		} else if (typeof link === "number") {
-			marker.href = "#";
+			marker.href = "#location-" + link;
 			marker.dataset.id = link;
 			marker.classList.add("intlink");
 		} else {
-			marker.href = "#";
+			marker.href = "#info";
 			marker.classList.add("infodot");
 		}
 
