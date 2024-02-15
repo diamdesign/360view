@@ -1,0 +1,96 @@
+
+1
+00:00:01,000 --> 00:00:05,000
+Hej där, hur är läget?
+
+2
+00:00:05,000 --> 00:00:10,000
+Inte så illa, bara hänger.
+
+3
+00:00:10,000 --> 00:00:15,000
+Snyggt, har du sett några bra filmer på sistone?
+
+4
+00:00:15,000 --> 00:00:20,000
+Ja, jag såg en riktigt bra igår kväll.
+
+5
+00:00:20,000 --> 00:00:25,000
+Snyggt, vad handlade den om?
+
+6
+00:00:25,000 --> 00:00:30,000
+Det var en thriller om en detektiv som löser ett mordmysterium.
+
+7
+00:00:30,000 --> 00:00:35,000
+Det låter intrikat, jag måste kolla in det.
+
+8
+00:00:35,000 --> 00:00:40,000
+Definitivt värt att titta på om du gillar spännande filmer.
+
+9
+00:00:40,000 --> 00:00:45,000
+Jag lägger till det på min lista, tack för rekommendationen.
+
+10
+00:00:45,000 --> 00:00:50,000
+Inga problem, låt mig veta vad du tycker efter att du har sett den.
+
+11
+00:00:50,000 --> 00:00:55,000
+Gör det, vi hörs senare!
+
+12
+00:00:55,000 --> 00:01:00,000
+Vi ses senare, ha en bra dag!
+
+13
+00:01:00,000 --> 00:01:05,000
+Hej, har du några planer för helgen?
+
+14
+00:01:05,000 --> 00:01:10,000
+Inte än, jag försöker fortfarande lista ut vad jag ska göra.
+
+15
+00:01:10,000 --> 00:01:15,000
+Vi borde gå på en vandring, vädret ska vara trevligt.
+
+16
+00:01:15,000 --> 00:01:20,000
+Det låter som en bra idé, jag kan använda lite frisk luft.
+
+17
+00:01:20,000 --> 00:01:25,000
+Fantastiskt, jag ska kolla upp några leder och låta dig veta.
+
+18
+00:01:25,000 --> 00:01:30,000
+Låter som en plan, tack för att du organiserar!
+
+19
+00:01:30,000 --> 00:01:35,000
+Inga problem, det ska bli kul att utforska nya leder tillsammans.
+
+20
+00:01:35,000 --> 00:01:40,000
+Absolut, kan inte vänta med att ge oss ut på leder!
+
+21
+00:01:40,000 --> 00:01:45,000
+Det kommer att bli episkt, vi ses då!
+
+22
+00:01:45,000 --> 00:01:50,000
+Vi ses snart, ta hand!
+
+23
+00:01:50,000 --> 00:01:55,000
+Hej, har du hört talas om den nya restaurangen centralt?
+
+24
+00:01:55,000 --> 00:02:00,000
+Ja, jag hörde att den ska vara riktigt bra.

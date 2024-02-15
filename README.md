@@ -1,2 +1,2 @@
-# 360
-360 Viewer (No name yet)
+# 360view
+This project is licensed under the Apache License - see the [LICENSE](LICENSE) file for details.

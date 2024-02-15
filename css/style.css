@@ -1,0 +1,1104 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: Arial, Helvetica, sans-serif;
+	user-select: none;
+}
+body,
+html {
+	background-color: black;
+	background-image: url("../img/introloadersafe.webp");
+	background-repeat: no-repeat;
+	background-position: center center;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+canvas {
+	background-color: black;
+	background-image: url("../img/introloadersafe.webp");
+	background-repeat: no-repeat;
+	background-position: center center;
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.locations {
+	opacity: 0;
+	width: calc(100% + 20px);
+	left: -10px;
+	position: fixed;
+	height: 175px;
+	bottom: -175px;
+	transition: bottom 0.4s ease-in-out, opacity 1s ease;
+	display: flex;
+	justify-content: center;
+	list-style: none;
+	background: rgba(0, 0, 0, 0.4);
+
+	z-index: 1000;
+}
+
+.locations .container {
+	z-index: 10;
+
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow-x: auto;
+	overflow-y: hidden;
+	scrollbar-width: thin;
+	scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+}
+
+.locations #indicatorbtn {
+	content: "";
+	display: block;
+	position: absolute;
+	top: -32px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 88px;
+	height: 32px;
+	border-top-left-radius: 12px;
+	border-top-right-radius: 12px;
+	background: rgba(0, 0, 0, 0.4);
+}
+
+.locations #indicatorbtn:after {
+	content: "";
+	opacity: 0.5;
+	display: block;
+	position: absolute;
+	height: 32px;
+	width: 32px;
+	transform-origin: top left;
+	transition: rotate 0.4s ease-in-out;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	filter: invert(1);
+	background-image: url("../img/chevron.svg") !important;
+	background-position: center center !important;
+	background-repeat: no-repeat !important;
+	background-size: 16px !important;
+}
+
+.locations #indicatorbtn:hover {
+	cursor: pointer;
+}
+
+.locations #indicatorbtn:hover:after,
+#closeinfobtn:hover:after {
+	opacity: 1;
+}
+
+#indicatorbtn.rotate180:after {
+	rotate: 180deg;
+}
+
+.locations .container ul {
+	min-width: 100%;
+	padding-left: 20px;
+	padding-right: 20px;
+	display: flex;
+	justify-content: center;
+	list-style: none;
+	position: absolute;
+	left: 0;
+}
+
+.locations .container ul li {
+	user-select: none;
+	margin-bottom: 2px;
+	background-color: black;
+	background-image: url("../img/loaderdotbig.webp");
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: 18px;
+	min-width: 220px;
+	font-weight: bold;
+	font-size: 12px;
+	padding: 10px;
+	max-width: 220px;
+	aspect-ratio: 16/10;
+	border-radius: 8px;
+	overflow: hidden;
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 20px 5px;
+}
+
+.locations .container ul li img {
+	user-select: none;
+	display: block;
+	height: 300%;
+	object-fit: cover;
+	transition: scale 0.2s ease-in-out;
+}
+
+.locations .container ul li:hover {
+	color: white;
+	cursor: pointer;
+	animation: flash 0.2s ease-in-out 1 forwards;
+	outline: 4px solid white;
+}
+
+.locations .container ul li:hover img {
+	user-select: none;
+	scale: 1.1;
+}
+
+.flash {
+	animation: flash 0.2s ease-in-out 1 forwards;
+}
+
+@keyframes flash {
+	0% {
+		filter: brightness(2);
+	}
+	100% {
+		filter: brightness(1);
+	}
+}
+
+.locations .container ul li div {
+	z-index: 10;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	color: white;
+	text-align: center;
+	padding-bottom: 14px;
+	font-size: 14px;
+	height: 50%;
+	align-items: flex-end;
+	justify-content: center;
+	display: none;
+	font-weight: normal;
+	background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), transparent);
+}
+
+.locations .container ul li:hover div {
+	display: flex;
+}
+
+.locations .container ul li.active div {
+	display: flex;
+	border-bottom: 3px solid royalblue;
+}
+
+canvas:hover {
+	cursor: grab;
+}
+
+canvas:active {
+	cursor: grabbing;
+}
+
+#video {
+	z-index: -1000;
+	position: fixed;
+}
+
+canvas {
+	filter: contrast(1) brightness(1) saturate(1);
+}
+
+#angleIndicator {
+	position: fixed;
+	top: 40px;
+	right: -10px;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	width: 50px;
+	height: 50px;
+	opacity: 0;
+	transition: opacity 1s ease;
+	font-size: 28px;
+	background: rgba(0, 0, 0, 0.4);
+	border-radius: 100%;
+	color: white;
+	z-index: 1000;
+}
+
+#angleIndicator:before {
+	position: absolute;
+	content: "";
+	display: block;
+
+	width: 38px;
+	height: 38px;
+	rotate: 45deg;
+	top: -3px;
+	left: -3px;
+	transform: skewX(16deg) skewY(16deg);
+	transform-origin: center right;
+	background: linear-gradient(-48deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 48%);
+}
+
+#angleIndicator:after {
+	position: absolute;
+	content: "";
+	display: block;
+	background: linear-gradient(0deg, rgba(105, 11, 11, 1) 0%, rgba(193, 20, 20, 1) 100%);
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	border-radius: 100%;
+	width: 18px;
+	height: 18px;
+}
+
+#angleIndicator:hover,
+#closeinfobtn:hover {
+	cursor: pointer;
+	background: black;
+	animation: outlinepush 0.8s ease-out 1 forwards;
+}
+
+@keyframes outlinepush {
+	0% {
+		outline: 0px solid rgba(0, 0, 0, 0.5);
+	}
+	100% {
+		outline: 16px solid rgba(0, 0, 0, 0);
+	}
+}
+
+#settings {
+	color: rgba(255, 255, 255, 0.6);
+	background: rgba(0, 0, 0, 0.6);
+	border-radius: 12px;
+	position: fixed;
+	z-index: 1001;
+	padding: 40px;
+	padding-right: 80px;
+	right: -640px;
+	transition: right 0.7s ease-in-out;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	max-width: 640px;
+}
+
+#settings .row {
+	display: grid;
+	grid-template-columns: 2fr 10fr 1fr;
+	grid-gap: 10px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+	margin-top: 10px;
+	padding-bottom: 10px;
+}
+
+#settings .row span:nth-child(3n) {
+	text-align: right;
+	color: white;
+	font-weight: bold;
+}
+
+#settings input {
+	background: transparent;
+	color: white !important;
+	box-shadow: none;
+	border: none;
+	width: 100%;
+}
+
+#settings input::placeholder,
+#settings input {
+	font-weight: bold;
+	font-size: 16px;
+	color: white;
+}
+
+.icon-video {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	content: "";
+	display: block;
+	background-image: url(../img/icon-play.svg);
+	background-position: left center;
+	background-repeat: no-repeat;
+	background-size: 24px;
+	z-index: 1;
+	/* width: 71px; */
+	background-color: white;
+	height: 21px;
+	padding-left: 28px;
+	line-height: 21px;
+	padding-right: 8px;
+	color: black;
+	text-align: right;
+	border-radius: 4px;
+	filter: invert(1);
+}
+
+#reset {
+	border-radius: 6px;
+	background: rgba(255, 255, 255, 0.2);
+	padding: 10px 20px;
+	margin-top: 20px;
+	text-align: center;
+}
+
+#reset:hover {
+	animation: outlinepush 0.8s ease-out 1 forwards;
+	cursor: pointer;
+	filter: invert(1);
+	color: white;
+	background: black !important;
+}
+
+#settings .closebtn {
+	width: 80px;
+	height: 100%;
+	position: absolute;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	content: "";
+}
+#settings .closebtn:after {
+	width: 40px;
+	height: 40px;
+	position: absolute;
+	right: 0%;
+	top: 50%;
+	content: "";
+	background: url("../img/chevron.svg");
+	transform-origin: top center;
+	background-size: 16px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	filter: invert(1);
+	rotate: 90deg;
+	opacity: 0.5;
+}
+
+#settings .closebtn:hover {
+	cursor: pointer;
+}
+#settings .closebtn:hover:after {
+	opacity: 1;
+}
+
+/*********** Baseline, reset styles ***********/
+input[type="range"] {
+	-webkit-appearance: none;
+	appearance: none;
+	background: transparent;
+	cursor: pointer;
+	width: 100%;
+}
+
+/* Removes default focus */
+input[type="range"]:focus {
+	outline: none;
+}
+
+/******** Chrome, Safari, Opera and Edge Chromium styles ********/
+/* slider track */
+input[type="range"]::-webkit-slider-runnable-track {
+	background-color: #ffffff7c;
+	border-radius: 1rem;
+	height: 1rem;
+}
+
+/* slider thumb */
+input[type="range"]::-webkit-slider-thumb {
+	-webkit-appearance: none; /* Override default look */
+	appearance: none;
+	margin-top: -4px; /* Centers thumb on the track */
+	background-color: #ffffff;
+	border-radius: 1.5rem;
+	height: 1.5rem;
+	width: 1.5rem;
+}
+
+input[type="range"]:focus::-webkit-slider-thumb {
+	outline: 3px solid #fffb01;
+	outline-offset: 0.125rem;
+}
+
+/*********** Firefox styles ***********/
+/* slider track */
+input[type="range"]::-moz-range-track {
+	background-color: #ffffff7c;
+	border-radius: 1rem;
+	height: 1rem;
+}
+
+/* slider thumb */
+input[type="range"]::-moz-range-thumb {
+	background-color: #ffffff;
+	border: none; /*Removes extra border that FF applies*/
+	border-radius: 1.5rem;
+	height: 1.5rem;
+	width: 1.5rem;
+}
+
+input[type="range"]:focus::-moz-range-thumb {
+	outline: 3px solid #fffb01;
+	outline-offset: 0.125rem;
+}
+
+.settingsbtn {
+	opacity: 0;
+	transition: opacity 1s ease;
+	content: "";
+	background-image: url("../img/icon-settings.svg") !important;
+	background-repeat: no-repeat !important;
+	background-position: center center;
+	background-size: 18px;
+	position: fixed;
+	top: 15px;
+	right: 75px;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	width: 50px;
+	height: 50px;
+	font-size: 28px;
+	background-color: rgba(0, 0, 0, 0.4);
+	border-radius: 100%;
+	z-index: 1000;
+}
+
+.settingsbtn:after {
+	content: "";
+	background-image: url("../img/icon-settings.svg");
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: 18px;
+	position: absolute;
+
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	filter: invert(1) brightness(1.5) contrast(1.3);
+}
+
+.settingsbtn:hover,
+#fullscreenbtn:hover,
+#mapbtn:hover,
+#infobtn:hover,
+#logo:hover,
+.maplink:hover,
+.marker:hover {
+	cursor: pointer;
+	background-color: black;
+	animation: outlinepush 0.8s ease-out 1 forwards;
+}
+
+#fullscreenbtn,
+#mapbtn,
+#infobtn,
+#logo,
+.maplink,
+.marker {
+	transition: opacity 1s ease;
+	opacity: 0;
+	content: "";
+	position: absolute;
+	top: -70px;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	width: 50px;
+	height: 50px;
+	font-size: 28px;
+	background-color: rgba(0, 0, 0, 0.4);
+	border-radius: 100%;
+	z-index: 1000;
+}
+
+#logo {
+	content: "";
+	top: 15px;
+	left: 15px;
+	z-index: 2000;
+	display: block;
+	opacity: 1;
+	overflow: hidden;
+}
+
+#logo div,
+#logo div img {
+	width: 100%;
+}
+#infobtn {
+	text-align: center;
+	display: none;
+	color: white;
+	font-style: italic;
+	font-family: Georgia, "Times New Roman", Times, serif;
+	line-height: 50px;
+	right: 25px;
+	top: -130px;
+}
+#fullscreenbtn {
+	right: 25px;
+}
+
+#fullscreenbtn:after {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: url("../img/icon-maximize.svg");
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 18px;
+	filter: invert(1);
+}
+
+.fullscreen:after {
+	background-image: url("../img/icon-minimize.svg") !important;
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 18px;
+}
+
+#mapbtn {
+	left: 25px;
+	z-index: 201;
+}
+
+#mapbtn:after {
+	content: "";
+	display: block;
+	position: absolute;
+	top: -2px;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: url("../img/icon-map.svg");
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 24px;
+	filter: invert(1);
+}
+
+#zoombtn {
+	transition: opacity 1s ease;
+	opacity: 0;
+	position: absolute;
+	z-index: 10;
+	top: -140px;
+	left: -1px;
+}
+#zoombtn input {
+	rotate: -270deg;
+	width: 100px;
+}
+
+#fullscreenbtn span,
+.settingsbtn span,
+#infobtn span,
+#mapbtn span,
+#logo span,
+.maplink span,
+.marker span {
+	position: absolute;
+	opacity: 0;
+	right: 0;
+	font-family: Arial, Helvetica, sans-serif;
+	font-style: normal;
+	overflow: hidden;
+	background: rgba(0, 0, 0, 0.4);
+	color: white;
+	font-size: 14px;
+	border-radius: 32px;
+	white-space: nowrap;
+	line-height: 52px;
+	padding-left: 20px;
+	padding-right: 60px;
+	transition: opacity 0.5s ease-in-out, width 0.3s ease-in-out;
+	display: none;
+	width: 0;
+	z-index: -1;
+}
+
+#mapbtn span,
+#logo span,
+.maplink span,
+.marker span {
+	left: 0;
+	right: auto;
+	padding-right: 20px;
+	padding-left: 60px;
+}
+
+.linktextleft span {
+	left: auto;
+	right: 0;
+	padding-right: 60px;
+	padding-left: 20px;
+}
+
+@keyframes expandWidth {
+	0% {
+		opacity: 0;
+		width: 0;
+	}
+	50% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+		width: auto;
+	}
+}
+
+#fullscreenbtn:hover span,
+#mapbtn:hover span,
+.settingsbtn:hover span,
+#infobtn:hover span,
+#logo:hover span,
+.maplink:hover span,
+.marker:hover span {
+	display: inline-block;
+	animation: expandWidth 0.1s 1 forwards;
+	opacity: 1;
+}
+
+#map {
+	display: none;
+	justify-content: center;
+	align-items: center;
+	background-color: rgba(0, 0, 0, 0.4);
+	backdrop-filter: blur(40px);
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 10;
+}
+
+#map #mapimage {
+	height: calc(100% - 80px);
+	width: calc(100% - 80px);
+	position: relative;
+}
+#map img {
+	object-fit: contain !important;
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+
+#map .maplink {
+	opacity: 1;
+}
+
+#map .maplink:after {
+	content: "";
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-image: url("../img/chevron.svg");
+	filter: invert(1);
+	background-repeat: no-repeat;
+	background-size: 21px;
+	background-position: center center;
+}
+
+#mapimage {
+	width: 100%;
+	height: 100%;
+	background-size: contain;
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+
+#info {
+	display: none;
+	position: fixed;
+	backdrop-filter: blur(32px);
+	top: 0;
+	right: -600px;
+	z-index: 1050;
+	background: rgba(0, 0, 0, 0.85);
+	height: 100%;
+	width: 460px;
+	padding-right: 10px;
+	transition: right 0.8s ease-in-out;
+}
+
+#info #resizer {
+	content: "";
+	position: absolute;
+	left: -4px;
+	top: 0;
+	width: 8px;
+	height: 100%;
+	background: rgba(0, 0, 0, 0);
+}
+
+#info #resizer:after {
+	outline: 2px solid white;
+	position: absolute;
+	content: "";
+	display: none;
+	width: 12px;
+	height: 50px;
+	border-radius: 16px;
+	background: black;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+}
+
+#info #resizer:hover {
+	cursor: w-resize;
+	background: rgba(0, 0, 0, 0.4);
+}
+#info #resizer:hover:after {
+	display: block;
+}
+
+#info .container {
+	scrollbar-width: thin;
+	scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+	width: 100%;
+	height: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding: 20px;
+	color: white;
+	padding-bottom: 40px;
+}
+
+#info .container p {
+	user-select: text;
+	line-height: 24px;
+	margin-bottom: 20px;
+}
+
+#info .container p a {
+	user-select: text;
+	color: white;
+	padding: 4px 16px 4px 6px;
+	border-radius: 4px;
+	background-color: rgba(255, 255, 255, 0.2);
+}
+#info .container p a:after {
+	opacity: 0.5;
+	background-image: url("../img/icon-link.svg");
+	background-repeat: no-repeat;
+	background-position: center right;
+	background-size: 18px;
+	display: inline-block;
+	position: relative;
+	right: -8px;
+	top: 2px;
+	filter: invert(1);
+	content: "";
+	width: 16px;
+	height: 16px;
+}
+#info .container p a:hover {
+	background: white;
+	color: black;
+	text-decoration: none;
+}
+
+#info .container p a:hover:after {
+	filter: invert(0);
+	opacity: 1;
+}
+
+#info .container .button {
+	color: White;
+	text-decoration: none;
+	border-radius: 6px;
+	background: rgba(255, 255, 255, 0.2);
+	padding: 10px 20px;
+	margin-top: 20px;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+#info .container .button:hover {
+	animation: outlinepush 0.8s ease-out 1 forwards;
+	cursor: pointer;
+	filter: invert(1);
+	color: white;
+	background: black !important;
+}
+
+#info .container ul {
+	margin-left: 20px;
+	margin-bottom: 20px;
+}
+#info .container ul li {
+	user-select: text;
+	line-height: 24px;
+}
+
+#info .container img,
+#info .container iframe {
+	width: 100%;
+	object-fit: contain;
+	margin-bottom: 20px;
+}
+
+#info .container hr {
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	margin-bottom: 20px;
+	width: 100%;
+}
+
+#info .container h1 {
+	user-select: text;
+	color: white;
+	font-size: 42px;
+	margin-bottom: 20px;
+}
+#closeinfobtn {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	background: rgba(0, 0, 0, 0.4);
+	width: 42px;
+	height: 42px;
+	border-radius: 100%;
+	z-index: 200;
+	content: "";
+}
+#closeinfobtn:after {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: url("../img/chevron.svg");
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 16px;
+	rotate: 90deg;
+	content: "";
+	display: block;
+	filter: invert(1);
+	opacity: 0.5;
+}
+
+#videoplayer {
+	left: 50%;
+	position: absolute;
+	height: 60px;
+	padding-left: 20px;
+	padding-right: 20px;
+	border-radius: 12px;
+	top: -120px;
+	transition: bottom 0.4s ease-in-out, opacity 1s ease;
+	display: none;
+	justify-content: center;
+	list-style: none;
+	background: rgba(0, 0, 0, 0.4);
+	z-index: 1000;
+	width: 50%;
+	min-width: 220px;
+	max-width: 60%;
+	transform: translateX(-50%);
+}
+
+#captionselect {
+	display: none;
+	float: left;
+	background-image: url("../img/icon-ccoff.svg");
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 32px;
+	width: 60px;
+	height: 60px;
+	filter: invert(1);
+	position: relative;
+}
+
+.on {
+	background-image: url("../img/icon-ccon.svg") !important;
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 32px;
+}
+
+#captionselect:hover {
+	cursor: pointer;
+}
+
+#captionselect ul {
+	display: none;
+	position: absolute;
+	bottom: 100%;
+	right: 0;
+	list-style: none;
+	background: white;
+	border-radius: 8px;
+}
+#captionselect ul li {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	display: block;
+	padding: 10px 20px;
+	border-left: 6px solid transparent;
+	white-space: nowrap;
+	color: gray;
+}
+
+#captionselect ul li:hover {
+	color: black;
+	cursor: pointer;
+}
+
+#captionselect ul .active {
+	background: rgb(220, 220, 220);
+	border-left: 6px solid black;
+	color: black;
+}
+
+#playvideo {
+	background-image: url("../img/icon-playbig.svg");
+	background-position: center center;
+	background-size: 28px;
+	background-repeat: no-repeat;
+	display: block;
+	content: "";
+	width: 60px;
+	height: 60px;
+	float: left;
+	filter: invert(1);
+	margin-right: 10px;
+}
+
+#playvideo:hover {
+	cursor: pointer;
+}
+
+.playing {
+	background-image: url("../img/icon-pause.svg") !important;
+}
+
+#currenttime {
+	line-height: 60px;
+	color: white;
+	margin-left: 10px;
+	margin-right: 10px;
+	min-width: 65px;
+}
+#caption {
+	position: fixed;
+	bottom: 40px;
+	left: 50%;
+	transform: translateX(-50%);
+	background: rgba(0, 0, 0, 0.8);
+	color: white;
+	min-width: 320px;
+	max-width: 80%;
+	z-index: 100;
+}
+
+#caption p {
+	text-align: center;
+	padding: 10px 20px;
+	font-size: 2rem;
+}
+
+@media screen and (max-width: 640px) {
+	#caption p {
+		font-size: 1rem;
+	}
+	#locations {
+		height: 135px;
+		bottom: -135px;
+	}
+	.locations .container ul li {
+		min-width: 160px;
+		max-width: 160px;
+	}
+
+	.locations .container ul li div {
+		font-size: 11px;
+	}
+}
+
+#labels {
+	z-index: 1;
+	position: fixed;
+}
+.marker {
+	background-color: rgba(0, 0, 0, 0.8);
+	opacity: 1;
+}
+
+.marker-container {
+	display: none;
+	width: 300px;
+	max-height: 400px;
+	overflow-y: auto;
+	background: rgba(0, 0, 0, 0.6);
+	overflow-x: hidden;
+}
+
+.marker img {
+	width: 100%;
+}
+
+.infodot {
+	background: rgba(255, 255, 255, 0.8);
+}
+
+.extlink:after {
+	width: 100%;
+	height: 100%;
+	content: "";
+	display: block;
+	position: absolute;
+	background-image: url("../img/icon-link.svg");
+	background-size: 28px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	filter: invert(1);
+}
+
+.intlink:after {
+	width: 100%;
+	height: 100%;
+	content: "";
+	display: block;
+	position: absolute;
+	background-image: url("../img/chevron.svg");
+	background-size: 21px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	filter: invert(1);
+}
+
+.infodot:after {
+	width: 100%;
+	height: 100%;
+	content: "";
+	display: block;
+	position: absolute;
+	background-image: url("../img/icon-text.svg");
+	background-size: 28px;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+.infodot:hover:after {
+	filter: invert(1);
+}
