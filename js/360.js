@@ -988,7 +988,6 @@ function change360Content(targetId) {
 	// Remove all markers/labels
 	root.clear();
 
-	console.log(markerData);
 	if (markerData !== "" && markerData !== null && markerData !== undefined) {
 		// Call createMarkers function asynchronously
 		createMarkers(markerData).then(() => {
@@ -1609,7 +1608,7 @@ async function createMarkers(markerData) {
 					clearInterval(interval); // Stop the interval
 					resolve(); // Resolve the promise
 				}
-			}, 100);
+			}, 25);
 		});
 	};
 
@@ -1623,7 +1622,6 @@ async function createMarkers(markerData) {
 	markerInternalLinks.forEach((link) => {
 		link.addEventListener("click", (e) => {
 			e.preventDefault();
-			console.log("click");
 			const contentId = link.getAttribute("data-id");
 			change360Content(parseInt(contentId));
 		});
@@ -1632,7 +1630,6 @@ async function createMarkers(markerData) {
 	markerInfoLabels.forEach((link) => {
 		link.addEventListener("click", (e) => {
 			e.preventDefault();
-			console.log("click");
 			let content = link.querySelector(".marker-container");
 			let computedStyle = getComputedStyle(content);
 
