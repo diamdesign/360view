@@ -286,7 +286,7 @@ canvas {
 	padding: 40px;
 	padding-right: 80px;
 	right: -640px;
-	transition: right 0.7s ease-in-out;
+	transition: right 0.3s ease-in-out;
 	border-top-right-radius: 0;
 	border-bottom-right-radius: 0;
 	top: 50%;
