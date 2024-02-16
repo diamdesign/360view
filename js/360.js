@@ -234,6 +234,8 @@ const infoButton = document.querySelector("#infobtn");
 const infoResizer = document.querySelector("#resizer");
 
 const likeButton = document.querySelector("#likebtn");
+const closeCommentsButton = document.querySelector("#closecommentsbtn");
+const commentsElem = document.querySelector("#comments");
 const commentButton = document.querySelector("#commentbtn");
 
 const videoplayer = document.querySelector("#videoplayer");
@@ -361,11 +363,21 @@ function viewContainerFadeOut() {
 // Start by showing the UI
 viewContainerFadeIn();
 
-// Hide all UI elements even if you look around (CC still visible)
 document.addEventListener("keydown", (e) => {
 	if (e.key === "h" || e.key === "H") {
 		const one = document.querySelector("#view-container");
 		const two = document.querySelector("#outside");
+		const commentInput = document.querySelector("#commentinput");
+
+		// Check if the focus is inside the comment input
+		const isFocusInsideInput = commentInput.contains(document.activeElement);
+
+		// If the focus is inside the input, don't toggle the UI
+		if (isFocusInsideInput) {
+			return;
+		}
+
+		// Toggle the display of UI elements
 		if (one.style.display === "none") {
 			one.style.display = "block";
 			two.style.display = "block";
@@ -1062,7 +1074,8 @@ function isMouseOverScrollableContent(event) {
 		return (
 			target.closest("#scrollable") !== null ||
 			target.closest("#info") !== null ||
-			target.closest(".marker-container") !== null
+			target.closest(".marker-container") !== null ||
+			target.closest("#comments") !== null
 		);
 	} else {
 		// If event is undefined or null, return false
@@ -1391,9 +1404,18 @@ function openInfo() {
 	infoElem.classList.add("infoshow");
 }
 
+function openComments() {
+	commentButton.style.opacity = "0";
+	commentsElem.classList.add("commentshow");
+}
+
 infoButton.addEventListener("click", openInfo);
 infoButton.addEventListener("touchstart", openInfo);
 infoButton.addEventListener("selectstart", openInfo);
+
+commentButton.addEventListener("click", openComments);
+commentButton.addEventListener("touchstart", openComments);
+commentButton.addEventListener("selectstart", openComments);
 
 function closeInfo() {
 	infoButton.style.opacity = "1";
@@ -1401,9 +1423,19 @@ function closeInfo() {
 	infoElem.style.width = "460px";
 }
 
+function closeComments() {
+	commentButton.style.opacity = "1";
+	commentsElem.classList.remove("commentshow");
+	commentsElem.style.width = "460px";
+}
+
 closeInfoButton.addEventListener("click", closeInfo);
 closeInfoButton.addEventListener("touchstart", closeInfo);
 closeInfoButton.addEventListener("selectstart", closeInfo);
+
+closeCommentsButton.addEventListener("click", closeComments);
+closeCommentsButton.addEventListener("touchstart", closeComments);
+closeCommentsButton.addEventListener("selectstart", closeComments);
 
 document.addEventListener("DOMContentLoaded", function () {
 	// Get all the <li> elements
