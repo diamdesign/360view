@@ -846,6 +846,13 @@ input[type="range"]:focus::-moz-range-thumb {
 	margin-bottom: 20px;
 }
 
+.replies {
+	color: rgb(160, 160, 160);
+	font-size: 0.8rem;
+	font-weight: 600;
+	margin-left: 50px;
+	margin-bottom: 40px;
+}
 .writecomment {
 	border-top: 1px solid #d2d2d2;
 	padding: 50px 20px 10px 20px;
@@ -859,7 +866,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	line-height: 1.2rem;
 	border-radius: 100px;
 	border: none;
-	background: lightgray;
+	background: #e1e1e1;
 	padding-left: 15px;
 	padding-right: 15px;
 }
@@ -869,43 +876,49 @@ input[type="range"]:focus::-moz-range-thumb {
 	width: 40px;
 	height: 40px;
 	border-radius: 100%;
-	background: lightgray;
+	background: #e1e1e1;
 }
 
 .comment .profilename {
-	font-weight: bold;
-	top: -4px;
+	user-select: text;
+	font-weight: 600;
+	top: -8px;
 	position: relative;
 	color: rgb(160, 160, 160);
 	font-size: 0.8rem;
 }
 
 .comment .timeago {
+	user-select: text;
 	color: rgb(160, 160, 160);
-	font-size: 0.8rem;
+	font-size: 0.75rem;
+	font-weight: 300;
 }
 
-.comment .reply {
+.comment .replybtn {
 	color: rgb(160, 160, 160);
 	font-size: 0.8rem;
-	font-weight: bold;
+	font-weight: 600;
 }
 
-.comment .reply:hover,
+.comment .replybtn:hover,
 .comment .profilename:hover {
 	color: royalblue;
 }
 
 .comment .message {
+	user-select: text;
 	font-size: 15px;
 	line-height: 1.2rem;
-	margin-top: -8px;
+	margin-top: -12px;
 	padding-bottom: 4px;
+	font-weight: 500;
+	color: black;
 }
 
 .comment .likecomment {
 	float: right;
-	font-size: 0.8rem;
+	font-size: 0.75rem;
 	padding-left: 24px;
 	position: relative;
 	color: rgb(160, 160, 160);
@@ -953,12 +966,29 @@ input[type="range"]:focus::-moz-range-thumb {
 	text-decoration: none;
 }
 
+.comment .creator {
+	font-weight: 600;
+	color: royalblue;
+	margin-left: 5px;
+}
+.comment .repliedto {
+	display: flex;
+}
+.comment .replyto {
+	font-weight: 600;
+	margin-left: 5px;
+}
+
 .infoshow,
 .commentshow {
 	display: block !important;
 	right: 0 !important;
 }
 
+.reply .thumb {
+	width: 32px;
+	height: 32px;
+}
 #info #resizer {
 	content: "";
 	position: absolute;
