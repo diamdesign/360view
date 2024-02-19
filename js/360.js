@@ -216,6 +216,23 @@ window.addEventListener("load", function () {
 		});
 });
 
+if (
+	navigator.userAgent
+		.toLowerCase()
+		.match(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i)
+) {
+	// It's a mobile device!
+	console.log("You are using a mobile device.");
+	window.addEventListener("deviceorientation", handleOrientation);
+}
+
+function handleOrientation(event) {
+	// Use device orientation data to update camera rotation
+	camera.rotation.x = (event.beta * Math.PI) / 180; // beta is the front-to-back tilt in degrees
+	camera.rotation.y = (event.gamma * Math.PI) / 180; // gamma is the left-to-right tilt in degrees
+	camera.rotation.z = (event.alpha * Math.PI) / 180; // alpha is the compass direction the device is facing in degrees
+}
+
 var sceneType = "image";
 
 // Get all elements into variables
