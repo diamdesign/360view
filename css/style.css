@@ -28,23 +28,21 @@ canvas {
 
 .locations {
 	opacity: 0;
-	width: calc(100% + 20px);
-	left: -10px;
+	width: calc(100% + 1.25rem);
+	left: -0.62rem;
 	position: fixed;
-	height: 175px;
-	bottom: -175px;
+	height: 10.9rem;
+	bottom: -10.9rem;
 	transition: bottom 0.4s ease-in-out, opacity 1s ease;
 	display: flex;
 	justify-content: center;
 	list-style: none;
 	background: rgba(0, 0, 0, 0.4);
-
 	z-index: 1000;
 }
 
 .locations .container {
 	z-index: 10;
-
 	position: relative;
 	width: 100%;
 	height: 100%;
@@ -58,13 +56,13 @@ canvas {
 	content: "";
 	display: block;
 	position: absolute;
-	top: -32px;
+	top: -2rem;
 	left: 50%;
 	transform: translateX(-50%);
-	width: 88px;
-	height: 32px;
-	border-top-left-radius: 12px;
-	border-top-right-radius: 12px;
+	width: 5, 5rem;
+	height: 2rem;
+	border-top-left-radius: 0.75rem;
+	border-top-right-radius: 0.75rem;
 	background: rgba(0, 0, 0, 0.4);
 }
 
@@ -73,8 +71,8 @@ canvas {
 	opacity: 0.5;
 	display: block;
 	position: absolute;
-	height: 32px;
-	width: 32px;
+	height: 2rem;
+	width: 2rem;
 	transform-origin: top left;
 	transition: rotate 0.4s ease-in-out;
 	top: 50%;
@@ -84,7 +82,7 @@ canvas {
 	background-image: url("../img/chevron.svg") !important;
 	background-position: center center !important;
 	background-repeat: no-repeat !important;
-	background-size: 16px !important;
+	background-size: 1rem !important;
 }
 
 .locations #indicatorbtn:hover {
@@ -103,8 +101,8 @@ canvas {
 
 .locations .container ul {
 	min-width: 100%;
-	padding-left: 20px;
-	padding-right: 20px;
+	padding-left: 1.25rem;
+	padding-right: 1.25rem;
 	display: flex;
 	justify-content: center;
 	list-style: none;
@@ -114,25 +112,25 @@ canvas {
 
 .locations .container ul li {
 	user-select: none;
-	margin-bottom: 2px;
+	margin-bottom: 0.125rem;
 	background-color: black;
 	background-image: url("../img/loaderdotbig.webp");
 	background-repeat: no-repeat;
 	background-position: center center;
-	background-size: 18px;
-	min-width: 220px;
+	background-size: 1.125rem;
+	min-width: 13.75rem;
 	font-weight: bold;
-	font-size: 12px;
-	padding: 10px;
-	max-width: 220px;
+	font-size: 0.75rem;
+	padding: 0.625rem;
+	max-width: 13.75rem;
 	aspect-ratio: 16/10;
-	border-radius: 8px;
+	border-radius: 0.5rem;
 	overflow: hidden;
 	position: relative;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	margin: 20px 5px;
+	margin: 1.25rem 0.3125rem;
 }
 
 .locations .container ul li img {
@@ -147,7 +145,7 @@ canvas {
 	color: white;
 	cursor: pointer;
 	animation: flash 0.2s ease-in-out 1 forwards;
-	outline: 4px solid white;
+	outline: 0.25rem solid white;
 }
 
 .locations .container ul li:hover img {
@@ -176,8 +174,8 @@ canvas {
 	width: 100%;
 	color: white;
 	text-align: center;
-	padding-bottom: 14px;
-	font-size: 14px;
+	padding-bottom: 0.875rem;
+	font-size: 0.875rem;
 	height: 50%;
 	align-items: flex-end;
 	justify-content: center;
@@ -192,7 +190,7 @@ canvas {
 
 .locations .container ul li.active div {
 	display: flex;
-	border-bottom: 3px solid royalblue;
+	border-bottom: 0.1875rem solid royalblue;
 }
 
 canvas:hover {
@@ -214,16 +212,16 @@ canvas {
 
 #angleIndicator {
 	position: fixed;
-	top: 40px;
-	right: -10px;
+	top: 2.5rem;
+	right: -0.625rem;
 	display: flex;
 	align-items: flex-start;
 	justify-content: center;
-	width: 50px;
-	height: 50px;
+	width: 3.2rem;
+	height: 3.2rem;
 	opacity: 0;
 	transition: opacity 1s ease;
-	font-size: 28px;
+	font-size: 1.75rem;
 	background: rgba(0, 0, 0, 0.4);
 	border-radius: 100%;
 	color: white;
@@ -234,12 +232,11 @@ canvas {
 	position: absolute;
 	content: "";
 	display: block;
-
-	width: 38px;
-	height: 38px;
+	width: 2.375rem;
+	height: 2.375rem;
 	rotate: 45deg;
-	top: -3px;
-	left: -3px;
+	top: -0.1875rem;
+	left: -0.1875rem;
 	transform: skewX(16deg) skewY(16deg);
 	transform-origin: center right;
 	background: linear-gradient(-48deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 48%);
@@ -254,8 +251,8 @@ canvas {
 	left: 50%;
 	transform: translateX(-50%) translateY(-50%);
 	border-radius: 100%;
-	width: 18px;
-	height: 18px;
+	width: 1.125rem;
+	height: 1.125rem;
 }
 
 #angleIndicator:hover,
@@ -269,38 +266,38 @@ canvas {
 
 @keyframes outlinepush {
 	0% {
-		outline: 0px solid rgba(0, 0, 0, 0.5);
+		outline: 0rem solid rgba(0, 0, 0, 0.5);
 	}
 	100% {
-		outline: 16px solid rgba(0, 0, 0, 0);
+		outline: 1rem solid rgba(0, 0, 0, 0);
 	}
 }
 
 #settings {
 	color: rgba(255, 255, 255, 0.6);
 	background-color: rgba(0, 0, 0, 0.6);
-	backdrop-filter: blur(20px);
-	border-radius: 12px;
+	backdrop-filter: blur(1.25rem);
+	border-radius: 0.75rem;
 	position: fixed;
 	z-index: 1001;
-	padding: 40px;
-	padding-right: 80px;
-	right: -640px;
+	padding: 2.5rem;
+	padding-right: 5rem;
+	right: -40rem;
 	transition: right 0.3s ease-in-out;
 	border-top-right-radius: 0;
 	border-bottom-right-radius: 0;
 	top: 50%;
 	transform: translateY(-50%);
-	max-width: 640px;
+	max-width: 40rem;
 }
 
 #settings .row {
 	display: grid;
 	grid-template-columns: 2fr 10fr 1fr;
-	grid-gap: 10px;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-	margin-top: 10px;
-	padding-bottom: 10px;
+	grid-gap: 0.625rem;
+	border-bottom: 0.0625rem solid rgba(255, 255, 255, 0.3);
+	margin-top: 0.625rem;
+	padding-bottom: 0.625rem;
 }
 
 #settings .row span:nth-child(3n) {
@@ -320,38 +317,38 @@ canvas {
 #settings input::placeholder,
 #settings input {
 	font-weight: bold;
-	font-size: 16px;
+	font-size: 1rem;
 	color: white;
 }
 
 .icon-video {
 	position: absolute;
-	top: 10px;
-	right: 10px;
+	top: 0.625rem;
+	right: 0.625rem;
 	content: "";
 	display: block;
 	background-image: url(../img/icon-play.svg);
 	background-position: left center;
 	background-repeat: no-repeat;
-	background-size: 24px;
+	background-size: 1.5rem;
 	z-index: 1;
-	/* width: 71px; */
+	/* width: 4.4375rem; */
 	background-color: white;
-	height: 21px;
-	padding-left: 28px;
-	line-height: 21px;
-	padding-right: 8px;
+	height: 1.3125rem;
+	padding-left: 1.75rem;
+	line-height: 1.3125rem;
+	padding-right: 0.5rem;
 	color: black;
 	text-align: right;
-	border-radius: 4px;
+	border-radius: 0.25rem;
 	filter: invert(1);
 }
 
 #reset {
-	border-radius: 6px;
+	border-radius: 0.375rem;
 	background: rgba(255, 255, 255, 0.2);
-	padding: 10px 20px;
-	margin-top: 20px;
+	padding: 0.625rem 1.25rem;
+	margin-top: 1.25rem;
 	text-align: center;
 }
 
@@ -364,7 +361,7 @@ canvas {
 }
 
 #settings .closebtn {
-	width: 80px;
+	width: 5rem;
 	height: 100%;
 	position: absolute;
 	right: 0;
@@ -373,15 +370,15 @@ canvas {
 	content: "";
 }
 #settings .closebtn:after {
-	width: 40px;
-	height: 40px;
+	width: 2.5rem;
+	height: 2.5rem;
 	position: absolute;
 	right: 0%;
 	top: 50%;
 	content: "";
 	background: url("../img/chevron.svg");
 	transform-origin: top center;
-	background-size: 16px;
+	background-size: 1rem;
 	background-repeat: no-repeat;
 	background-position: center center;
 	filter: invert(1);
@@ -422,7 +419,7 @@ input[type="range"]::-webkit-slider-runnable-track {
 input[type="range"]::-webkit-slider-thumb {
 	-webkit-appearance: none; /* Override default look */
 	appearance: none;
-	margin-top: -4px; /* Centers thumb on the track */
+	margin-top: -0.25rem; /* Centers thumb on the track */
 	background-color: #ffffff;
 	border-radius: 1.5rem;
 	height: 1.5rem;
@@ -430,7 +427,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 input[type="range"]:focus::-webkit-slider-thumb {
-	outline: 3px solid #fffb01;
+	outline: 0.1875rem solid #fffb01;
 	outline-offset: 0.125rem;
 }
 
@@ -452,7 +449,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 input[type="range"]:focus::-moz-range-thumb {
-	outline: 3px solid #fffb01;
+	outline: 0.1875rem solid #fffb01;
 	outline-offset: 0.125rem;
 }
 
@@ -463,16 +460,16 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-image: url("../img/icon-settings.svg") !important;
 	background-repeat: no-repeat !important;
 	background-position: center center;
-	background-size: 18px;
+	background-size: 1.125rem;
 	position: fixed;
-	top: 15px;
-	right: 75px;
+	top: 0.9rem;
+	right: 4.6875rem;
 	display: flex;
 	align-items: flex-start;
 	justify-content: center;
-	width: 50px;
-	height: 50px;
-	font-size: 28px;
+	width: 3.2rem;
+	height: 3.2rem;
+	font-size: 1.75rem;
 	background-color: rgba(0, 0, 0, 0.4);
 	border-radius: 100%;
 	z-index: 1000;
@@ -483,7 +480,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-image: url("../img/icon-settings.svg");
 	background-repeat: no-repeat;
 	background-position: center center;
-	background-size: 18px;
+	background-size: 1.125rem;
 	position: absolute;
 
 	top: 0;
@@ -519,13 +516,13 @@ input[type="range"]:focus::-moz-range-thumb {
 	opacity: 0;
 	content: "";
 	position: absolute;
-	top: -70px;
+	top: -4.375rem;
 	display: flex;
 	align-items: flex-start;
 	justify-content: center;
-	width: 50px;
-	height: 50px;
-	font-size: 28px;
+	width: 3.2rem;
+	height: 3.2rem;
+	font-size: 1.75rem;
 	background-color: rgba(0, 0, 0, 0.4);
 	border-radius: 100%;
 	z-index: 1000;
@@ -533,14 +530,20 @@ input[type="range"]:focus::-moz-range-thumb {
 
 #logo {
 	content: "";
-	top: 15px;
-	left: 15px;
+	top: 0.9rem;
+	left: 0.9rem;
 	z-index: 2000;
 	display: block;
 	opacity: 1;
-	overflow: hidden;
+	position: absolute;
 }
 
+#logo div {
+	width: 100%;
+	height: 100%;
+	border-radius: 32rem;
+	overflow: hidden;
+}
 #logo div,
 #logo div img {
 	width: 100%;
@@ -551,15 +554,15 @@ input[type="range"]:focus::-moz-range-thumb {
 	color: white;
 	font-style: italic;
 	font-family: Georgia, "Times New Roman", Times, serif;
-	line-height: 50px;
-	right: 25px;
-	top: -130px;
+	line-height: 3.2rem;
+	right: 1.5625rem;
+	top: -8.125rem;
 }
 #commentbtn {
 	text-align: center;
 	display: block;
-	right: 25px;
-	top: -210px;
+	right: 1.5625rem;
+	top: -13.125rem;
 }
 
 #commentbtn .amount {
@@ -567,10 +570,10 @@ input[type="range"]:focus::-moz-range-thumb {
 	position: absolute;
 	left: 50%;
 	transform: translateX(-50%);
-	bottom: -23px;
+	bottom: -1.4375rem;
 	color: white;
-	font-size: 13px;
-	filter: drop-shadow(0 1px 4px black);
+	font-size: 0.8125rem;
+	filter: drop-shadow(0 0.0625rem 0.25rem black);
 	text-align: center;
 }
 
@@ -585,15 +588,15 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-image: url("../img/icon-comment.svg");
 	background-position: center center;
 	background-repeat: no-repeat;
-	background-size: 24px;
+	background-size: 1.5rem;
 	filter: invert(1);
 }
 
 #likebtn {
 	text-align: center;
 	display: block;
-	right: 25px;
-	top: -290px;
+	right: 1.5625rem;
+	top: -18.125rem;
 }
 
 #likebtn .amount {
@@ -601,10 +604,10 @@ input[type="range"]:focus::-moz-range-thumb {
 	position: absolute;
 	left: 50%;
 	transform: translateX(-50%);
-	bottom: -23px;
+	bottom: -1.4375rem;
 	color: white;
-	font-size: 13px;
-	filter: drop-shadow(0 1px 4px black);
+	font-size: 0.8125rem;
+	filter: drop-shadow(0 0.0625rem 0.25rem black);
 	text-align: center;
 }
 
@@ -619,7 +622,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-image: url("../img/icon-heart.svg");
 	background-position: center center;
 	background-repeat: no-repeat;
-	background-size: 24px;
+	background-size: 1.5rem;
 	filter: invert(1);
 }
 
@@ -628,7 +631,7 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 #fullscreenbtn {
-	right: 25px;
+	right: 1.5625rem;
 }
 
 #fullscreenbtn:after {
@@ -642,7 +645,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-image: url("../img/icon-maximize.svg");
 	background-position: center center;
 	background-repeat: no-repeat;
-	background-size: 18px;
+	background-size: 1.125rem;
 	filter: invert(1);
 }
 
@@ -650,11 +653,11 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-image: url("../img/icon-minimize.svg") !important;
 	background-position: center center;
 	background-repeat: no-repeat;
-	background-size: 18px;
+	background-size: 1.125rem;
 }
 
 #mapbtn {
-	left: 25px;
+	left: 1.5625rem;
 	z-index: 201;
 }
 
@@ -662,14 +665,14 @@ input[type="range"]:focus::-moz-range-thumb {
 	content: "";
 	display: block;
 	position: absolute;
-	top: -2px;
+	top: -0.125rem;
 	left: 0;
 	width: 100%;
 	height: 100%;
 	background-image: url("../img/icon-map.svg");
 	background-position: center center;
 	background-repeat: no-repeat;
-	background-size: 24px;
+	background-size: 1.5rem;
 	filter: invert(1);
 }
 
@@ -678,12 +681,12 @@ input[type="range"]:focus::-moz-range-thumb {
 	opacity: 0;
 	position: absolute;
 	z-index: 10;
-	top: -140px;
-	left: -1px;
+	top: -8.75rem;
+	left: -0.0625rem;
 }
 #zoombtn input {
 	rotate: -270deg;
-	width: 100px;
+	width: 6.25rem;
 }
 
 #fullscreenbtn .hint,
@@ -698,17 +701,18 @@ input[type="range"]:focus::-moz-range-thumb {
 	position: absolute;
 	opacity: 0;
 	right: 0;
+	top: 0;
 	font-style: normal;
 	overflow: hidden;
 	background: rgba(0, 0, 0, 0.4);
 	color: white;
-	font-size: 14px;
+	font-size: 0.875rem;
 	font-weight: 500;
-	border-radius: 32px;
+	border-radius: 2rem;
 	white-space: nowrap;
-	line-height: 52px;
-	padding-left: 20px;
-	padding-right: 60px;
+	line-height: 3.25rem;
+	padding-left: 1.25rem;
+	padding-right: 3.75rem;
 	transition: opacity 0.5s ease-in-out, width 0.3s ease-in-out;
 	display: none;
 	width: 0;
@@ -721,15 +725,15 @@ input[type="range"]:focus::-moz-range-thumb {
 .marker .hint {
 	left: 0;
 	right: auto;
-	padding-right: 20px;
-	padding-left: 60px;
+	padding-right: 1.25rem;
+	padding-left: 3.75rem;
 }
 
 .linktextleft .hint {
 	left: auto;
 	right: 0;
-	padding-right: 60px;
-	padding-left: 20px;
+	padding-right: 3.75rem;
+	padding-left: 1.25rem;
 }
 
 @keyframes expandWidth {
@@ -765,7 +769,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	justify-content: center;
 	align-items: center;
 	background-color: rgba(0, 0, 0, 0.4);
-	backdrop-filter: blur(40px);
+	backdrop-filter: blur(2.5rem);
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -775,8 +779,8 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 #map #mapimage {
-	height: calc(100% - 80px);
-	width: calc(100% - 80px);
+	height: calc(100% - 5rem);
+	width: calc(100% - 5rem);
 	position: relative;
 }
 #map img {
@@ -798,7 +802,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-image: url("../img/chevron.svg");
 	filter: invert(1);
 	background-repeat: no-repeat;
-	background-size: 21px;
+	background-size: 1.3125rem;
 	background-position: center center;
 }
 
@@ -814,18 +818,18 @@ input[type="range"]:focus::-moz-range-thumb {
 #comments {
 	display: none;
 	position: fixed;
-	backdrop-filter: blur(20px);
+	backdrop-filter: blur(1.25rem);
 	top: 0;
-	right: -460px;
+	right: -28.75rem;
 	z-index: 1050;
 	background-color: rgba(0, 0, 0, 0.85);
 	height: 100%;
-	width: 460px;
+	width: 28.75rem;
 }
 
 #comments {
-	padding-right: 0px;
-	backdrop-filter: blur(20px) invert(1) grayscale(1);
+	padding-right: 0rem;
+	backdrop-filter: blur(1.25rem) invert(1) grayscale(1);
 	background-color: rgba(255, 255, 255, 0.85);
 }
 
@@ -833,7 +837,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	text-align: center;
 	color: black;
 	display: block;
-	line-height: 80px;
+	line-height: 5rem;
 	font-weight: bold;
 }
 
@@ -843,43 +847,43 @@ input[type="range"]:focus::-moz-range-thumb {
 	color: black;
 	display: grid;
 	grid-template-columns: 1fr 9fr;
-	grid-gap: 16px;
-	margin-bottom: 20px;
+	grid-gap: 1rem;
+	margin-bottom: 1.25rem;
 }
 
 .replies {
 	color: black;
 	font-size: 0.8rem;
 	font-weight: 500;
-	margin-left: 50px;
-	margin-bottom: 40px;
+	margin-left: 3.2rem;
+	margin-bottom: 2.5rem;
 }
 .replies:hover {
 	cursor: pointer;
 	color: royalblue;
 }
 .writecomment {
-	border-top: 1px solid #d2d2d2;
-	padding: 50px 20px 10px 20px;
+	border-top: 0.0625rem solid #d2d2d2;
+	padding: 3.2rem 1.25rem 0.625rem 1.25rem;
 }
 .writecomment textarea {
 	resize: none;
-	font-size: 15px;
+	font-size: 0.9rem;
 	font-family: "Poppins";
-	padding-top: 10px;
-	padding-bottom: 10px;
+	padding-top: 0.625rem;
+	padding-bottom: 0.625rem;
 	line-height: 1.2rem;
-	border-radius: 100px;
+	border-radius: 6.25rem;
 	border: none;
 	background: #e1e1e1;
-	padding-left: 15px;
-	padding-right: 15px;
+	padding-left: 0.9rem;
+	padding-right: 0.9rem;
 }
 
 .comment .thumb,
 .writecomment .thumb {
-	width: 40px;
-	height: 40px;
+	width: 2.5rem;
+	height: 2.5rem;
 	border-radius: 100%;
 	background: #e1e1e1;
 }
@@ -887,7 +891,7 @@ input[type="range"]:focus::-moz-range-thumb {
 .comment .profilename {
 	user-select: text;
 	font-weight: 600;
-	top: -8px;
+	top: -0.5rem;
 	position: relative;
 	color: rgb(160, 160, 160);
 	font-size: 0.8rem;
@@ -913,10 +917,10 @@ input[type="range"]:focus::-moz-range-thumb {
 
 .comment .message {
 	user-select: text;
-	font-size: 15px;
+	font-size: 0.9rem;
 	line-height: 1.2rem;
-	margin-top: -12px;
-	padding-bottom: 4px;
+	margin-top: -0.75rem;
+	padding-bottom: 0.25rem;
 	font-weight: 500;
 	color: black;
 }
@@ -924,10 +928,10 @@ input[type="range"]:focus::-moz-range-thumb {
 .comment .likecomment {
 	float: right;
 	font-size: 0.75rem;
-	padding-left: 24px;
+	padding-left: 1.5rem;
 	position: relative;
 	color: rgb(160, 160, 160);
-	top: 4px;
+	top: 0.25rem;
 }
 
 .comment .likecomment:hover svg {
@@ -935,10 +939,10 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 .comment .likecomment svg {
-	width: 20px;
-	top: -1px;
+	width: 1.25rem;
+	top: -0.0625rem;
 	position: relative;
-	margin-right: 6px;
+	margin-right: 0.375rem;
 	display: inline;
 	float: left;
 	opacity: 0.2;
@@ -974,14 +978,14 @@ input[type="range"]:focus::-moz-range-thumb {
 .comment .creator {
 	font-weight: 600;
 	color: royalblue;
-	margin-left: 5px;
+	margin-left: 0.3125rem;
 }
 .comment .repliedto {
 	display: flex;
 }
 .comment .replyto {
 	font-weight: 600;
-	margin-left: 5px;
+	margin-left: 0.3125rem;
 }
 
 .infoshow,
@@ -991,28 +995,28 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 .reply .thumb {
-	width: 32px;
-	height: 32px;
+	width: 2rem;
+	height: 2rem;
 }
 #info #resizer {
 	content: "";
 	position: absolute;
-	left: -4px;
+	left: -0.25rem;
 	top: 0;
-	width: 8px;
+	width: 0.5rem;
 	height: 100%;
 	background: rgba(0, 0, 0, 0);
 	transition: opacity 0.5s ease-in-out;
 }
 
 #info #resizer:after {
-	outline: 2px solid white;
+	outline: 0.125rem solid white;
 	position: absolute;
 	content: "";
 	display: none;
-	width: 12px;
-	height: 50px;
-	border-radius: 16px;
+	width: 0.75rem;
+	height: 3.2rem;
+	border-radius: 1rem;
 	background: black;
 	top: 50%;
 	left: 50%;
@@ -1035,30 +1039,30 @@ input[type="range"]:focus::-moz-range-thumb {
 	height: 100%;
 	overflow-y: auto;
 	overflow-x: hidden;
-	padding: 20px;
+	padding: 1.25rem;
 	color: white;
-	padding-bottom: 40px;
+	padding-bottom: 2.5rem;
 }
 
 #comments .container {
 	scrollbar-width: thin;
 	scrollbar-color: rgba(0, 0, 0, 0.4) transparent;
-	height: calc(100% - 190px);
+	height: calc(100% - 11.875rem);
 }
 
 #info .container p,
 .marker-container p {
 	user-select: text;
-	line-height: 24px;
-	margin-bottom: 20px;
+	line-height: 1.5rem;
+	margin-bottom: 1.25rem;
 }
 
 #info .container p a,
 .marker-container p a {
 	user-select: text;
 	color: white;
-	padding: 4px 16px 4px 6px;
-	border-radius: 4px;
+	padding: 0.25rem 1rem 0.25rem 0.375rem;
+	border-radius: 0.25rem;
 	background-color: rgba(255, 255, 255, 0.2);
 }
 #info .container p a:after,
@@ -1067,15 +1071,15 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-image: url("../img/icon-link.svg");
 	background-repeat: no-repeat;
 	background-position: center right;
-	background-size: 18px;
+	background-size: 1.125rem;
 	display: inline-block;
 	position: relative;
-	right: -8px;
-	top: 2px;
+	right: -0.5rem;
+	top: 0.125rem;
 	filter: invert(1);
 	content: "";
-	width: 16px;
-	height: 16px;
+	width: 1rem;
+	height: 1rem;
 }
 #info .container p a:hover,
 .marker-container p a:hover {
@@ -1094,17 +1098,17 @@ input[type="range"]:focus::-moz-range-thumb {
 .marker-container .button {
 	color: White;
 	text-decoration: none;
-	border-radius: 6px;
+	border-radius: 0.375rem;
 	background-color: rgba(255, 255, 255, 0.2);
-	padding: 10px 20px;
-	margin-top: 20px;
+	padding: 0.625rem 1.25rem;
+	margin-top: 1.25rem;
 	text-align: center;
-	margin-bottom: 20px;
+	margin-bottom: 1.25rem;
 	position: relative;
 }
 
 [data-id].button {
-	padding: 10px 40px 10px 20px;
+	padding: 0.625rem 2.5rem 0.625rem 1.25rem;
 }
 
 [data-id].button:after {
@@ -1112,14 +1116,14 @@ input[type="range"]:focus::-moz-range-thumb {
 	filter: invert(1);
 	content: "";
 	position: absolute;
-	width: 16px;
-	height: 16px;
-	right: 10px;
-	top: 10px;
+	width: 1rem;
+	height: 1rem;
+	right: 0.625rem;
+	top: 0.625rem;
 	rotate: 90deg;
 	background-image: url("../img/chevron.svg");
 	background-position: center center;
-	background-size: 14px;
+	background-size: 0.875rem;
 }
 
 #info .container .button:hover,
@@ -1133,13 +1137,13 @@ input[type="range"]:focus::-moz-range-thumb {
 
 #info .container ul,
 .marker-container ul {
-	margin-left: 20px;
-	margin-bottom: 20px;
+	margin-left: 1.25rem;
+	margin-bottom: 1.25rem;
 }
 #info .container ul li,
 .marker-container ul li {
 	user-select: text;
-	line-height: 24px;
+	line-height: 1.5rem;
 }
 
 #info .container img,
@@ -1148,13 +1152,13 @@ input[type="range"]:focus::-moz-range-thumb {
 .marker-container iframe {
 	width: 100%;
 	object-fit: contain;
-	margin-bottom: 20px;
+	margin-bottom: 1.25rem;
 }
 
 #info .container hr,
 .marker-container hr {
-	border: 1px solid rgba(255, 255, 255, 0.2);
-	margin-bottom: 20px;
+	border: 0.0625rem solid rgba(255, 255, 255, 0.2);
+	margin-bottom: 1.25rem;
 	width: 100%;
 }
 
@@ -1162,17 +1166,17 @@ input[type="range"]:focus::-moz-range-thumb {
 .marker-container h1 {
 	user-select: text;
 	color: white;
-	font-size: 42px;
-	margin-bottom: 20px;
+	font-size: 2.625rem;
+	margin-bottom: 1.25rem;
 }
 #closeinfobtn,
 #closecommentsbtn {
 	position: absolute;
-	top: 20px;
-	right: 20px;
+	top: 1.25rem;
+	right: 1.25rem;
 	background: rgba(0, 0, 0, 0.4);
-	width: 42px;
-	height: 42px;
+	width: 2.625rem;
+	height: 2.625rem;
 	border-radius: 100%;
 	z-index: 200;
 	content: "";
@@ -1187,7 +1191,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-image: url("../img/chevron.svg");
 	background-position: center center;
 	background-repeat: no-repeat;
-	background-size: 16px;
+	background-size: 1rem;
 	rotate: 90deg;
 	content: "";
 	display: block;
@@ -1198,11 +1202,11 @@ input[type="range"]:focus::-moz-range-thumb {
 #videoplayer {
 	left: 50%;
 	position: absolute;
-	height: 60px;
-	padding-left: 20px;
-	padding-right: 20px;
-	border-radius: 12px;
-	top: -120px;
+	height: 3.75rem;
+	padding-left: 1.25rem;
+	padding-right: 1.25rem;
+	border-radius: 0.75rem;
+	top: -7.5rem;
 	transition: bottom 0.4s ease-in-out, opacity 1s ease;
 	display: none;
 	justify-content: center;
@@ -1210,7 +1214,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	background: rgba(0, 0, 0, 0.4);
 	z-index: 1000;
 	width: 50%;
-	min-width: 220px;
+	min-width: 13.75rem;
 	max-width: 60%;
 	transform: translateX(-50%);
 }
@@ -1221,9 +1225,9 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-image: url("../img/icon-ccoff.svg");
 	background-position: center center;
 	background-repeat: no-repeat;
-	background-size: 32px;
-	width: 60px;
-	height: 60px;
+	background-size: 2rem;
+	width: 3.75rem;
+	height: 3.75rem;
 	filter: invert(1);
 	position: relative;
 }
@@ -1232,7 +1236,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-image: url("../img/icon-ccon.svg") !important;
 	background-position: center center;
 	background-repeat: no-repeat;
-	background-size: 32px;
+	background-size: 2rem;
 }
 
 #captionselect:hover {
@@ -1246,13 +1250,13 @@ input[type="range"]:focus::-moz-range-thumb {
 	right: 0;
 	list-style: none;
 	background: white;
-	border-radius: 8px;
+	border-radius: 0.5rem;
 }
 #captionselect ul li {
-	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	border-bottom: 0.0625rem solid rgba(0, 0, 0, 0.1);
 	display: block;
-	padding: 10px 20px;
-	border-left: 6px solid transparent;
+	padding: 0.625rem 1.25rem;
+	border-left: 0.375rem solid transparent;
 	white-space: nowrap;
 	color: gray;
 }
@@ -1264,22 +1268,22 @@ input[type="range"]:focus::-moz-range-thumb {
 
 #captionselect ul .active {
 	background: rgb(220, 220, 220);
-	border-left: 6px solid black;
+	border-left: 0.375rem solid black;
 	color: black;
 }
 
 #playvideo {
 	background-image: url("../img/icon-playbig.svg");
 	background-position: center center;
-	background-size: 28px;
+	background-size: 1.75rem;
 	background-repeat: no-repeat;
 	display: block;
 	content: "";
-	width: 60px;
-	height: 60px;
+	width: 3.75rem;
+	height: 3.75rem;
 	float: left;
 	filter: invert(1);
-	margin-right: 10px;
+	margin-right: 0.625rem;
 }
 
 #playvideo:hover {
@@ -1291,27 +1295,27 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 #currenttime {
-	line-height: 60px;
+	line-height: 3.75rem;
 	color: white;
-	margin-left: 10px;
-	margin-right: 10px;
-	min-width: 65px;
+	margin-left: 0.625rem;
+	margin-right: 0.625rem;
+	min-width: 4.0625rem;
 }
 #caption {
 	position: fixed;
-	bottom: 40px;
+	bottom: 2.5rem;
 	left: 50%;
 	transform: translateX(-50%);
 	background: rgba(0, 0, 0, 0.8);
 	color: white;
-	min-width: 320px;
+	min-width: 20rem;
 	max-width: 80%;
 	z-index: 100;
 }
 
 #caption p {
 	text-align: center;
-	padding: 10px 20px;
+	padding: 0.625rem 1.25rem;
 	font-size: 2rem;
 }
 
@@ -1329,21 +1333,21 @@ input[type="range"]:focus::-moz-range-thumb {
 .marker-container {
 	color: white;
 	text-decoration: none;
-	font-size: 14px;
+	font-size: 0.875rem;
 	display: none;
-	width: 360px;
-	max-height: 520px;
+	width: 22.5rem;
+	max-height: 32.5rem;
 	overflow-y: auto;
 	background: rgba(0, 0, 0, 0.75);
-	backdrop-filter: blur(20px);
+	backdrop-filter: blur(1.25rem);
 	overflow-x: hidden;
-	left: 60px;
+	left: 3.75rem;
 	position: absolute;
-	padding: 20px;
-	border-radius: 8px;
+	padding: 1.25rem;
+	border-radius: 0.5rem;
 	scrollbar-width: thin;
 	scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
-	padding-bottom: 40px;
+	padding-bottom: 2.5rem;
 }
 
 .marker img {
@@ -1357,13 +1361,13 @@ input[type="range"]:focus::-moz-range-thumb {
 	transform-origin: top left;
 	display: block;
 	content: "";
-	width: 50px;
-	height: 50px;
+	width: 3.2rem;
+	height: 3.2rem;
 	top: 50%;
 	left: 50%;
 	transform: translateX(-50%) translateY(-50%);
-	border-radius: 50px;
-	border: 6px solid white;
+	border-radius: 3.2rem;
+	border: 0.375rem solid white;
 	animation: infodot 1s ease-out infinite;
 	position: absolute;
 }
@@ -1394,7 +1398,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	display: block;
 	position: absolute;
 	background-image: url("../img/icon-link.svg");
-	background-size: 28px;
+	background-size: 1.75rem;
 	background-repeat: no-repeat;
 	background-position: center center;
 	filter: invert(1);
@@ -1407,7 +1411,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	display: block;
 	position: absolute;
 	background-image: url("../img/chevron.svg");
-	background-size: 21px;
+	background-size: 1.3125rem;
 	background-repeat: no-repeat;
 	background-position: center center;
 	filter: invert(1);
@@ -1420,7 +1424,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	display: block;
 	position: absolute;
 	background-image: url("../img/icon-text.svg");
-	background-size: 28px;
+	background-size: 1.75rem;
 	background-repeat: no-repeat;
 	background-position: center center;
 }
@@ -1433,33 +1437,33 @@ input[type="range"]:focus::-moz-range-thumb {
 	border-radius: 100%;
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 40rem) {
 	#caption p {
 		font-size: 0.9rem;
 	}
 	#locations {
-		height: 135px;
-		bottom: -135px;
+		height: 8.4375rem;
+		bottom: -8.4375rem;
 	}
 	.locations .container ul li {
-		min-width: 160px;
-		max-width: 160px;
+		min-width: 10rem;
+		max-width: 10rem;
 	}
 
 	.locations .container ul li div {
-		font-size: 11px;
+		font-size: 0.6875rem;
 	}
 
 	.marker-container {
-		width: 300px;
-		max-height: 350px;
-		padding-bottom: 30px;
+		width: 18.75rem;
+		max-height: 21.875rem;
+		padding-bottom: 1.875rem;
 	}
 
 	#comments,
 	#info {
-		width: 340px;
-		max-width: 340px !important;
+		width: 21.25rem;
+		max-width: 21.25rem !important;
 	}
 	.comment .message,
 	.writecomment textarea,
@@ -1468,12 +1472,12 @@ input[type="range"]:focus::-moz-range-thumb {
 	#info .container ul li,
 	.marker-container ul li,
 	.button {
-		font-size: 12px;
+		font-size: 0.75rem;
 		line-height: 1rem;
 	}
 	#info .container h1,
 	.marker-container h1 {
-		font-size: 32px;
+		font-size: 2rem;
 	}
 
 	#fullscreenbtn .hint,
@@ -1485,7 +1489,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	#logo .hint,
 	.maplink .hint,
 	.marker .hint {
-		font-size: 12px;
+		font-size: 0.75rem;
 		font-weight: 500;
 	}
 }

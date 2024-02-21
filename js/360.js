@@ -1457,87 +1457,6 @@ document.addEventListener("DOMContentLoaded", function () {
 	checkFirstListItem();
 });
 
-// SRT Stuff
-function readSRTFile(file) {
-	const reader = new FileReader();
-	reader.onload = function (event) {
-		const captions = parseSRT(event.target.result);
-		// Assuming captions is an array of objects with 'start', 'end', and 'text' properties
-		console.log(captions);
-		// You can store the captions array or use it directly
-		displayCaption(captions);
-	};
-	reader.readAsText(file);
-}
-function parseSRT(data) {
-	const lines = data.trim().split(/\r?\n/); // Split the data into lines
-	const captions = [];
-	let caption = {};
-
-	for (let i = 0; i < lines.length; i++) {
-		const line = lines[i].trim();
-
-		if (!line) {
-			// Skip empty lines
-			continue;
-		}
-
-		if (!caption.id) {
-			// If caption ID is not set, expect the ID line
-			caption.id = parseInt(line);
-		} else if (!caption.start) {
-			// If start time is not set, expect the time range line
-			const timeParts = line.split(" --> ");
-			if (timeParts.length === 2) {
-				caption.start = srtTimeToSeconds(timeParts[0]);
-				caption.end = srtTimeToSeconds(timeParts[1]);
-			} else {
-				// If time range line does not contain start and end times, skip caption
-				caption = {};
-				continue;
-			}
-		} else if (!caption.text) {
-			// If text is not set, expect the caption text line
-			caption.text = line;
-		} else {
-			// If all properties are set, push the current caption object to captions array and reset caption object
-			captions.push(caption);
-			caption = {};
-		}
-	}
-
-	console.log(captions);
-	return captions;
-}
-function srtTimeToSeconds(timeString) {
-	console.log(timeString);
-	const [hh, mm, ssAndMs] = timeString.split(":").map(parseFloat);
-	let [ss, ms] = [0, 0]; // Initialize seconds and milliseconds
-
-	if (typeof ssAndMs === "string" && ssAndMs.includes(",")) {
-		// Check if the timeString contains milliseconds
-		const splitTime = ssAndMs.split(",");
-		ss = parseFloat(splitTime[0]); // Extract seconds
-		ms = parseFloat(splitTime[1]); // Extract milliseconds
-	} else {
-		ss = parseFloat(ssAndMs); // If no milliseconds or not a string, directly assign seconds
-	}
-
-	return hh * 3600 + mm * 60 + ss + ms / 1000; // Convert milliseconds to seconds
-}
-function displayCaption(captions) {
-	video.addEventListener("timeupdate", function () {
-		const currentTime = video.currentTime;
-		const captionElement = document.getElementById("caption");
-		for (const caption of captions) {
-			if (currentTime >= caption.start && currentTime <= caption.end) {
-				captionElement.innerHTML = `<p>${caption.text}</p>`;
-				return;
-			}
-		}
-		captionElement.innerHTML = "";
-	});
-}
 const map = document.getElementById("map");
 const mapImage = document.getElementById("mapimage");
 const mapImg = document.getElementById("mapimg");
@@ -1716,30 +1635,87 @@ function handleOrientation(event) {
 	camera.rotation.z = (event.alpha * Math.PI) / 180; // alpha is the compass direction the device is facing in degrees
 }
 
-/*
-// Function to update marker positions based on camera movements
-function updateMarkerPositions(camera) {
-	// Iterate through all CSS2DObjects in the labelRenderer's scene
-	labelRenderer.scene.children.forEach((object) => {
-		// Check if the object is an instance of CSS2DObject
-		if (object instanceof CSS2DObject) {
-			// Retrieve the marker's position from its associated CSS2DObject
-			const position = object.position;
+// SRT Stuff
+function readSRTFile(file) {
+	const reader = new FileReader();
+	reader.onload = function (event) {
+		const captions = parseSRT(event.target.result);
+		// Assuming captions is an array of objects with 'start', 'end', and 'text' properties
+		console.log(captions);
+		// You can store the captions array or use it directly
+		displayCaption(captions);
+	};
+	reader.readAsText(file);
+}
 
-			// Calculate the position relative to the camera
-			const markerPosition = position.clone().sub(camera.position);
+function parseSRT(data) {
+	const lines = data.trim().split(/\r?\n/); // Split the data into lines
+	const captions = [];
+	let caption = {};
 
-			// Project marker position onto screen coordinates
-			const vector = markerPosition.project(camera);
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i].trim();
 
-			// Calculate screen coordinates
-			const xScreen = ((vector.x + 1) / 2) * window.innerWidth;
-			const yScreen = (-(vector.y - 1) / 2) * window.innerHeight;
-
-			// Update the position of the CSS2DObject in the DOM
-			object.element.style.left = xScreen + "px";
-			object.element.style.top = yScreen + "px";
+		if (!line) {
+			// Skip empty lines
+			continue;
 		}
+
+		if (!caption.id) {
+			// If caption ID is not set, expect the ID line
+			caption.id = parseInt(line);
+		} else if (!caption.start) {
+			// If start time is not set, expect the time range line
+			const timeParts = line.split(" --> ");
+			if (timeParts.length === 2) {
+				caption.start = srtTimeToSeconds(timeParts[0]);
+				caption.end = srtTimeToSeconds(timeParts[1]);
+			} else {
+				// If time range line does not contain start and end times, skip caption
+				caption = {};
+				continue;
+			}
+		} else if (!caption.text) {
+			// If text is not set, expect the caption text line
+			caption.text = line;
+		} else {
+			// If all properties are set, push the current caption object to captions array and reset caption object
+			captions.push(caption);
+			caption = {};
+		}
+	}
+
+	console.log(captions);
+	return captions;
+}
+
+function srtTimeToSeconds(timeString) {
+	console.log(timeString);
+	const [hh, mm, ssAndMs] = timeString.split(":").map(parseFloat);
+	let [ss, ms] = [0, 0]; // Initialize seconds and milliseconds
+
+	if (typeof ssAndMs === "string" && ssAndMs.includes(",")) {
+		// Check if the timeString contains milliseconds
+		const splitTime = ssAndMs.split(",");
+		ss = parseFloat(splitTime[0]); // Extract seconds
+		ms = parseFloat(splitTime[1]); // Extract milliseconds
+	} else {
+		ss = parseFloat(ssAndMs); // If no milliseconds or not a string, directly assign seconds
+	}
+
+	return hh * 3600 + mm * 60 + ss + ms / 1000; // Convert milliseconds to seconds
+}
+
+function displayCaption(captions) {
+	video.addEventListener("timeupdate", function () {
+		const currentTime = video.currentTime;
+		const captionElement = document.getElementById("caption");
+		for (const caption of captions) {
+			if (currentTime >= caption.start && currentTime <= caption.end) {
+				captionElement.innerHTML = `<p>${caption.text}</p>`;
+				return;
+			}
+		}
+		captionElement.innerHTML = "";
 	});
 }
-*/
