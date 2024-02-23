@@ -59,7 +59,7 @@ canvas {
 	top: -2rem;
 	left: 50%;
 	transform: translateX(-50%);
-	width: 5, 5rem;
+	width: 5rem;
 	height: 2rem;
 	border-top-left-radius: 0.75rem;
 	border-top-right-radius: 0.75rem;

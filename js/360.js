@@ -460,6 +460,35 @@ labelRenderer.domElement.style.top = "0px";
 labelRenderer.domElement.style.pointerEvents = "none";
 document.body.appendChild(labelRenderer.domElement);
 
+// Add mouse controls to the camera
+const controls = new OrbitControls(camera, renderer.domElement);
+
+// Other controls settings
+controls.enablePan = false;
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.rotateSpeed = -1;
+controls.autoRotate = false;
+controls.autoRotateSpeed *= 0.25;
+
+// Set camera position
+camera.position.set(0, 0, 0);
+camera.rotation.order = "YXZ";
+// Function to reset the camera rotation and position to its initial state
+const newPos = new THREE.Vector3(0, 0, 0); // Default position
+const newRot = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 150, 0)); // Default rotation
+
+resetCameraRotation(newPos, newRot);
+
+controls.minDistance = 30; // Set a minimum zoom distance that allows zooming in closer
+controls.maxDistance = 280; // Set maximum zoom distance
+controls.zoomSpeed = 3; // Adjust zoom speed
+
+const zoomSpeed = 0.1;
+const perspectiveFactor = 0.1; // Adjust perspective factor as needed
+const minPerspective = 10; // Adjust minimum perspective value as needed
+const maxPerspective = 90;
+
 // Create a video element for video content
 const video = document.createElement("video");
 
@@ -1106,35 +1135,6 @@ zoomLevelInput.addEventListener("input", function () {
 	camera.maxDistance = newMaxDistance;
 	camera.updateProjectionMatrix();
 });
-
-// Add mouse controls to the camera
-const controls = new OrbitControls(camera, renderer.domElement);
-
-// Other controls settings
-controls.enablePan = false;
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.rotateSpeed = -1;
-controls.autoRotate = false;
-controls.autoRotateSpeed *= 0.25;
-
-// Set camera position
-camera.position.set(0, 0, 0);
-camera.rotation.order = "YXZ";
-// Function to reset the camera rotation and position to its initial state
-const newPos = new THREE.Vector3(0, 0, 0); // Default position
-const newRot = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 150, 0)); // Default rotation
-
-resetCameraRotation(newPos, newRot);
-
-controls.minDistance = 30; // Set a minimum zoom distance that allows zooming in closer
-controls.maxDistance = 280; // Set maximum zoom distance
-controls.zoomSpeed = 3; // Adjust zoom speed
-
-const zoomSpeed = 0.1;
-const perspectiveFactor = 0.1; // Adjust perspective factor as needed
-const minPerspective = 10; // Adjust minimum perspective value as needed
-const maxPerspective = 90;
 
 // Function to create and update the angle indicator
 function createAngleIndicator() {
