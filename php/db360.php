@@ -1,6 +1,11 @@
 <?php
 // Include the database configuration file
-include 'db_config.php';
+include ("db360_config.php");
+
+// Start the session if it hasn't been started
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Initialize an array to store error messages
 $errors = [];
@@ -73,7 +78,7 @@ try {
         info TEXT NULL,
         custom_logo VARCHAR(255) NULL,
         custom_css TEXT NULL,
-        ispublic INT(1) NOT NULL DEFAULT 0
+        ispublic INT(1) NOT NULL DEFAULT 0,
         allowcomments INT(1) NOT NULL DEFAULT 1,
         registered DATETIME NULL
     )");
@@ -90,7 +95,7 @@ try {
         user_id INT(30) NULL,
         location_id INT(30) NULL,
         reply_id INT(30) NULL,
-        comment TEXT
+        comment TEXT,
         registered DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     )");
 
@@ -101,12 +106,23 @@ try {
         registered DATETIME NULL
     )");
 
-
     $pdo->exec("CREATE TABLE IF NOT EXISTS captions (
         id INT(30) AUTO_INCREMENT PRIMARY KEY,
         user_id INT(30) NULL,
         location_id INT(30) NULL,
         caption_language VARCHAR(255)
+    )");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS visitors (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT(30) NULL,
+        ip_address VARCHAR(45) NULL,
+        browser VARCHAR(255) NULL,
+        resolution VARCHAR(20) NULL,
+        user_language VARCHAR(50) NULL,
+        operating_system VARCHAR(50) NULL,
+        device_type ENUM('Mobile', 'Desktop', 'Tablet', 'Other') NULL,
+        visited TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
 
 } catch (PDOException $e) {

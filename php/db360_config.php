@@ -1,7 +1,7 @@
 <?php
 // Database configuration
 $host = 'localhost'; // Change this to your database host
-$dbname = 'diam:360'; // Change this to your database name
+$dbname = 'diam_360'; // Change this to your database name
 $username = 'diam_360'; // Change this to your database username
 $password = 'qm4R5fQLyx6NexC5wyE8'; // Change this to your database password
 

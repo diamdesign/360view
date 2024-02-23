@@ -2,6 +2,8 @@
 
 include ("php/db360.php");
 
+
+
 ?>
 <html lang="en">
 	<head>
@@ -10,6 +12,6 @@ include ("php/db360.php");
 		<title>360 iframe</title>
 	</head>
 	<body>
-		<iframe src="index.html?i=P425DFDSXxfe" width="640" height="400"></iframe>
+		<iframe src="watch/?i=P425DFDSXxfe" width="640" height="400"></iframe>
 	</body>
 </html>
