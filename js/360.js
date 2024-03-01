@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 
+const baseUrl = "https://snallapojkar.se/360/";
 // Array for Map view
 var mapArray = [
 	{
@@ -451,7 +452,7 @@ rootElement.appendChild(renderer.domElement);
 
 // Setup CSS2DRenderer
 const labelRenderer = new CSS2DRenderer();
-labelRenderer.setSize(rootElement.innerWidth, rootElement.innerHeight);
+labelRenderer.setSize(window.innerWidth, window.innerHeight);
 labelRenderer.domElement.style.position = "absolute";
 labelRenderer.domElement.style.top = "0px";
 labelRenderer.domElement.style.pointerEvents = "none";
@@ -696,7 +697,7 @@ for (let i = 0; i < contentArray.length; i++) {
 		let itemHtml = `<li class="${activeClass}" data-file="${content.file}" data-id="${content.id}" data-type="${content.type}">
                             <span class="icon-video">${content.duration}</span>
                             <div>${content.title}</div>
-                            <img src="https://snallapojkar.se/360/video/${fileNameWithoutExtension}.jpg" alt="" />
+                            <img src="${baseUrl}video/${fileNameWithoutExtension}.jpg" alt="" />
                         </li>`;
 		locationsHtml += itemHtml;
 	} else {
@@ -704,7 +705,7 @@ for (let i = 0; i < contentArray.length; i++) {
 		const fileNameWithoutExtension = content.file.split(".").slice(0, -1).join(".");
 		let itemHtml = `<li class="${activeClass}" data-file="${content.file}" data-id="${content.id}" data-type="${content.type}">
                             <div>${content.title}</div>
-                            <img src="https://snallapojkar.se/360/img/${fileNameWithoutExtension}-low.jpg" alt="" />
+                            <img src="${baseUrl}img/${fileNameWithoutExtension}-low.jpg" alt="" />
                         </li>`;
 		locationsHtml += itemHtml;
 	}
@@ -769,7 +770,7 @@ function change360Content(targetId) {
 		// Define the preloadHighQualityVideo function outside the condition
 		function preloadHighQualityVideo(video, highQualitySrc) {
 			const highQualityVideo = document.createElement("video");
-			highQualityVideo.src = "video/" + highQualitySrc;
+			highQualityVideo.src = baseUrl + "video/" + highQualitySrc;
 			highQualityVideo.addEventListener("canplay", function () {
 				const intervalId = setInterval(function () {
 					if (highQualityVideo.readyState === 4) {
@@ -797,7 +798,7 @@ function change360Content(targetId) {
 			preloadHighQualityVideo(video, fileName);
 		}
 		// Update the src attribute of the video element
-		video.src = "https://snallapojkar.se/360/video/" + videoFile;
+		video.src = baseUrl + "video/" + videoFile;
 		video.load();
 		video.crossOrigin = "anonymous";
 		video.loop = true;
@@ -828,7 +829,7 @@ function change360Content(targetId) {
 				const fileNameWithoutExtension = targetObj.file.split(".").slice(0, -1).join(".");
 
 				// Construct the new file name with the desired caption
-				const newSRTName = `https://snallapojkar.se/360/video/${fileNameWithoutExtension}-${captiontag}.srt`;
+				const newSRTName = `${baseUrl}video/${fileNameWithoutExtension}-${captiontag}.srt`;
 				console.log(newSRTName);
 				captionHTML.style.display = "block";
 				allCaptions.forEach((cap) => {
@@ -997,9 +998,9 @@ function change360Content(targetId) {
 
 		// Extract the file name without extension
 		const fileNameWithoutExtension = targetObject.file.split(".").slice(0, -1).join(".");
-		let imageFile = "https://snallapojkar.se/360/img/" + fileName;
+		let imageFile = baseUrl + "img/" + fileName;
 		if (!highSpeed) {
-			imageFile = "https://snallapojkar.se/360/img/" + fileNameWithoutExtension + "-low.jpg";
+			imageFile = baseUrl + "img/" + fileNameWithoutExtension + "-low.jpg";
 		}
 
 		// Load the low-quality image
@@ -1018,7 +1019,7 @@ function change360Content(targetId) {
 
 		// Preload high-quality image if necessary
 		if (!highSpeed) {
-			let highQualityFileName = "https://snallapojkar.se/360/img/" + fileName;
+			let highQualityFileName = baseUrl + "img/" + fileName;
 			preloadHighQualityImage(highQualityFileName, function (highQualityTexture) {
 				// Once the high-quality image is loaded and processed, here you can do additional operations
 				// For example, update the texture of a sphere mesh with the high-quality texture
@@ -1081,7 +1082,7 @@ function handleZoom(event) {
 	perspective = Math.max(minPerspective, Math.min(maxPerspective, perspective));
 
 	// Update the camera's perspective
-	camera.aspect = rootElement.innerWidth / rootElement.innerHeight;
+	camera.aspect = window.innerWidth / window.innerHeight;
 
 	camera.fov = perspective;
 	camera.updateProjectionMatrix();

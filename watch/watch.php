@@ -82,8 +82,6 @@ try {
         href="https://fonts.googleapis.com/css2?family=Archivo:wght@100;200;300;400;500;600;700;900&family=Bebas+Neue&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:wght@100;400;500;700;900&display=swap"
         rel="stylesheet"
     />
-
-    <link rel="stylesheet" href="../css/style.css" />
     <link rel="stylesheet" href="../css/platform.css">
     <title>Watch</title>
 </head>
@@ -96,7 +94,7 @@ try {
             include("../components/leftmenu.php");
         ?>
         <div id="center">
-            <div id="root"></div>
+            <iframe src="https://snallapojkar.se/360/embed/?i=Pds343GXFfse32&loc=245" frameborder="0" width="100%" id="iframeroot"></iframe>
             <div id="profile">
                 <div class="info">
                     <div class="thumb">
@@ -118,9 +116,5 @@ try {
             include("../components/rightmenu.php");
         ?>
     </div>
-    <script src="../js/360template.js"></script>
-    <script src="../js/functions.min.js"></script>
-    <script src="../js/watch.min.js"></script>
-    <script src="../dist/bundle.js"></script>
 </body>
 </html>

@@ -1,13 +1,4 @@
-// Create an iframe element
-const iframe = document.createElement("iframe");
-
-// Set attributes and properties for the iframe
-iframe.width = "100%";
-iframe.height = "100%";
-iframe.frameBorder = 0; // optional, set to 0 to remove the border
-
-// Insert HTML content into the iframe's srcdoc property
-iframe.srcdoc = `<div id="outside">
+const rootHTML = `<div id="outside">
 			<a href="#" id="logo">
 				<div><img src="img/logo.jpg" alt="" /></div>
 				<span class="hint">Powered by Snälla Pojkar</span>
@@ -357,4 +348,4 @@ iframe.srcdoc = `<div id="outside">
 const rootElement = document.getElementById("root");
 
 // Append the iframe to the parent element
-root.innderHTML = iframe;
+rootElement.innerHTML = rootHTML;

@@ -1,6 +1,7 @@
 body {
 	background: rgb(243, 249, 251);
 	font-family: "Poppins", sans-serif;
+	padding-top: 2.8rem;
 }
 #grid {
 	position: relative;
@@ -19,12 +20,15 @@ body {
 }
 
 #header {
-	position: relative;
+	position: fixed;
+	width: 100%;
 	grid-area: header;
 	background: white;
 	box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.3);
 	z-index: 2;
-	height: 2.8rem;
+	height: 3.5rem;
+	top: 0;
+	left: 0;
 }
 
 #leftmenu {
@@ -52,8 +56,11 @@ body {
 	padding-bottom: 2rem;
 }
 
-#center #root {
+#center #root,
+#iframeroot {
 	max-height: 800px;
+	height: 800px;
+	min-height: 400px;
 }
 
 #profile {
@@ -87,4 +94,10 @@ body {
 #profile .title {
 	display: block;
 	font-weight: 600;
+	margin: 0;
+}
+
+#profile .content {
+	font-size: 0.9rem;
+	margin-top: 1rem;
 }

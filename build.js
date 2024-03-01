@@ -9,8 +9,8 @@ terser
 	.minify(code)
 	.then((result) => {
 		// Write the minified code to a new file
-		fs.writeFileSync("dist/360.min.js", result.code);
-		console.log("Minification complete! Output saved to dist/360.min.js");
+		fs.writeFileSync("js/360.min.js", result.code);
+		console.log("Minification complete! Output saved to js/360.min.js");
 	})
 	.catch((error) => {
 		console.error("Error minifying JavaScript:", error);
