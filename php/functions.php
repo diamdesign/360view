@@ -1,14 +1,26 @@
 <?php 
 
-function visitorInfo($pdo) {
-    $info = [];
-    // Get current user id if user is logged in and session set
-    // Check if user_id is set in the session
-    if(isset($_SESSION['user_id'])) {
-        $user_id = $_SESSION['user_id'];
-    } else {
-        $user_id = null; // or any default value you want to assign if user_id is not set
+// Function to get user info from the users table
+function getUserInfo($pdo, $user_id) {
+    // Check if user_id is null or empty
+    if (empty($user_id)) {
+        // Return null or any appropriate value indicating that user_id is not provided
+        return null;
     }
+    // Prepare the SQL statement
+    $statement = $pdo->prepare("SELECT id, username, email, subscriber, registered FROM users WHERE id = :user_id");
+    // Bind the parameter
+    $statement->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    // Execute the statement
+    $statement->execute();
+    // Fetch the result as an associative array
+    $userArray = $statement->fetch(PDO::FETCH_ASSOC);
+    // Return the user information
+    return $userArray;
+}
+
+// Function to insert visitor information to database
+function visitorInfo($pdo, $user_id) {
 
     // Get user agent from HTTP headers
     $user_agent = $_SERVER['HTTP_USER_AGENT'];
@@ -16,7 +28,6 @@ function visitorInfo($pdo) {
     $ip_address = $_SERVER['REMOTE_ADDR'];
     $browser = $user_agent;
     $language = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? $_SERVER['HTTP_ACCEPT_LANGUAGE'] : 'Unknown';
-
     
     // Insert user information into the database
     try {
@@ -29,7 +40,7 @@ function visitorInfo($pdo) {
 
         $stmt->execute();
     } catch(PDOException $e) {
-        echo "Error: " . $e->getMessage();
+       $response = ['error' => $e->getMessage()];
     }
   
 }

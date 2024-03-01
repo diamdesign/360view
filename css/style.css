@@ -8,12 +8,20 @@
 body,
 html {
 	background-color: black;
-	background-image: url("../img/introloadersafe.webp");
-	background-repeat: no-repeat;
-	background-position: center center;
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
+}
+
+#root {
+	overflow: hidden;
+	background-image: url("../img/introloadersafe.webp");
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-color: black;
+	width: 100%;
+	aspect-ratio: 16 / 10;
+	position: relative;
 }
 
 canvas {
@@ -30,7 +38,7 @@ canvas {
 	opacity: 0;
 	width: calc(100% + 1.25rem);
 	left: -0.62rem;
-	position: fixed;
+	position: absolute;
 	height: 10.9rem;
 	bottom: -10.9rem;
 	transition: bottom 0.4s ease-in-out, opacity 1s ease;
@@ -203,7 +211,7 @@ canvas:active {
 
 #video {
 	z-index: -1000;
-	position: fixed;
+	position: abso;
 }
 
 canvas {
@@ -211,7 +219,7 @@ canvas {
 }
 
 #angleIndicator {
-	position: fixed;
+	position: absolute;
 	top: 2.5rem;
 	right: -0.625rem;
 	display: flex;
@@ -278,7 +286,7 @@ canvas {
 	background-color: rgba(0, 0, 0, 0.6);
 	backdrop-filter: blur(1.25rem);
 	border-radius: 0.75rem;
-	position: fixed;
+	position: absolute;
 	z-index: 1001;
 	padding: 2.5rem;
 	padding-right: 5rem;
@@ -293,7 +301,7 @@ canvas {
 
 #settings .row {
 	display: grid;
-	grid-template-columns: 2fr 10fr 1fr;
+	grid-template-columns: 2fr 7fr 1fr;
 	grid-gap: 0.625rem;
 	border-bottom: 0.0625rem solid rgba(255, 255, 255, 0.3);
 	margin-top: 0.625rem;
@@ -461,7 +469,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-repeat: no-repeat !important;
 	background-position: center center;
 	background-size: 1.125rem;
-	position: fixed;
+	position: absolute;
 	top: 0.9rem;
 	right: 4.6875rem;
 	display: flex;
@@ -492,6 +500,7 @@ input[type="range"]:focus::-moz-range-thumb {
 
 .settingsbtn:hover,
 #fullscreenbtn:hover,
+#sharebtn:hover,
 #mapbtn:hover,
 #infobtn:hover,
 #likebtn:hover,
@@ -504,7 +513,18 @@ input[type="range"]:focus::-moz-range-thumb {
 	animation: outlinepush 0.8s ease-out 1 forwards;
 }
 
+.rightbuttons {
+	position: absolute;
+	bottom: 12.175rem;
+	right: 1.5625rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	opacity: 0;
+}
+
 #fullscreenbtn,
+#sharebtn,
 #mapbtn,
 #infobtn,
 #commentbtn,
@@ -515,8 +535,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	transition: opacity 1s ease;
 	opacity: 0;
 	content: "";
-	position: absolute;
-	top: -4.375rem;
+	position: relative;
 	display: flex;
 	align-items: flex-start;
 	justify-content: center;
@@ -526,6 +545,21 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-color: rgba(0, 0, 0, 0.4);
 	border-radius: 100%;
 	z-index: 1000;
+}
+
+#fullscreenbtn,
+#sharebtn,
+#infobtn,
+#commentbtn,
+#likebtn {
+	opacity: 1;
+}
+
+.maplink,
+.marker,
+#mapbtn {
+	position: absolute;
+	top: -4.375rem;
 }
 
 #logo {
@@ -555,14 +589,11 @@ input[type="range"]:focus::-moz-range-thumb {
 	font-style: italic;
 	font-family: Georgia, "Times New Roman", Times, serif;
 	line-height: 3.2rem;
-	right: 1.5625rem;
-	top: -8.125rem;
 }
 #commentbtn {
 	text-align: center;
 	display: block;
-	right: 1.5625rem;
-	top: -13.125rem;
+	margin-bottom: 1.3rem;
 }
 
 #commentbtn .amount {
@@ -595,8 +626,7 @@ input[type="range"]:focus::-moz-range-thumb {
 #likebtn {
 	text-align: center;
 	display: block;
-	right: 1.5625rem;
-	top: -18.125rem;
+	margin-bottom: 1.3rem;
 }
 
 #likebtn .amount {
@@ -630,10 +660,6 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-color: rgba(233, 15, 15, 0.979) !important;
 }
 
-#fullscreenbtn {
-	right: 1.5625rem;
-}
-
 #fullscreenbtn:after {
 	content: "";
 	display: block;
@@ -646,6 +672,21 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-position: center center;
 	background-repeat: no-repeat;
 	background-size: 1.125rem;
+	filter: invert(1);
+}
+
+#sharebtn:after {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: url("../img/icon-share.svg");
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 1.1rem;
 	filter: invert(1);
 }
 
@@ -690,6 +731,7 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 #fullscreenbtn .hint,
+#sharebtn .hint,
 #commentbtn .hint,
 #likebtn .hint,
 .settingsbtn .hint,
@@ -751,6 +793,7 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 #fullscreenbtn:hover .hint,
+#sharebtn:hover .hint,
 #mapbtn:hover .hint,
 #commentbtn:hover .hint,
 #likebtn:hover .hint,
@@ -770,7 +813,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	align-items: center;
 	background-color: rgba(0, 0, 0, 0.4);
 	backdrop-filter: blur(2.5rem);
-	position: fixed;
+	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
@@ -817,11 +860,11 @@ input[type="range"]:focus::-moz-range-thumb {
 #info,
 #comments {
 	display: none;
-	position: fixed;
+	position: absolute;
 	backdrop-filter: blur(1.25rem);
 	top: 0;
-	right: -28.75rem;
-	z-index: 1050;
+	right: -30.75rem;
+	z-index: 2010;
 	background-color: rgba(0, 0, 0, 0.85);
 	height: 100%;
 	width: 28.75rem;
@@ -1001,29 +1044,32 @@ input[type="range"]:focus::-moz-range-thumb {
 #info #resizer {
 	content: "";
 	position: absolute;
-	left: -0.25rem;
+	left: -0.5rem;
 	top: 0;
-	width: 0.5rem;
+	width: 1rem;
 	height: 100%;
 	background: rgba(0, 0, 0, 0);
 	transition: opacity 0.5s ease-in-out;
+	opacity: 0;
 }
 
 #info #resizer:after {
-	outline: 0.125rem solid white;
+	outline: 0.325rem solid rgba(0, 0, 0, 0.4);
 	position: absolute;
 	content: "";
 	display: none;
 	width: 0.75rem;
 	height: 3.2rem;
 	border-radius: 1rem;
-	background: black;
+	background: #3e3f3e;
 	top: 50%;
 	left: 50%;
 	transform: translateX(-50%) translateY(-50%);
+	transition: 0.2s ease-in-out;
 }
 
 #info #resizer:hover {
+	opacity: 1;
 	cursor: w-resize;
 	background: rgba(0, 0, 0, 0.4);
 }
@@ -1042,6 +1088,40 @@ input[type="range"]:focus::-moz-range-thumb {
 	padding: 1.25rem;
 	color: white;
 	padding-bottom: 2.5rem;
+}
+
+#info .container {
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	position: absolute;
+	top: 5rem;
+	height: calc(100% - 5rem);
+}
+
+#info #info-details {
+	display: none;
+}
+
+.show-loc,
+.show-info {
+	padding: 1.5rem;
+	color: white;
+	font-weight: 500;
+	line-height: 1.8rem;
+	border-bottom: 0.2rem solid transparent;
+	display: inline;
+	float: left;
+	opacity: 0.5;
+}
+
+.show-loc:hover,
+.show-info:hover {
+	cursor: pointer;
+	opacity: 1;
+}
+
+.showactive {
+	opacity: 1;
+	border-bottom: 0.2rem solid white;
 }
 
 #comments .container {
@@ -1155,6 +1235,16 @@ input[type="range"]:focus::-moz-range-thumb {
 	margin-bottom: 1.25rem;
 }
 
+#info .container img {
+	max-width: 40rem;
+	display: inline;
+}
+
+#info .container img:hover {
+	cursor: pointer;
+	animation: flash 0.3s ease-in-out;
+}
+
 #info .container hr,
 .marker-container hr {
 	border: 0.0625rem solid rgba(255, 255, 255, 0.2);
@@ -1168,6 +1258,15 @@ input[type="range"]:focus::-moz-range-thumb {
 	color: white;
 	font-size: 2.625rem;
 	margin-bottom: 1.25rem;
+}
+#info .container h2 {
+	font-size: 2.0625rem;
+}
+#info .container h3 {
+	font-size: 1.625rem;
+}
+#info .container h4 {
+	font-size: 1.25rem;
 }
 #closeinfobtn,
 #closecommentsbtn {
@@ -1302,7 +1401,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	min-width: 4.0625rem;
 }
 #caption {
-	position: fixed;
+	position: absolute;
 	bottom: 2.5rem;
 	left: 50%;
 	transform: translateX(-50%);
@@ -1321,7 +1420,7 @@ input[type="range"]:focus::-moz-range-thumb {
 
 #labels {
 	z-index: 1;
-	position: fixed;
+	position: absolute;
 }
 .marker {
 	pointer-events: all !important;
@@ -1370,6 +1469,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	border: 0.375rem solid white;
 	animation: infodot 1s ease-out infinite;
 	position: absolute;
+	pointer-events: none;
 }
 
 .infodot:hover:before {
@@ -1435,6 +1535,16 @@ input[type="range"]:focus::-moz-range-thumb {
 .infodot:hover:after {
 	background-color: white;
 	border-radius: 100%;
+}
+
+.rootfullscreen {
+	position: fixed !important;
+	top: 0 !important;
+	left: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	max-height: 100% !important;
+	z-index: 100000000 !important;
 }
 
 @media screen and (max-width: 40rem) {

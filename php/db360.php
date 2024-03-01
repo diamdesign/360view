@@ -18,7 +18,7 @@ try {
         email VARCHAR(100) NULL,
         user_password VARCHAR(255) NULL,
         apikey VARCHAR(20) NULL,
-        subscriber INT(1) NOT NULL DEFAULT 0,
+        subscriber TINYINT(1) NOT NULL DEFAULT 0,
         registered DATETIME NULL
     )");
 
@@ -30,8 +30,12 @@ try {
         map_filename VARCHAR(255) NULL,
         base_url VARCHAR(255) NULL,
         custom_logo VARCHAR(255) NULL,
+        logo_link VARCHAR(255) NULL,
         custom_css VARCHAR(255) NULL,
-        ispublic INT(1) NOT NULL DEFAULT 0,
+        ispublic TINYINT(1) NOT NULL DEFAULT 0,
+        hasmusic TINYINT(1) NOT NULL DEFAULT 0,
+        haspass TINYINT(1) NOT NULL DEFAULT 0,
+        project_password VARCHAR(255) NULL,
         registered DATETIME NULL
     )");
 
@@ -77,9 +81,13 @@ try {
         captions VARCHAR(255) NULL,
         info TEXT NULL,
         custom_logo VARCHAR(255) NULL,
+        logo_link VARCHAR(255) NULL,
         custom_css TEXT NULL,
-        ispublic INT(1) NOT NULL DEFAULT 0,
-        allowcomments INT(1) NOT NULL DEFAULT 1,
+        ispublic TINYINT(1) NOT NULL DEFAULT 0,
+        allowcomments TINYINT(1) NOT NULL DEFAULT 1,
+        hasmusic TINYINT(1) NOT NULL DEFAULT 0,
+        haspass TINYINT(1) NOT NULL DEFAULT 0,
+        location_password VARCHAR(255) NULL,
         registered DATETIME NULL
     )");
 
@@ -113,6 +121,17 @@ try {
         caption_language VARCHAR(255)
     )");
 
+    $pdo->exec("CREATE TABLE IF NOT EXISTS music (
+        id INT(30) AUTO_INCREMENT PRIMARY KEY,
+        user_id INT(30) NULL,
+        project_id INT(30) NULL,
+        location_id INT(30) NULL,
+        file_name VARCHAR(255),
+        base_url VARCHAR(255),
+        artist VARCHAR(255) NULL,
+        album VARCHAR(255) NULL
+    )");
+
     $pdo->exec("CREATE TABLE IF NOT EXISTS visitors (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT(30) NULL,
@@ -125,11 +144,11 @@ try {
         visited TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
 
+
+
 } catch (PDOException $e) {
     // If an error occurs, add the error message to the $errors array
     $errors[] = $e->getMessage();
 }
 
-// Send the error messages array as JSON
-echo json_encode($errors);
 ?>

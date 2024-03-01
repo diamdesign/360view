@@ -174,28 +174,8 @@ var markerData = [];
 
 // Function to test internet speed
 var highSpeed = false;
-function testInternetSpeed() {
-	return new Promise((resolve, reject) => {
-		const imageAddr = "img/360-low.jpg"; // A sample image URL
-		const downloadSize = 63633; // Size of the test image in bytes (adjust as needed)
-		const startTime = new Date().getTime();
 
-		const image = new Image();
-		image.onload = function () {
-			const endTime = new Date().getTime();
-			const duration = (endTime - startTime) / 1000; // Duration in seconds
-			const bitsLoaded = downloadSize * 8;
-			const speedBps = (bitsLoaded / duration).toFixed(2);
-			const speedKbps = (speedBps / 1024).toFixed(2); // Speed in Kilobits per second
-			resolve(speedKbps);
-		};
-		image.onerror = function (err) {
-			reject(err);
-		};
-		image.src = imageAddr + "?n=" + Math.random(); // Prevent caching
-	});
-}
-
+const rootElement = document.querySelector("#root");
 // Perform internet speed test on page load
 window.addEventListener("load", function () {
 	testInternetSpeed()
@@ -223,6 +203,8 @@ const viewElem = document.getElementById("view-container");
 const zoomLevel = document.querySelector("#zoombtn");
 const zoomLevelInput = document.querySelector("#zoomlevel");
 const mapButton = document.querySelector("#mapbtn");
+
+const rightButtons = document.querySelector(".rightbuttons");
 const fullscreenButton = document.querySelector("#fullscreenbtn");
 const locationsElem = document.getElementById("locations");
 const angleIndicator = document.getElementById("angleIndicator");
@@ -263,6 +245,25 @@ const settingsVolumeNo = document.getElementById("volumeNo");
 const settingsButton = document.querySelector(".settingsbtn");
 const resetButton = document.getElementById("reset");
 const closeSettingsButton = document.querySelector(".closebtn");
+
+const infoLocationButton = document.querySelector(".show-loc");
+const infoDetailsButton = document.querySelector(".show-info");
+const infoLocationContainer = document.querySelector("#info-location");
+const infoDetailsContainer = document.querySelector("#info-details");
+
+infoLocationButton.addEventListener("click", () => {
+	infoLocationContainer.style.display = "block";
+	infoDetailsContainer.style.display = "none";
+	infoLocationButton.classList.add("showactive");
+	infoDetailsButton.classList.remove("showactive");
+});
+
+infoDetailsButton.addEventListener("click", () => {
+	infoDetailsContainer.style.display = "block";
+	infoLocationContainer.style.display = "none";
+	infoLocationButton.classList.remove("showactive");
+	infoDetailsButton.classList.add("showactive");
+});
 
 // Define the minimum and maximum widths for infoElem (Information popup)
 const minWidth = 460;
@@ -344,9 +345,7 @@ function viewContainerFadeIn() {
 	settingsButton.style.opacity = "1";
 	zoomLevel.style.opacity = "1";
 	mapButton.style.opacity = "1";
-	fullscreenButton.style.opacity = "1";
-	likeButton.style.opacity = "1";
-	commentButton.style.opacity = "1";
+	rightButtons.style.opacity = "1";
 }
 
 function viewContainerFadeOut() {
@@ -355,9 +354,7 @@ function viewContainerFadeOut() {
 	settingsButton.style.opacity = "0";
 	zoomLevel.style.opacity = "0";
 	mapButton.style.opacity = "0";
-	fullscreenButton.style.opacity = "0";
-	likeButton.style.opacity = "0";
-	commentButton.style.opacity = "1";
+	rightButtons.style.opacity = "0";
 }
 
 // Start by showing the UI
@@ -450,15 +447,15 @@ const camera = new THREE.PerspectiveCamera(
 const renderer = new THREE.WebGLRenderer({ alpha: false });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x000000);
-document.body.appendChild(renderer.domElement);
+rootElement.appendChild(renderer.domElement);
 
 // Setup CSS2DRenderer
 const labelRenderer = new CSS2DRenderer();
-labelRenderer.setSize(window.innerWidth, window.innerHeight);
+labelRenderer.setSize(rootElement.innerWidth, rootElement.innerHeight);
 labelRenderer.domElement.style.position = "absolute";
 labelRenderer.domElement.style.top = "0px";
 labelRenderer.domElement.style.pointerEvents = "none";
-document.body.appendChild(labelRenderer.domElement);
+rootElement.appendChild(labelRenderer.domElement);
 
 // Add mouse controls to the camera
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -699,7 +696,7 @@ for (let i = 0; i < contentArray.length; i++) {
 		let itemHtml = `<li class="${activeClass}" data-file="${content.file}" data-id="${content.id}" data-type="${content.type}">
                             <span class="icon-video">${content.duration}</span>
                             <div>${content.title}</div>
-                            <img src="video/${fileNameWithoutExtension}.jpg" alt="" />
+                            <img src="https://snallapojkar.se/360/video/${fileNameWithoutExtension}.jpg" alt="" />
                         </li>`;
 		locationsHtml += itemHtml;
 	} else {
@@ -707,7 +704,7 @@ for (let i = 0; i < contentArray.length; i++) {
 		const fileNameWithoutExtension = content.file.split(".").slice(0, -1).join(".");
 		let itemHtml = `<li class="${activeClass}" data-file="${content.file}" data-id="${content.id}" data-type="${content.type}">
                             <div>${content.title}</div>
-                            <img src="img/${fileNameWithoutExtension}-low.jpg" alt="" />
+                            <img src="https://snallapojkar.se/360/img/${fileNameWithoutExtension}-low.jpg" alt="" />
                         </li>`;
 		locationsHtml += itemHtml;
 	}
@@ -796,10 +793,11 @@ function change360Content(targetId) {
 		if (!highSpeed) {
 			videoFile = fileNameWithoutExtension + "-low.mp4";
 			// Function to preload high-quality video
+
 			preloadHighQualityVideo(video, fileName);
 		}
 		// Update the src attribute of the video element
-		video.src = "video/" + videoFile;
+		video.src = "https://snallapojkar.se/360/video/" + videoFile;
 		video.load();
 		video.crossOrigin = "anonymous";
 		video.loop = true;
@@ -830,7 +828,7 @@ function change360Content(targetId) {
 				const fileNameWithoutExtension = targetObj.file.split(".").slice(0, -1).join(".");
 
 				// Construct the new file name with the desired caption
-				const newSRTName = `video/${fileNameWithoutExtension}-${captiontag}.srt`;
+				const newSRTName = `https://snallapojkar.se/360/video/${fileNameWithoutExtension}-${captiontag}.srt`;
 				console.log(newSRTName);
 				captionHTML.style.display = "block";
 				allCaptions.forEach((cap) => {
@@ -999,9 +997,9 @@ function change360Content(targetId) {
 
 		// Extract the file name without extension
 		const fileNameWithoutExtension = targetObject.file.split(".").slice(0, -1).join(".");
-		let imageFile = "img/" + fileName;
+		let imageFile = "https://snallapojkar.se/360/img/" + fileName;
 		if (!highSpeed) {
-			imageFile = "img/" + fileNameWithoutExtension + "-low.jpg";
+			imageFile = "https://snallapojkar.se/360/img/" + fileNameWithoutExtension + "-low.jpg";
 		}
 
 		// Load the low-quality image
@@ -1020,7 +1018,7 @@ function change360Content(targetId) {
 
 		// Preload high-quality image if necessary
 		if (!highSpeed) {
-			let highQualityFileName = "img/" + fileName;
+			let highQualityFileName = "https://snallapojkar.se/360/img/" + fileName;
 			preloadHighQualityImage(highQualityFileName, function (highQualityTexture) {
 				// Once the high-quality image is loaded and processed, here you can do additional operations
 				// For example, update the texture of a sphere mesh with the high-quality texture
@@ -1033,7 +1031,7 @@ function change360Content(targetId) {
 	}
 
 	if (fileInfo !== "" && fileInfo !== null && fileInfo !== undefined) {
-		infoElem.querySelector(".container").innerHTML = fileInfo;
+		infoLocationContainer.innerHTML = fileInfo;
 		infoElem.style.display = "block";
 		infoButton.style.display = "block";
 		infoButton.style.opacity = "1";
@@ -1083,7 +1081,8 @@ function handleZoom(event) {
 	perspective = Math.max(minPerspective, Math.min(maxPerspective, perspective));
 
 	// Update the camera's perspective
-	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.aspect = rootElement.innerWidth / rootElement.innerHeight;
+
 	camera.fov = perspective;
 	camera.updateProjectionMatrix();
 
@@ -1225,11 +1224,13 @@ function toggleFullscreen() {
 		// If not in fullscreen mode, request fullscreen
 		document.documentElement.requestFullscreen();
 		fullscreenButton.classList.add("fullscreen");
+		rootElement.classList.add("rootfullscreen");
 	} else {
 		// If in fullscreen mode, exit fullscreen
 		if (document.exitFullscreen) {
 			fullscreenButton.classList.remove("fullscreen");
 			document.exitFullscreen();
+			rootElement.classList.remove("rootfullscreen");
 		}
 	}
 }
@@ -1461,7 +1462,7 @@ const map = document.getElementById("map");
 const mapImage = document.getElementById("mapimage");
 const mapImg = document.getElementById("mapimg");
 
-mapImg.src = "img/" + mapArray[0].file; // Set the source attribute for the image
+mapImg.src = "https://snallapojkar.se/360/img/" + mapArray[0].file; // Set the source attribute for the image
 
 mapArray[0].links.forEach((maplink) => {
 	// Adjust to access the first element of mapArray
