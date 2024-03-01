@@ -94,21 +94,23 @@ try {
             include("../components/leftmenu.php");
         ?>
         <div id="center">
-            <iframe src="https://snallapojkar.se/360/embed/?i=Pds343GXFfse32&loc=245" frameborder="0" width="100%" id="iframeroot"></iframe>
-            <div id="profile">
-                <div class="info">
-                    <div class="thumb">
-                        <img src="<?php echo $thumbnail ?>" alt="">
-                    </div>
-                    <div class="details">
-                        <div class="user">
-                            <a class="profilelink" href="https://snallapojkar.se/360/profile/<?php echo $username ?>" target="_blank"><?php echo $username ?></a>
+            <div class="center-content">
+                <iframe src="https://snallapojkar.se/360/embed/?i=Pds343GXFfse32&loc=245" frameborder="0" width="100%" id="iframeroot"></iframe>
+                <div id="profile">
+                    <div class="info">
+                        <div class="thumb">
+                            <img src="<?php echo $thumbnail ?>" alt="">
                         </div>
-                        <p class="title"><?php echo $title ?></p>
+                        <div class="details">
+                            <div class="user">
+                                <a class="profilelink" href="https://snallapojkar.se/360/profile/<?php echo $username ?>" target="_blank"><?php echo $username ?></a>
+                            </div>
+                            <p class="title"><?php echo $title ?></p>
+                        </div>
                     </div>
-                </div>
-                <div class="content">
-                    Lorem ipsum, dolor sit amet consectetur adipisicing elit. Est quasi ipsam quisquam provident repellat tenetur vitae ea qui facilis labore similique recusandae, incidunt voluptas iusto velit dicta deleniti porro nesciunt! .Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero maxime tempora hic, explicabo a quas laboriosam! Repudiandae vitae id consequatur nemo officiis ipsum, expedita, libero animi nesciunt numquam necessitatibus temporibus?
+                    <div class="content">
+                        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Est quasi ipsam quisquam provident repellat tenetur vitae ea qui facilis labore similique recusandae, incidunt voluptas iusto velit dicta deleniti porro nesciunt! .Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero maxime tempora hic, explicabo a quas laboriosam! Repudiandae vitae id consequatur nemo officiis ipsum, expedita, libero animi nesciunt numquam necessitatibus temporibus?
+                    </div>
                 </div>
             </div>
         </div>
