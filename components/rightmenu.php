@@ -1,3 +1,3 @@
 <div id="rightmenu">
-    rightmenu
+    <div id="toggle-rightpanel"></div>
 </div>

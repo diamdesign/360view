@@ -285,7 +285,7 @@ const rootHTML = `<div id="outside">
 				<div class="closebtn"></div>
 				<div class="row">
 					<span>Ambient:</span>
-					<input type="range" min="0.5" max="8" step="0.1" id="ambient" value="3.5" />
+					<input type="range" min="0.5" max="8" step="0.01" id="ambient" value="3.5" />
 					<span id="ambientNo">3.5</span>
 				</div>
 				<div class="row">

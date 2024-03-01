@@ -1,3 +1,3 @@
 <div id="leftmenu">
-    this is leftmenu
+    <div id="toggle-leftpanel"></div>
 </div>

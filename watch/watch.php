@@ -98,12 +98,12 @@ try {
                 <iframe src="https://snallapojkar.se/360/embed/?i=Pds343GXFfse32&loc=245" frameborder="0" width="100%" id="iframeroot"></iframe>
                 <div id="profile">
                     <div class="info">
-                        <div class="thumb">
+                        <a class="thumb" href="https://snallapojkar.se/360/profile/<?php echo $username ?>">
                             <img src="<?php echo $thumbnail ?>" alt="">
-                        </div>
+                        </a>
                         <div class="details">
                             <div class="user">
-                                <a class="profilelink" href="https://snallapojkar.se/360/profile/<?php echo $username ?>" target="_blank"><?php echo $username ?></a>
+                                <a class="profilelink" href="https://snallapojkar.se/360/profile/<?php echo $username ?>"><?php echo $username ?></a>
                             </div>
                             <p class="title"><?php echo $title ?></p>
                         </div>
@@ -118,5 +118,22 @@ try {
             include("../components/rightmenu.php");
         ?>
     </div>
+    <script>
+        document.querySelector('#toggle-leftpanel').addEventListener('click', function() {
+            const leftMenu = this.closest('#leftmenu');
+            if (leftMenu) {
+                leftMenu.classList.toggle('gridsmall');
+                this.classList.toggle("panelexpand");
+            }
+        });
+
+        document.querySelector('#toggle-rightpanel').addEventListener('click', function() {
+            const rightMenu = this.closest('#rightmenu');
+            if (rightMenu) {
+                rightMenu.classList.toggle('gridsmall');
+                this.classList.toggle("panelexpand");
+            }
+        });
+    </script>
 </body>
 </html>
