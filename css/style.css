@@ -1427,33 +1427,10 @@ input[type="range"]:focus::-moz-range-thumb {
 	z-index: 9999;
 }
 
-.marker-container {
-	color: white;
-	text-decoration: none;
-	font-size: 0.875rem;
-	display: none;
-	width: 22.5rem;
-	max-height: 32.5rem;
-	overflow-y: auto;
-	background: rgba(0, 0, 0, 0.75);
-	backdrop-filter: blur(1.25rem);
-	overflow-x: hidden;
-	left: 3.75rem;
-	position: absolute;
-	padding: 1.25rem;
-	border-radius: 0.5rem;
-	scrollbar-width: thin;
-	scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
-	padding-bottom: 2.5rem;
-}
-
-.marker img {
-	width: 100%;
-}
-
 .infodot {
 	background: rgba(255, 255, 255, 0.8);
 }
+
 .infodot:before {
 	transform-origin: top left;
 	display: block;
@@ -1474,6 +1451,28 @@ input[type="range"]:focus::-moz-range-thumb {
 	animation: none;
 	border: none;
 }
+
+.infodot:after {
+	width: 100%;
+	height: 100%;
+	content: "";
+	display: block;
+	position: absolute;
+	background-image: url("../img/icon-text.svg");
+	background-size: 1.75rem;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+.infodot:hover {
+	background-color: white;
+}
+
+.infodot:hover:after {
+	background-color: white;
+	border-radius: 100%;
+}
+
 @keyframes infodot {
 	0% {
 		opacity: 1;
@@ -1487,6 +1486,36 @@ input[type="range"]:focus::-moz-range-thumb {
 		opacity: 0;
 		scale: 1.25;
 	}
+}
+
+.marker-container {
+	color: white;
+	text-decoration: none;
+	font-size: 0.875rem;
+	display: none;
+	width: 22.5rem;
+	max-height: 32.5rem;
+	overflow-y: auto;
+	background: rgba(0, 0, 0, 0.75);
+	backdrop-filter: blur(1.25rem);
+	overflow-x: hidden;
+	left: 3.75rem;
+	position: absolute;
+	padding: 1.25rem;
+	border-radius: 0.5rem;
+	scrollbar-width: thin;
+	scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+	padding-bottom: 2.5rem;
+	cursor: default;
+}
+
+.marker img {
+	width: 100%;
+}
+
+.marker img:hover {
+	cursor: pointer;
+	animation: flash 0.3s ease-in-out;
 }
 
 .extlink:after {
@@ -1515,26 +1544,6 @@ input[type="range"]:focus::-moz-range-thumb {
 	filter: invert(1);
 }
 
-.infodot:after {
-	width: 100%;
-	height: 100%;
-	content: "";
-	display: block;
-	position: absolute;
-	background-image: url("../img/icon-text.svg");
-	background-size: 1.75rem;
-	background-repeat: no-repeat;
-	background-position: center center;
-}
-
-.infodot:hover {
-	background-color: white;
-}
-.infodot:hover:after {
-	background-color: white;
-	border-radius: 100%;
-}
-
 .rootfullscreen {
 	position: fixed !important;
 	top: 0 !important;
@@ -1543,6 +1552,33 @@ input[type="range"]:focus::-moz-range-thumb {
 	height: 100% !important;
 	max-height: 100% !important;
 	z-index: 100000000 !important;
+}
+
+.row span {
+	font-size: 1rem;
+}
+
+.zoomedimage {
+	position: fixed;
+	z-index: 10000;
+	background-color: rgba(0, 0, 0, 0.6);
+	backdrop-filter: blur(2rem);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	cursor: pointer;
+}
+
+.zoomedimage img {
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
 }
 
 @media screen and (max-width: 40rem) {
@@ -1562,16 +1598,29 @@ input[type="range"]:focus::-moz-range-thumb {
 		font-size: 0.6875rem;
 	}
 
+	.rightbuttons {
+		bottom: 9.575rem;
+	}
+
 	.marker-container {
 		width: 18.75rem;
 		max-height: 21.875rem;
 		padding-bottom: 1.875rem;
 	}
 
+	.infoshow,
+	.commentshow {
+		width: 100% !important;
+	}
+
 	#comments,
 	#info {
-		width: 21.25rem;
-		max-width: 21.25rem !important;
+		right: -105%;
+		width: 100%;
+		max-width: 100% !important;
+		height: 80vh;
+		bottom: 0;
+		top: auto;
 	}
 	.comment .message,
 	.writecomment textarea,
@@ -1599,5 +1648,9 @@ input[type="range"]:focus::-moz-range-thumb {
 	.marker .hint {
 		font-size: 0.75rem;
 		font-weight: 500;
+	}
+
+	.row span {
+		font-size: 0.75rem;
 	}
 }

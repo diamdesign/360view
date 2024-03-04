@@ -86,6 +86,8 @@ try {
     <title>Watch</title>
 </head>
 <body>
+    <div id="content-container">
+        <div id="showmenu"></div>
         <?php 
             include("../components/header.php");
         ?>
@@ -95,7 +97,7 @@ try {
         ?>
         <div id="center">
             <div class="center-content">
-                <iframe src="https://snallapojkar.se/360/embed/?i=Pds343GXFfse32&loc=245" frameborder="0" width="100%" id="iframeroot"></iframe>
+                <iframe src="http://localhost/360/embed/?i=Pds343GXFfse32&loc=245" frameborder="0" width="100%" id="iframeroot"></iframe>
                 <div id="profile">
                     <div class="info">
                         <a class="thumb" href="https://snallapojkar.se/360/profile/<?php echo $username ?>">
@@ -118,6 +120,7 @@ try {
             include("../components/rightmenu.php");
         ?>
     </div>
+     </div>
     <script>
         document.querySelector('#toggle-leftpanel').addEventListener('click', function() {
             const leftMenu = this.closest('#leftmenu');
@@ -133,6 +136,40 @@ try {
                 rightMenu.classList.toggle('gridsmall');
                 this.classList.toggle("panelexpand");
             }
+        });
+
+        const darkenElement = document.querySelector("#darkoverlay");
+        const signupElement = document.querySelector("#signup-container");
+        const loginElement = document.querySelector("#login-container");
+        const menuUl = document.querySelector("#menu ul");
+
+        document.querySelector("#btn-login").addEventListener("click", function() {
+            darkenElement.style.display = "block";
+            loginElement.style.display = "block";
+        });
+
+        document.querySelector("#btn-signup").addEventListener("click", function() {
+            darkenElement.style.display = "block";
+            signupElement.style.display = "block";
+        });
+
+        darkenElement.addEventListener("click", function() {
+            darkenElement.style.display = "none";
+            loginElement.style.display = "none";
+            signupElement.style.display = "none";
+        });
+
+        document.querySelector("#menu").addEventListener("click", function() {
+            menuUl.closest("#menu").classList.toggle("on");
+        });
+
+        document.querySelector("#showmenu").addEventListener("click", function() {
+             document.querySelector("#header").classList.add("headeron");
+             document.querySelector("#searchinput").focus();
+        });
+
+        document.querySelector("#close-header").addEventListener("click", function() {
+             document.querySelector("#header").classList.remove("headeron");
         });
     </script>
 </body>

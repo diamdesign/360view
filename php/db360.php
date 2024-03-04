@@ -27,6 +27,7 @@ try {
         embed_id VARCHAR(50) NULL,
         user_id INT(30) NULL,
         project_title VARCHAR(255) NULL,
+        project_description TEXT NULL,
         map_filename VARCHAR(255) NULL,
         base_url VARCHAR(255) NULL,
         custom_logo VARCHAR(255) NULL,
@@ -35,6 +36,8 @@ try {
         ispublic TINYINT(1) NOT NULL DEFAULT 0,
         hasmusic TINYINT(1) NOT NULL DEFAULT 0,
         haspass TINYINT(1) NOT NULL DEFAULT 0,
+        hasinventory TINYINT(1) NOT NULL DEFAULT 0,
+        showlocations TINYINT(1) NOT NULL DEFAULT 1,
         project_password VARCHAR(255) NULL,
         registered DATETIME NULL
     )");
@@ -44,7 +47,8 @@ try {
         embed_id VARCHAR(50) NULL,
         user_id INT(30) NULL,
         project_id INT(30) NULL,
-        location_id INT(30) NULL
+        location_id INT(30) NULL,
+        order_index INT(2) NULL
     )");
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS markers (
@@ -87,6 +91,7 @@ try {
         allowcomments TINYINT(1) NOT NULL DEFAULT 1,
         hasmusic TINYINT(1) NOT NULL DEFAULT 0,
         haspass TINYINT(1) NOT NULL DEFAULT 0,
+        hasinventory TINYINT(1) NOT NULL DEFAULT 0,
         location_password VARCHAR(255) NULL,
         registered DATETIME NULL
     )");
@@ -94,6 +99,7 @@ try {
     $pdo->exec("CREATE TABLE IF NOT EXISTS likes (
         id INT(30) AUTO_INCREMENT PRIMARY KEY,
         user_id INT(30) NULL,
+        location_id INT(30) NULL,
         project_id INT(30) NULL,
         registered DATETIME NULL
     )");
@@ -126,11 +132,51 @@ try {
         user_id INT(30) NULL,
         project_id INT(30) NULL,
         location_id INT(30) NULL,
-        file_name VARCHAR(255),
-        base_url VARCHAR(255),
+        file_name VARCHAR(255) NULL,
+        base_url VARCHAR(255) NULL,
+        duration VARCHAR(20) NULL,
         artist VARCHAR(255) NULL,
         album VARCHAR(255) NULL
     )");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS inventory (
+        id INT(30) AUTO_INCREMENT PRIMARY KEY,
+        location_id INT(30) NULL,
+        project_id INT(30) NULL,
+        inventory_name VARCHAR(255) NULL,
+        inventory_description VARCHAR(255) NULL,
+        inventory_image VARCHAR(255) NULL,
+        usewith_id INT(30) NULL
+    )");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS user_inventory (
+        id INT(30) AUTO_INCREMENT PRIMARY KEY,
+        user_id INT(30) NULL,
+        location_id INT(30) NULL,
+        project_id INT(30) NULL,
+        inventory_id INT(30) NULL
+    )");
+
+    
+    $pdo->exec("CREATE TABLE IF NOT EXISTS customcss (
+        id INT(30) AUTO_INCREMENT PRIMARY KEY,
+        user_id INT(30) NULL,
+        customname VARCHAR(255) NULL,
+        maplink TINYINT(1) DEFAULT 0,
+        marker TINYINT(1) DEFAULT 0,
+        markerinfo TINYINT(1) DEFAULT 0,
+        customcss TEXT NULL
+    )");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS views (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT(30) NULL,
+        location_id INT(30) NULL,
+        project_id INT(30) NULL,
+        visitor_ipadress VARCHAR(255) NULL,
+        visited TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )");
+
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS visitors (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -141,6 +187,8 @@ try {
         user_language VARCHAR(50) NULL,
         operating_system VARCHAR(50) NULL,
         device_type ENUM('Mobile', 'Desktop', 'Tablet', 'Other') NULL,
+        current_url VARCHAR(255) NULL,
+        current_url_system VARCHAR(255) NULL,
         visited TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
 

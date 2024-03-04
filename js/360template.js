@@ -281,6 +281,7 @@ const rootHTML = `<div id="outside">
 			<div id="angleIndicator"></div>
 
 			<div class="settingsbtn"><span class="hint">Settings</span></div>
+
 			<div id="settings">
 				<div class="closebtn"></div>
 				<div class="row">
@@ -311,6 +312,11 @@ const rootHTML = `<div id="outside">
 
 				<div id="reset" class="button">Reset</div>
 			</div>
+
+			<div id="share">
+				
+			</div>
+
 			<div class="locations" id="locations">
 				<div id="videoplayer">
 					<div id="playvideo"></div>

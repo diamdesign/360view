@@ -2,8 +2,10 @@
 // Database configuration
 $host = 'localhost'; // Change this to your database host
 $dbname = 'diam_360'; // Change this to your database name
-$username = 'diam_360'; // Change this to your database username
-$password = 'qm4R5fQLyx6NexC5wyE8'; // Change this to your database password
+$username = "root";
+$password = "";
+// $username = 'diam_360'; // Change this to your database username
+// $password = 'qm4R5fQLyx6NexC5wyE8'; // Change this to your database password
 
 try {
     // Creating a new PDO instance

@@ -21,7 +21,6 @@ include("../php/db360.php");
     <div id="root"></div>
     <script src="../js/360template.js"></script>
     <script src="../js/functions.min.js"></script>
-    <script src="../js/watch.min.js"></script>
     <script src="../dist/bundle.js"></script>
 </body>
 </html>
