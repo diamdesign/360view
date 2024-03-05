@@ -71,8 +71,28 @@ function buildPasswordHtml() {
 	const rootElement = document.getElementById("root");
 	// Append the iframe to the parent element
 	rootElement.innerHTML = haspassHTML;
-	document.querySelector("#enter-password").addEventListener("click", () => {
-		console.log("Clicked");
+	document.querySelector("#enter-password").addEventListener("click", (e) => {
+		e.preventDefault();
+		const password = document.querySelector("#haspass-password").value.trim();
+		if (password === "") {
+			alert("Password can not be empty.");
+			return;
+		} else if (password.length < 5) {
+			alert("Password must be 5 letters or longer.");
+		} else {
+			const fileCheckPass = "../php/checkpass.php";
+			const passuri = "i=" + embedId + "&loc=" + locId + "&pass=" + password;
+			xhrSend("POST", fileCheckPass, passuri)
+				.then((data) => {
+					console.log(data);
+					if (data === "Password correct") {
+					}
+				})
+				.catch((error) => {
+					// Handle any errors
+					console.error("XHR request failed:", error);
+				});
+		}
 	});
 }
 

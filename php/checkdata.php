@@ -4,10 +4,6 @@ include("../php/functions.php");
 
 // Initialize an array to store messages and results
 $response = [];
-$projects = [];
-$locations = [];
-$location = [];
-$comments = [];
 
 
 if(isset($_POST['i'])) {
@@ -34,7 +30,7 @@ if(isset($_POST['i'])) {
 
         try {
             // Prepare a statement to select all rows from the "locations" table where "i" equals the provided "embed_id"
-            $statement = $pdo->prepare("SELECT id, embed_id, ispublic, haspass FROM locations WHERE embed_id = :embed_id");
+            $statement = $pdo->prepare("SELECT embed_id, ispublic, haspass FROM locations WHERE embed_id = :embed_id");
             // Bind the parameter
             $statement->bindParam(':embed_id', $embed_id, PDO::PARAM_STR);
             // Execute the statement
@@ -63,7 +59,7 @@ if(isset($_POST['i'])) {
 
         try {
             // Prepare a statement to select all rows from the "locations" table where "i" equals the provided "embed_id"
-            $statement = $pdo->prepare("SELECT id, embed_id, ispublic, haspass FROM projects WHERE embed_id = :embed_id");
+            $statement = $pdo->prepare("SELECT embed_id, ispublic, haspass FROM projects WHERE embed_id = :embed_id");
             // Bind the parameter
             $statement->bindParam(':embed_id', $embed_id, PDO::PARAM_STR);
             // Execute the statement
