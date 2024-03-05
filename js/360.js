@@ -13,6 +13,26 @@ var sceneType = "image";
 var listItems;
 var marker;
 
+// Define the image click handler function
+function imageClickHandler(event) {
+	const newDiv = document.createElement("div");
+	const clonedImage = event.target.cloneNode(true);
+	const divId = "zoom-div-" + Date.now(); // Generate unique ID
+	newDiv.id = divId; // Assign unique ID to the new div
+	newDiv.classList.add("zoomedimage");
+	clonedImage.classList.remove("zoom-image");
+	newDiv.appendChild(clonedImage);
+	rootElement.appendChild(newDiv);
+
+	// Add click event listener to the new div
+	newDiv.addEventListener("click", function () {
+		rootElement.removeChild(newDiv); // Remove the new div when clicked
+	});
+}
+
+// Create a group to add labels/markers into, and add it to the scene
+const root = new THREE.Group();
+
 // Perform internet speed test on page load
 window.addEventListener("load", function () {
 	testInternetSpeed()
@@ -43,7 +63,7 @@ const file = "../php/getdata.php";
 xhrSend("POST", file, data)
 	.then((data) => {
 		// Handle the response data
-		console.log(data);
+		console.log(data); /* Remove this later */
 		start(data);
 	})
 	.catch((error) => {
@@ -60,6 +80,7 @@ function start(data) {
 	console.log("Data Type:", dataType);
 
 	const baseUrl = "http://localhost/360/";
+
 	// Array for Map view
 	/*
 	var mapArray = [
@@ -527,6 +548,7 @@ function start(data) {
 
 	// Initialize currentVideoSrc with the URL of the initial video
 	let currentVideoSrc;
+	let currentImageSrc;
 
 	// Initialize texture for the texture to update on the sphere
 	let texture;
@@ -553,8 +575,6 @@ function start(data) {
 	const sphere = new THREE.Mesh(geometry, material);
 	scene.add(sphere);
 
-	// Create a group to add labels/markers into, and add it to the scene
-	const root = new THREE.Group();
 	scene.add(root);
 
 	// Set and add the ambient light
@@ -782,14 +802,81 @@ function start(data) {
 		});
 	}
 
+	// Define event listener functions
+	function markerInternalLinksClickHandler(e) {
+		e.preventDefault();
+		let link = e.target;
+		const orderId = link.getAttribute("data-order_index");
+		change360Content(parseInt(orderId));
+	}
+
+	function markerInfoLabelsClickHandler(e) {
+		if (!e.target.closest(".marker-container")) {
+			e.preventDefault();
+			let link = e.target;
+			let hint = link.querySelector(".hint");
+			let content = link.querySelector(".marker-container");
+			let computedStyle = getComputedStyle(content);
+
+			if (computedStyle.display === "none") {
+				content.style.display = "block";
+				hint.style.display = "none";
+			} else {
+				content.style.display = "none";
+				hint.style.display = "block";
+			}
+		}
+	}
+
 	// Function to update scene with image or video
 	function change360Content(orderId) {
+		// Once marker elements are available, add event listeners
+		let markerInternalLinks = document.querySelectorAll(".intlink");
+		let markerInfoLabels = document.querySelectorAll(".infodot");
+
+		// Remove existing event listeners from markerInternalLinks
+		markerInternalLinks.forEach((link) => {
+			link.removeEventListener("click", markerInternalLinksClickHandler);
+		});
+
+		// Remove existing event listeners from markerInfoLabels
+		markerInfoLabels.forEach((link) => {
+			link.removeEventListener("click", markerInfoLabelsClickHandler);
+		});
+
+		let zoomImages = document.querySelectorAll(".zoom-image");
+		zoomImages.forEach((image) => {
+			image.removeEventListener("click", imageClickHandler);
+		});
+
 		labelContainerElem.innerHTML = "";
 		infoElem.classList.remove("infoshow");
 		let targetObject = data.locations.find((obj) => obj.order_index === orderId);
 		let fileName = targetObject.file_name;
 		let fileType = targetObject.file_type;
 		let fileInfo = targetObject.info;
+
+		markerData = targetObject.markers;
+
+		// Remove all markers/labels
+		root.clear();
+
+		if (markerData !== "" && markerData !== null && markerData !== undefined) {
+			// Call createMarkers function asynchronously
+			console.log("Creating markers...");
+			createMarkers(markerData).then(() => {
+				setTimeout(() => {
+					// Add click event listeners to zoom images
+					zoomImages = document.querySelectorAll(".zoom-image");
+					zoomImages.forEach((image) => {
+						image.addEventListener("click", imageClickHandler);
+						console.log(image);
+					});
+					console.log("Added eventlistener to images...", zoomImages);
+					console.log("Markers created.");
+				}, 100);
+			});
+		}
 
 		if (fileType === "video") {
 			// Check if the videoId is the same as the current video
@@ -799,6 +886,7 @@ function start(data) {
 
 			sceneType = "video";
 			let videoFile = fileName;
+			currentImageSrc = "";
 
 			// Remove the previous texture
 			sphere.material.map = null;
@@ -1005,6 +1093,10 @@ function start(data) {
 			sphere.material.map = texture;
 			sphere.material.needsUpdate = true;
 		} else if (fileType === "image") {
+			// Check if the videoId is the same as the current video
+			if (currentImageSrc === fileName) {
+				return; // No need to change the video if it's the same
+			}
 			sceneType = "image";
 			videoplayer.style.display = "none";
 			// Remove the previous texture
@@ -1076,6 +1168,8 @@ function start(data) {
 					sphere.material.needsUpdate = true;
 				});
 			}
+
+			currentImageSrc = fileName;
 		} else {
 			console.log("Invalid file type");
 		}
@@ -1092,17 +1186,6 @@ function start(data) {
 		}
 
 		camera.updateProjectionMatrix();
-		markerData = targetObject.markers;
-
-		// Remove all markers/labels
-		root.clear();
-
-		if (markerData !== "" && markerData !== null && markerData !== undefined) {
-			// Call createMarkers function asynchronously
-			createMarkers(markerData).then(() => {
-				console.log("Markers created and event listeners added.");
-			});
-		}
 	}
 
 	// Define initialZoomLevel with the initial value of your input range
@@ -1532,7 +1615,6 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 
 			const activeListItem = document.querySelector(`#locations [data-id="${orderId}"]`);
 			activeListItem.classList.add("active");
-			console.log(orderId);
 			change360Content(parseInt(orderId));
 		});
 	});
@@ -1582,153 +1664,143 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 
 	// Function to create labels/markers
 	async function createMarkers(markerData) {
-		markerData.forEach((data, index) => {
-			const { marker_title, pos_x, pos_y, pos_z, info, link, sound, autoplay, customcss } =
-				data;
-
-			// Create a THREE.Vector3 instance from the position object
-			const positionVector = new THREE.Vector3(pos_x, pos_y, pos_z);
-
-			// Create marker element
-
-			if (typeof link === "string" && link !== "" && !isNaN(link)) {
-				// If the string represents a number
-				marker = document.createElement("div");
-				marker.dataset.order_index = parseInt(link); // Convert the string to a number
-				marker.classList.add("intlink");
-			} else if (typeof link === "string" && link !== "") {
-				// If it's a regular string
-				marker = document.createElement("a");
-				marker.href = link;
-				marker.target = "_blank";
-				marker.classList.add("extlink");
-			} else {
-				// If it's neither a string nor a number
-				marker = document.createElement("div");
-				marker.classList.add("infodot");
+		return new Promise((resolve) => {
+			if (markerData.length === 0) {
+				resolve(); // Resolve immediately if no marker data is provided
+				return; // Exit the function
 			}
 
-			let markerindex = index;
-			marker.id = "marker" + markerindex;
+			let markersCreated = 0; // Variable to track the number of markers created
 
-			if (customcss !== "" && customcss !== null) {
-				var cssArray = JSON.parse(customcss);
+			const checkMarkers = () => {
+				let markerInternalLinks = document.querySelectorAll(".intlink");
+				let markerInfoLabels = document.querySelectorAll(".infodot");
 
-				console.log(cssArray);
+				if (markerInternalLinks.length > 0 && markerInfoLabels.length > 0) {
+					clearInterval(interval); // Stop the interval
 
-				// Define your CSS rules as a string
-				var tag = "";
+					// Add event listeners
+					markerInternalLinks.forEach((link) => {
+						link.addEventListener("click", markerInternalLinksClickHandler);
+					});
 
-				cssArray.forEach((rule, index) => {
-					// Add marker index and CSS rule to the tag string
-					tag += "#marker" + markerindex + rule;
-					// Add a space if it's not the last rule
-					if (index !== cssArray.length - 1) {
-						tag += " ";
+					markerInfoLabels.forEach((link) => {
+						link.addEventListener("click", markerInfoLabelsClickHandler);
+					});
+
+					// Resolve the promise once all markers are created
+					if (markersCreated === markerData.length) {
+						resolve();
 					}
-				});
-
-				// Check if a <style> tag already exists
-				var existingStyle = document.querySelector("style[data-customcss]");
-
-				// If a <style> tag exists, append the CSS rules to its textContent
-				if (existingStyle) {
-					existingStyle.textContent += tag;
-				} else {
-					// Otherwise, create a new style element
-					var style = document.createElement("style");
-
-					style.textContent = tag;
-					// Add a custom attribute to identify this style tag
-					style.setAttribute("data-customcss", "");
-					// Append the style element to the <head> of the document
-					document.head.appendChild(style);
 				}
-			}
+			};
 
-			marker.classList.add("marker");
+			// Check markers initially
+			checkMarkers();
 
-			let html = `<span class="hint">${marker_title}</span><div class="marker-container"></div>`;
-			marker.innerHTML = html;
-			let markerContainer = marker.querySelector(".marker-container");
-			markerContainer.insertAdjacentHTML("afterbegin", info);
+			// Check markers periodically
+			const interval = setInterval(checkMarkers, 50);
 
-			// Create CSS2DObject for marker/label
-			const cssObject = new CSS2DObject(marker);
-			cssObject.position.copy(positionVector);
+			markerData.forEach((data, index) => {
+				const {
+					marker_title,
+					pos_x,
+					pos_y,
+					pos_z,
+					info,
+					link,
+					sound,
+					autoplay,
+					customcss,
+				} = data;
 
-			// Add CSS2DObject to the label renderer's scene (Root is a group)
-			root.add(cssObject);
-		});
+				// Create a THREE.Vector3 instance from the position object
+				const positionVector = new THREE.Vector3(pos_x, pos_y, pos_z);
 
-		// Define a function to wait for marker elements
-		const waitForMarkerElements = () => {
-			return new Promise((resolve) => {
-				const interval = setInterval(() => {
-					const markerInternalLinks = document.querySelectorAll(".intlink");
-					const markerInfoLabels = document.querySelectorAll(".infodot");
-					if (markerInternalLinks.length > 0 && markerInfoLabels.length > 0) {
-						clearInterval(interval); // Stop the interval
-						// Once marker elements are available, add event listeners
+				// Create marker element
 
-						markerInternalLinks.forEach((link) => {
-							link.addEventListener("click", (e) => {
-								e.preventDefault();
-								const orderId = link.getAttribute("data-order_index");
-								change360Content(parseInt(orderId));
-							});
-						});
+				if (typeof link === "string" && link !== "" && !isNaN(link)) {
+					// If the string represents a number
+					marker = document.createElement("div");
+					marker.dataset.order_index = parseInt(link); // Convert the string to a number
+					marker.classList.add("intlink");
+				} else if (typeof link === "string" && link !== "") {
+					// If it's a regular string
+					marker = document.createElement("a");
+					marker.href = link;
+					marker.target = "_blank";
+					marker.classList.add("extlink");
+				} else {
+					// If it's neither a string nor a number
+					marker = document.createElement("div");
+					marker.classList.add("infodot");
+				}
 
-						markerInfoLabels.forEach((link) => {
-							link.addEventListener("click", (e) => {
-								if (!e.target.closest(".marker-container")) {
-									e.preventDefault();
-									let hint = link.querySelector(".hint");
-									let content = link.querySelector(".marker-container");
-									let computedStyle = getComputedStyle(content);
+				let markerindex = index;
+				marker.id = "marker" + markerindex;
 
-									if (computedStyle.display === "none") {
-										content.style.display = "block";
-										hint.style.display = "none";
-									} else {
-										content.style.display = "none";
-										hint.style.display = "block";
-									}
-								}
-							});
-						});
+				if (customcss !== "" && customcss !== null) {
+					var cssArray = JSON.parse(customcss);
 
-						const zoomImage = document.querySelectorAll(".zoom-image");
+					// Define your CSS rules as a string
+					var tag = "";
 
-						zoomImage.forEach((image) => {
-							image.addEventListener("click", function () {
-								const newDiv = document.createElement("div");
-								const clonedImage = image.cloneNode(true);
-								const divId = "zoom-div-" + Date.now(); // Generate unique ID
+					cssArray.forEach((rule, index) => {
+						// Add marker index and CSS rule to the tag string
+						tag += "#marker" + markerindex + rule;
+						// Add a space if it's not the last rule
+						if (index !== cssArray.length - 1) {
+							tag += " ";
+						}
+					});
 
-								newDiv.id = divId; // Assign unique ID to the new div
-								newDiv.classList.add("zoomedimage");
-								clonedImage.classList.remove("zoom-image");
-								newDiv.appendChild(clonedImage);
-								rootElement.appendChild(newDiv);
+					// Check if a <style> tag already exists
+					var existingStyle = document.querySelector("style[data-customcss]");
 
-								// Add click event listener to the new div
-								newDiv.addEventListener("click", function () {
-									rootElement.removeChild(newDiv); // Remove the new div when clicked
-								});
-							});
-						});
+					// If a <style> tag exists, append the CSS rules to its textContent
+					if (existingStyle) {
+						existingStyle.textContent += tag;
+					} else {
+						// Otherwise, create a new style element
+						var style = document.createElement("style");
 
-						resolve(); // Resolve the promise
+						style.textContent = tag;
+						// Add a custom attribute to identify this style tag
+						style.setAttribute("data-customcss", "");
+						// Append the style element to the <head> of the document
+						document.head.appendChild(style);
 					}
-				}, 25);
+				}
+
+				marker.classList.add("marker");
+
+				let html = `<span class="hint">${marker_title}</span><div class="marker-container"></div>`;
+				marker.innerHTML = html;
+				let markerContainer = marker.querySelector(".marker-container");
+				markerContainer.insertAdjacentHTML("afterbegin", info);
+
+				// Create CSS2DObject for marker/label
+				const cssObject = new CSS2DObject(marker);
+				cssObject.position.copy(positionVector);
+
+				// Add CSS2DObject to the label renderer's scene (Root is a group)
+				root.add(cssObject);
+				markersCreated++;
 			});
-		};
 
-		// Wait for marker elements
-		await waitForMarkerElements();
+			camera.position.set(360, 0, 0);
+			camera.rotation.set(360, 0, 0);
+			camera.lookAt(scene.position);
+			camera.updateProjectionMatrix();
 
-		console.log("Event listeners added to markers.");
+			camera.position.x = -360;
+			camera.rotation.x = -360;
+			camera.lookAt(scene.position);
+			camera.updateProjectionMatrix();
+			render();
+
+			console.log("Markers added to root.");
+		});
 	}
 
 	if (

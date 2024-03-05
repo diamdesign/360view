@@ -330,6 +330,7 @@ a:hover {
 #profile .content {
 	font-size: 0.9rem;
 	margin-top: 1rem;
+	padding-bottom: 3rem;
 }
 
 #toggle-leftpanel,
