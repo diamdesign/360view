@@ -1654,3 +1654,46 @@ input[type="range"]:focus::-moz-range-thumb {
 		font-size: 0.75rem;
 	}
 }
+
+#info-details .column3 {
+	display: flex;
+	text-align: center;
+	justify-content: space-between;
+	color: rgba(255, 255, 255, 0.5);
+	border-top: 1px solid rgba(255, 255, 255, 0.2);
+	padding: 1rem;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#info-details .column3 span {
+	display: block;
+	text-align: center;
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: white;
+}
+
+#info-details .user-details {
+	display: flex;
+}
+
+#info-details .thumbnail {
+	width: 4rem;
+	border-radius: 50rem;
+	overflow: hidden;
+	height: 4rem;
+	margin-right: 1rem;
+}
+
+#info-details h2 {
+	line-height: 1.4rem;
+	font-size: 1.4rem !important;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+	font-weight: 600;
+}
+
+#info-details .userinfo a {
+	color: white;
+	font-weight: 600;
+}

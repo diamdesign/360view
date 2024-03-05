@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
+import { rootHTML, haspassHTML } from "./360template.js";
 
 var dataType = "";
 // Array for markers/labels update per each image/video
@@ -56,15 +57,53 @@ window.addEventListener("load", function () {
 const embedId = getUrlParameter("i");
 const locId = getUrlParameter("loc");
 
-const data = "i=" + embedId + "&loc=" + locId;
-const file = "../php/getdata.php";
+const uri = "i=" + embedId + "&loc=" + locId;
+const fileCheckData = "../php/checkdata.php";
+const fileGetData = "../php/getdata.php";
 
-// Usage example:
-xhrSend("POST", file, data)
+function buildHtml() {
+	const rootElement = document.getElementById("root");
+	// Append the iframe to the parent element
+	rootElement.innerHTML = rootHTML;
+}
+
+function buildPasswordHtml() {
+	const rootElement = document.getElementById("root");
+	// Append the iframe to the parent element
+	rootElement.innerHTML = haspassHTML;
+	document.querySelector("#enter-password").addEventListener("click", () => {
+		console.log("Clicked");
+	});
+}
+
+xhrSend("POST", fileCheckData, uri)
 	.then((data) => {
 		// Handle the response data
 		console.log(data); /* Remove this later */
-		start(data);
+
+		if (!data.haspass && data.ispublic) {
+			xhrSend("POST", fileGetData, uri)
+				.then((data) => {
+					// Handle the response data
+					console.log(data); /* Remove this later */
+					buildHtml();
+					start(data);
+				})
+				.catch((error) => {
+					// Handle any errors
+					console.error("XHR request failed:", error);
+				});
+		} else if (data.haspass && data.ispublic) {
+			console.log("This has password ON.");
+			buildPasswordHtml();
+			return;
+		} else if (!data.haspass && !data.ispublic) {
+			console.log("This is private.");
+			return;
+		} else if (data.haspass && !data.ispublic) {
+			console.log("This is private and has password.");
+			return;
+		}
 	})
 	.catch((error) => {
 		// Handle any errors

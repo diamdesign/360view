@@ -19,7 +19,7 @@ include("../php/db360.php");
 </head>
 <body>
     <div id="root"></div>
-    <script src="../js/360template.js"></script>
+    <script type="module" src="../js/360template.js"></script>
     <script src="../js/functions.min.js"></script>
     <script src="../dist/bundle.js"></script>
 </body>

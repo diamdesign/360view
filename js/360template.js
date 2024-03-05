@@ -1,4 +1,4 @@
-const rootHTML = `<div id="outside">
+export const rootHTML = `<div id="outside">
 			<a href="#" id="logo">
 				<div><img src="img/logo.jpg" alt="" /></div>
 				<span class="hint">Powered by Snälla Pojkar</span>
@@ -16,10 +16,26 @@ const rootHTML = `<div id="outside">
 
 				<div id="info-location" class="container"></div>
 				<div id="info-details" class="container">
-					<div class="column3">
-						<div>Likes<span>132</span></div>
-						<div>Views<span>1,132</span></div>
+					<div class="user-details">
+						<a href="#" class="thumbnail">
+							<img src="https://picsum.photos/400/400" alt="" />
+						</a>
+						<div class="userinfo">
+							<a href="#">Username</a>
+						</div>
 					</div>
+					<h2 class="title">
+						This is the title of the location
+					</h2>
+					<p class="description">
+						Lorem ipsum dolor
+					</p>
+					<div class="column3">
+						<div class="details-likes">Likes<span>132</span></div>
+						<div class="details-views">Views<span>1,132</span></div>
+						<div class="details-created">Created<span>2024-12-03 14:55:32</span></div>
+					</div>
+					
 				</div>
 			</div>
 			<div id="comments">
@@ -351,7 +367,10 @@ const rootHTML = `<div id="outside">
 			<div id="labels"></div>
 		</div>`;
 
-const rootElement = document.getElementById("root");
-
-// Append the iframe to the parent element
-rootElement.innerHTML = rootHTML;
+export const haspassHTML = `<div id="haspass-login">
+		<form>
+			<label for="haspass-password">Password</label>
+			<input id="haspass-password" type="password" placeholder="Password" />
+			<button id="enter-password">Enter</button>
+		</form>
+	</div>`;
