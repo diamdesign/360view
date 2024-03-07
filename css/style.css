@@ -1749,3 +1749,28 @@ input[type="range"]:focus::-moz-range-thumb {
 	color: white;
 	background: black !important;
 }
+
+#haspass-login .formgroup {
+	display: flex;
+	flex-direction: column;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+	width: 50px;
+	padding: 8px;
+	aspect-ratio: 1;
+	border-radius: 50%;
+	background: white;
+	--_m: conic-gradient(#ffffff00 10%, #fff), linear-gradient(#fff 0 0) content-box;
+	-webkit-mask: var(--_m);
+	mask: var(--_m);
+	-webkit-mask-composite: source-out;
+	mask-composite: subtract;
+	animation: l3 1s infinite linear;
+}
+@keyframes l3 {
+	to {
+		transform: rotate(1turn);
+	}
+}

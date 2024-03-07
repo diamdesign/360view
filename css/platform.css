@@ -233,6 +233,7 @@ a:hover {
 }
 
 #leftmenu {
+	white-space: nowrap;
 	background-color: rgb(239, 239, 241);
 	width: 20rem;
 	transition: all 0.3s ease;
@@ -241,6 +242,7 @@ a:hover {
 }
 
 #rightmenu {
+	white-space: nowrap;
 	width: 30rem;
 	transition: all 0.3s ease;
 	border-left: 1px solid rgba(0, 0, 0, 0.2);

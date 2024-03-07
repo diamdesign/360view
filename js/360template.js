@@ -370,7 +370,9 @@ export const rootHTML = `<div id="outside">
 export const haspassHTML = `<div id="haspass-login">
 		<form>
 			<label for="haspass-password">Password</label>
-			<input id="haspass-password" type="password" placeholder="Password" />
-			<button id="enter-password">Enter</button>
+			<div class="formgroup">
+				<input id="haspass-password" type="password" placeholder="Password" />
+				<button id="enter-password">Enter</button>
+			</div>
 		</form>
 	</div>`;

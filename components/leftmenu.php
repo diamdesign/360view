@@ -1,7 +1,10 @@
 <div id="leftmenu">
     <div id="toggle-leftpanel"></div>
-    <ul>
-        <li>Should be able to toggle off locations menu, for interactive game making or such.</li>
-        <li>Create a "checkstatus" php function first, to see if the object is private or has password, then if okay getdata.php</li>
+    <ul style="list-style:inside;font-size:0.8rem;padding:1rem;">
+        <li>Fix the comments</li>
+        <li>Fix the emoji for comments</li>
+        <li>Fix css for login/signup</li>
+        <li>Fix the captcha plugin for signup</li>
+        <li>Fix login and signup inside the 360</li>
     </ul>
-</div>
+</div> 

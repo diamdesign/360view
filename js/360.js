@@ -1,7 +1,8 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
-import { rootHTML, haspassHTML } from "./360template.js";
+import { rootHTML, haspassHTML } from "./360template.min.js";
+import { testInternetSpeed, xhrSend, getUrlParameter } from "./functions.min.js";
 
 var dataType = "";
 // Array for markers/labels update per each image/video
@@ -16,6 +17,7 @@ var marker;
 
 // Define the image click handler function
 function imageClickHandler(event) {
+	const rootElement = document.querySelector("#root");
 	const newDiv = document.createElement("div");
 	const clonedImage = event.target.cloneNode(true);
 	const divId = "zoom-div-" + Date.now(); // Generate unique ID
@@ -70,22 +72,56 @@ function buildHtml() {
 function buildPasswordHtml() {
 	const rootElement = document.getElementById("root");
 	// Append the iframe to the parent element
+
 	rootElement.innerHTML = haspassHTML;
+	document.querySelector("#haspass-password").focus();
 	document.querySelector("#enter-password").addEventListener("click", (e) => {
 		e.preventDefault();
+		const formGroup = document.querySelector("#haspass-login form");
 		const password = document.querySelector("#haspass-password").value.trim();
+
+		const loaderHTML = '<div class="loader"></div>';
+		formGroup.insertAdjacentHTML("beforebegin", loaderHTML);
+
+		const loaderElem = document.querySelector(".loader");
+		formGroup.style.display = "none";
 		if (password === "") {
 			alert("Password can not be empty.");
+			formGroup.style.display = "block";
+			loaderElem.remove();
 			return;
 		} else if (password.length < 5) {
 			alert("Password must be 5 letters or longer.");
+			formGroup.style.display = "block";
+			loaderElem.remove();
+			return;
 		} else {
 			const fileCheckPass = "../php/checkpass.php";
 			const passuri = "i=" + embedId + "&loc=" + locId + "&pass=" + password;
 			xhrSend("POST", fileCheckPass, passuri)
 				.then((data) => {
 					console.log(data);
-					if (data === "Password correct") {
+					if (data.success) {
+						document.querySelector("#haspass-login").remove();
+
+						xhrSend("POST", fileGetData, uri)
+							.then((data) => {
+								// Handle the response data
+								console.log(data); /* Remove this later */
+								buildHtml();
+								start(data);
+							})
+							.catch((error) => {
+								// Handle any errors
+								console.error("XHR request failed:", error);
+							});
+					} else {
+						setTimeout(() => {
+							alert("Wrong password.");
+							formGroup.style.display = "block";
+							loaderElem.remove();
+							return;
+						}, 3000);
 					}
 				})
 				.catch((error) => {
@@ -539,13 +575,16 @@ function start(data) {
 	settingsButton.addEventListener("touchstart", openSettings);
 	settingsButton.addEventListener("selectstart", openSettings);
 
-	// Add locations empty list if data is a project and showlocations is true
+	const locationsUl = document.querySelector("#locationlist");
+	data.locations.forEach((item) => {
+		item = "<li></li>";
+		locationsUl.insertAdjacentHTML("afterbegin", item);
+	});
+
 	if (dataType === "project" && data.project && data.project.showlocations === true) {
-		const locationsUl = document.querySelector("#locationlist");
-		data.locations.forEach((item) => {
-			item = "<li></li>";
-			locationsUl.insertAdjacentHTML("afterbegin", item);
-		});
+		// Do nothing
+	} else {
+		document.querySelector("#indicatorbtn").remove();
 	}
 
 	// Perspective start at 75
@@ -799,67 +838,65 @@ function start(data) {
 	// Set the locations html
 	let locationsHtml = "";
 
-	if (dataType === "project" && data.project && data.project.showlocations === true) {
-		console.log("Render locations list for project...");
-		// For loop the locations list with data information
-		for (let i = 0; i < data.locations.length; i++) {
-			const content = data.locations[i];
-			let activeClass = i === 0 && content.file_type === "video" ? "active" : "";
-			let imageUrl = content.file_name.replace(/\.\w+$/, ".jpg");
-			if (content.file_type === "video") {
-				sceneType = "video";
-				const fileNameWithoutExtension = imageUrl.split(".").slice(0, -1).join(".");
-				let itemHtml = `<li class="${activeClass}" data-file="${content.file_name}" data-id="${content.id}" data-order_index="${content.order_index}" data-type="${content.file_type}">
+	console.log("Render locations list for project...");
+	// For loop the locations list with data information
+	for (let i = 0; i < data.locations.length; i++) {
+		const content = data.locations[i];
+		let activeClass = i === 0 && content.file_type === "video" ? "active" : "";
+		let imageUrl = content.file_name.replace(/\.\w+$/, ".jpg");
+		if (content.file_type === "video") {
+			sceneType = "video";
+			const fileNameWithoutExtension = imageUrl.split(".").slice(0, -1).join(".");
+			let itemHtml = `<li class="${activeClass}" data-file="${content.file_name}" data-id="${content.id}" data-order_index="${content.order_index}" data-type="${content.file_type}">
                             <span class="icon-video">${content.duration}</span>
                             <div>${content.location_title}</div>
                             <img src="${baseUrl}video/${fileNameWithoutExtension}.jpg" alt="" />
                         </li>`;
-				locationsHtml += itemHtml;
-			} else {
-				sceneType = "image";
-				const fileNameWithoutExtension = content.file_name
-					.split(".")
-					.slice(0, -1)
-					.join(".");
-				let itemHtml = `<li class="${activeClass}" data-file="${content.file_name}" data-id="${content.id}" data-order_index="${content.order_index}" data-type="${content.file_type}">
+			locationsHtml += itemHtml;
+		} else {
+			sceneType = "image";
+			const fileNameWithoutExtension = content.file_name.split(".").slice(0, -1).join(".");
+			let itemHtml = `<li class="${activeClass}" data-file="${content.file_name}" data-id="${content.id}" data-order_index="${content.order_index}" data-type="${content.file_type}">
                             <div>${content.location_title}</div>
                             <img src="${baseUrl}img/${fileNameWithoutExtension}-low.jpg" alt="" />
                         </li>`;
-				locationsHtml += itemHtml;
-			}
+			locationsHtml += itemHtml;
 		}
-
-		// Insert the locations list to HTML
-		const locationUl = document.querySelector("#locationlist");
-		locationUl.innerHTML = locationsHtml;
-
-		listItems = document.querySelectorAll("#locationlist li");
-
-		// Function to set active in list and update scene
-		function activateItem(item) {
-			listItems.forEach((listItem) => {
-				listItem.classList.remove("active");
-			});
-
-			item.classList.add("active");
-			const orderId = item.getAttribute("data-order_index");
-			// Call a function to change the 360 content based on the file name and type
-			change360Content(parseInt(orderId));
-		}
-
-		// Add click event listener to each <li> element
-		listItems.forEach((item) => {
-			item.addEventListener("click", function () {
-				activateItem(item);
-			});
-			item.addEventListener("touchstart", function () {
-				activateItem(item);
-			});
-			item.addEventListener("selectend", function () {
-				activateItem(item);
-			});
-		});
 	}
+
+	// Insert the locations list to HTML
+	const locationUl = document.querySelector("#locationlist");
+	locationUl.innerHTML = locationsHtml;
+
+	listItems = document.querySelectorAll("#locationlist li");
+
+	// Function to set active in list and update scene
+	function activateItem(item) {
+		listItems.forEach((listItem) => {
+			listItem.classList.remove("active");
+		});
+
+		item.classList.add("active");
+		const orderId = item.getAttribute("data-order_index");
+		// Call a function to change the 360 content based on the file name and type
+		change360Content(parseInt(orderId));
+	}
+
+	// Add click event listener to each <li> element
+	listItems.forEach((item) => {
+		item.addEventListener("click", function () {
+			activateItem(item);
+		});
+		item.addEventListener("touchstart", function () {
+			activateItem(item);
+		});
+		item.addEventListener("selectend", function () {
+			activateItem(item);
+		});
+	});
+
+	// Init, when all is added to the DOM
+	checkFirstListItem();
 
 	// Define event listener functions
 	function markerInternalLinksClickHandler(e) {
@@ -1628,24 +1665,20 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 	closeCommentsButton.addEventListener("touchstart", closeComments);
 	closeCommentsButton.addEventListener("selectstart", closeComments);
 
-	document.addEventListener("DOMContentLoaded", function () {
-		// Get all the <li> elements
-		// Function to change the 360 image
-
-		function checkFirstListItem() {
-			const firstListItem = document.querySelector("#locations .container ul li:first-child");
-			if (firstListItem) {
-				const orderId = data.locations[0].order_index;
-				change360Content(parseInt(orderId));
-				firstListItem.classList.add("active");
-			} else {
-				// Retry after a delay if the first list item is not found
-				setTimeout(checkFirstListItem, 1000); // Retry after 1 second
-			}
+	function checkFirstListItem() {
+		const firstListItem = document.querySelector("#locations .container ul li:first-child");
+		if (firstListItem) {
+			const orderId = data.locations[0].order_index;
+			change360Content(parseInt(orderId));
+			firstListItem.classList.add("active");
+		} else {
+			// Retry after a delay if the first list item is not found
+			setTimeout(checkFirstListItem, 1000); // Retry after 1 second
 		}
+	}
 
-		// Start checking for the first list item
-		checkFirstListItem();
+	document.addEventListener("DOMContentLoaded", function () {
+		// What to do here?
 	});
 
 	const map = document.getElementById("map");

@@ -1,12 +1,12 @@
 // Get the value of the 'i' parameter from the URL
-function getUrlParameter(name) {
+export function getUrlParameter(name) {
 	name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
 	var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
 	var results = regex.exec(location.search);
 	return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
-async function xhrSend(type, file, data) {
+export async function xhrSend(type, file, data) {
 	return new Promise((resolve, reject) => {
 		var xhr = new XMLHttpRequest();
 		xhr.open(type, file, true);
@@ -37,7 +37,7 @@ async function xhrSend(type, file, data) {
 	});
 }
 
-function testInternetSpeed() {
+export function testInternetSpeed() {
 	return new Promise((resolve, reject) => {
 		const imageAddr = "../img/360-low.jpg"; // A sample image URL
 		const downloadSize = 63633; // Size of the test image in bytes (adjust as needed)
