@@ -2,7 +2,14 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { rootHTML, haspassHTML } from "./360template.min.js";
-import { testInternetSpeed, xhrSend, getUrlParameter } from "./functions.min.js";
+import { buildComments } from "./comments.min.js";
+import {
+	testInternetSpeed,
+	xhrSend,
+	getUrlParameter,
+	formatNumber,
+	countComments,
+} from "./functions.min.js";
 
 var dataType = "";
 // Array for markers/labels update per each image/video
@@ -365,9 +372,8 @@ function start(data) {
 	const infoResizer = document.querySelector("#resizer");
 
 	const likeButton = document.querySelector("#likebtn");
-	const closeCommentsButton = document.querySelector("#closecommentsbtn");
-	const commentsElem = document.querySelector("#comments");
 	const commentButton = document.querySelector("#commentbtn");
+	const commentsElem = document.querySelector("#comments");
 
 	const videoplayer = document.querySelector("#videoplayer");
 	const playVideoButton = document.querySelector("#playvideo");
@@ -1281,8 +1287,42 @@ function start(data) {
 			infoButton.style.display = "none";
 		}
 
+		buildComments(targetObject.comments);
+
+		// Add event listeners to show replies
+		const viewReply = document.querySelectorAll(".btn-showreplies");
+		viewReply.forEach((btn) => {
+			btn.addEventListener("click", (e) => {
+				e.preventDefault();
+				let container = e.target.parentNode.querySelector(".replies-container");
+				if (container) {
+					container.style.display = "block";
+					e.target.remove();
+				} else {
+					console.error("Replies container not found.");
+				}
+			});
+		});
+
+		const closeCommentsButton = document.querySelector("#closecommentsbtn");
+
+		function closeComments() {
+			let commentButton = document.querySelector("#commentbtn");
+			commentButton.style.opacity = "1";
+			commentsElem.classList.remove("commentshow");
+		}
+
+		closeCommentsButton.addEventListener("click", closeComments);
+		closeCommentsButton.addEventListener("touchstart", closeComments);
+		closeCommentsButton.addEventListener("selectstart", closeComments);
+
+		commentButton.querySelector(".amount").textContent = formatNumber(
+			countComments(targetObject.comments)
+		);
+
 		camera.updateProjectionMatrix();
 	}
+	// End change360Content
 
 	// Define initialZoomLevel with the initial value of your input range
 	const initialZoomLevel = parseFloat(zoomLevelInput.value);
@@ -1652,18 +1692,9 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 		infoElem.classList.remove("infoshow");
 	}
 
-	function closeComments() {
-		commentButton.style.opacity = "1";
-		commentsElem.classList.remove("commentshow");
-	}
-
 	closeInfoButton.addEventListener("click", closeInfo);
 	closeInfoButton.addEventListener("touchstart", closeInfo);
 	closeInfoButton.addEventListener("selectstart", closeInfo);
-
-	closeCommentsButton.addEventListener("click", closeComments);
-	closeCommentsButton.addEventListener("touchstart", closeComments);
-	closeCommentsButton.addEventListener("selectstart", closeComments);
 
 	function checkFirstListItem() {
 		const firstListItem = document.querySelector("#locations .container ul li:first-child");

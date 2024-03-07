@@ -23,7 +23,13 @@ function getUserInfo($pdo, $user_id) {
 function visitorInfo($pdo, $user_id) {
 
     $current_url_system = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-    $current_url = $_SERVER['HTTP_REFERER'];
+    if(isset($_SERVER['HTTP_REFERER'])) {
+        $current_url = $_SERVER['HTTP_REFERER'];
+        // Proceed with using $current_url
+    } else {
+        // Handle the case when HTTP_REFERER is not set
+        $current_url = ""; // Or any default value you prefer
+    }
     // Get user agent from HTTP headers
     $user_agent = $_SERVER['HTTP_USER_AGENT'];
     // Retrieve user information

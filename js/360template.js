@@ -1,7 +1,7 @@
 export const rootHTML = `<div id="outside">
 			<a href="#" id="logo">
 				<div><img src="img/logo.jpg" alt="" /></div>
-				<span class="hint">Powered by Snälla Pojkar</span>
+				<span class="hint">Powered by 360</span>
 			</a>
 			<div id="map">
 				<div id="mapimage">
@@ -31,266 +31,14 @@ export const rootHTML = `<div id="outside">
 						Lorem ipsum dolor
 					</p>
 					<div class="column3">
-						<div class="details-likes">Likes<span>132</span></div>
-						<div class="details-views">Views<span>1,132</span></div>
-						<div class="details-created">Created<span>2024-12-03 14:55:32</span></div>
+						<div class="details-likes">Likes<span>0</span></div>
+						<div class="details-views">Views<span>0</span></div>
+						<div class="details-created">Created<span>-</span></div>
 					</div>
 					
 				</div>
 			</div>
-			<div id="comments">
-				<h4 class="amount-comments">88 comments</h4>
-				<div id="closecommentsbtn"></div>
-				<div class="container">
-					<div class="comment">
-						<a href="#profile" class="thumb"><img src="" alt="" /></a>
-						<div class="commentinfo">
-							<a href="#profile" class="profilename"
-								>Hellothere42<span class="creator">· Creator</span></a
-							>
-							<p class="message">
-								Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aut
-								accusantium aliquid in! Quidem.
-							</p>
-							<span class="timeago">40m</span>
-							<a href="#like" class="likecomment">
-								<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-									<rect fill="none" height="256" width="256" />
-									<path
-										d="M176,32a60,60,0,0,0-48,24A60,60,0,0,0,20,92c0,71.9,99.9,128.6,104.1,131a7.8,7.8,0,0,0,3.9,1,7.6,7.6,0,0,0,3.9-1,314.3,314.3,0,0,0,51.5-37.6C218.3,154,236,122.6,236,92A60,60,0,0,0,176,32Z"
-									/>
-								</svg>
-								324
-							</a>
-							<a href="#reply" class="replybtn">Reply</a>
-						</div>
-					</div>
-					<div class="replies">
-						<div class="comment reply">
-							<a href="#profile" class="thumb"><img src="" alt="" /></a>
-							<div class="commentinfo">
-								<a href="#profile" class="profilename">Hellothere42</a>
-								<p class="message">U are rocking it :)</p>
-								<span class="timeago">40m</span>
-								<a href="#like" class="likecomment">
-									<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-										<rect fill="none" height="256" width="256" />
-										<path
-											d="M176,32a60,60,0,0,0-48,24A60,60,0,0,0,20,92c0,71.9,99.9,128.6,104.1,131a7.8,7.8,0,0,0,3.9,1,7.6,7.6,0,0,0,3.9-1,314.3,314.3,0,0,0,51.5-37.6C218.3,154,236,122.6,236,92A60,60,0,0,0,176,32Z"
-										/>
-									</svg>
-									324
-								</a>
-								<a href="#reply" class="replybtn">Reply</a>
-							</div>
-						</div>
-						<div class="comment reply">
-							<a href="#profile" class="thumb"><img src="" alt="" /></a>
-							<div class="commentinfo">
-								<div class="repliedto">
-									<a href="#profile" class="profilename">Sparapåpengar</a>
-									<a href="#profile" class="profilename replyto"
-										>> Hellothere42</a
-									>
-								</div>
-								<p class="message">U are rocking it :)</p>
-								<span class="timeago">40m</span>
-								<a href="#like" class="likecomment">
-									<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-										<rect fill="none" height="256" width="256" />
-										<path
-											d="M176,32a60,60,0,0,0-48,24A60,60,0,0,0,20,92c0,71.9,99.9,128.6,104.1,131a7.8,7.8,0,0,0,3.9,1,7.6,7.6,0,0,0,3.9-1,314.3,314.3,0,0,0,51.5-37.6C218.3,154,236,122.6,236,92A60,60,0,0,0,176,32Z"
-										/>
-									</svg>
-									324
-								</a>
-								<a href="#reply" class="replybtn">Reply</a>
-							</div>
-						</div>
-					</div>
-					<div class="comment">
-						<a href="#profile" class="thumb"><img src="" alt="" /></a>
-						<div class="commentinfo">
-							<a href="#profile" class="profilename">Hellothere42</a>
-							<p class="message">
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo
-								quisquam dicta, officiis veritatis numquam autem cupiditate
-								doloribus eligendi architecto odit?
-							</p>
-							<span class="timeago">40m</span>
-							<a href="#like" class="likecomment likedcomment">
-								<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-									<rect fill="none" height="256" width="256" />
-									<path
-										d="M176,32a60,60,0,0,0-48,24A60,60,0,0,0,20,92c0,71.9,99.9,128.6,104.1,131a7.8,7.8,0,0,0,3.9,1,7.6,7.6,0,0,0,3.9-1,314.3,314.3,0,0,0,51.5-37.6C218.3,154,236,122.6,236,92A60,60,0,0,0,176,32Z"
-									/>
-								</svg>
-								324
-							</a>
-							<a href="#reply" class="replybtn">Reply</a>
-						</div>
-					</div>
-					<div class="replies">+ View 32 replies</div>
-					<div class="comment">
-						<a href="#profile" class="thumb"><img src="" alt="" /></a>
-						<div class="commentinfo">
-							<a href="#profile" class="profilename">Hellothere42</a>
-							<p class="message">
-								Lorem ipsum dolor sit amet consectetur adipisicing elit.
-							</p>
-							<span class="timeago">40m</span>
-							<a href="#like" class="likecomment">
-								<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-									<rect fill="none" height="256" width="256" />
-									<path
-										d="M176,32a60,60,0,0,0-48,24A60,60,0,0,0,20,92c0,71.9,99.9,128.6,104.1,131a7.8,7.8,0,0,0,3.9,1,7.6,7.6,0,0,0,3.9-1,314.3,314.3,0,0,0,51.5-37.6C218.3,154,236,122.6,236,92A60,60,0,0,0,176,32Z"
-									/>
-								</svg>
-								324
-							</a>
-							<a href="#reply" class="replybtn">Reply</a>
-						</div>
-					</div>
-					<div class="comment">
-						<a href="#profile" class="thumb"><img src="" alt="" /></a>
-						<div class="commentinfo">
-							<a href="#profile" class="profilename">Hellothere42</a>
-							<p class="message">
-								Lorem ipsum dolor, sit amet consectetur adipisicing elit. Enim,
-								earum accusantium? Corporis quo repellendus eius odio doloribus
-								accusamus possimus sapiente ex ea, eos porro nemo officiis? Eveniet
-								dolorem quos vero.
-							</p>
-							<span class="timeago">40m</span>
-							<a href="#like" class="likecomment">
-								<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-									<rect fill="none" height="256" width="256" />
-									<path
-										d="M176,32a60,60,0,0,0-48,24A60,60,0,0,0,20,92c0,71.9,99.9,128.6,104.1,131a7.8,7.8,0,0,0,3.9,1,7.6,7.6,0,0,0,3.9-1,314.3,314.3,0,0,0,51.5-37.6C218.3,154,236,122.6,236,92A60,60,0,0,0,176,32Z"
-									/>
-								</svg>
-								324
-							</a>
-							<a href="#reply" class="replybtn">Reply</a>
-						</div>
-					</div>
-					<div class="comment">
-						<a href="#profile" class="thumb"><img src="" alt="" /></a>
-						<div class="commentinfo">
-							<a href="#profile" class="profilename">Hellothere42</a>
-							<p class="message">
-								Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius aut
-								accusantium aliquid in! Quidem.
-							</p>
-							<span class="timeago">40m</span>
-							<a href="#like" class="likecomment likedcomment">
-								<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-									<rect fill="none" height="256" width="256" />
-									<path
-										d="M176,32a60,60,0,0,0-48,24A60,60,0,0,0,20,92c0,71.9,99.9,128.6,104.1,131a7.8,7.8,0,0,0,3.9,1,7.6,7.6,0,0,0,3.9-1,314.3,314.3,0,0,0,51.5-37.6C218.3,154,236,122.6,236,92A60,60,0,0,0,176,32Z"
-									/>
-								</svg>
-								324
-							</a>
-							<a href="#reply" class="replybtn">Reply</a>
-						</div>
-					</div>
-					<div class="comment">
-						<a href="#profile" class="thumb"><img src="" alt="" /></a>
-						<div class="commentinfo">
-							<a href="#profile" class="profilename">Hellothere42</a>
-							<p class="message">U are rocking it :)</p>
-							<span class="timeago">40m</span>
-							<a href="#like" class="likecomment">
-								<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-									<rect fill="none" height="256" width="256" />
-									<path
-										d="M176,32a60,60,0,0,0-48,24A60,60,0,0,0,20,92c0,71.9,99.9,128.6,104.1,131a7.8,7.8,0,0,0,3.9,1,7.6,7.6,0,0,0,3.9-1,314.3,314.3,0,0,0,51.5-37.6C218.3,154,236,122.6,236,92A60,60,0,0,0,176,32Z"
-									/>
-								</svg>
-								324
-							</a>
-							<a href="#reply" class="replybtn">Reply</a>
-						</div>
-					</div>
-					<div class="comment">
-						<a href="#profile" class="thumb"><img src="" alt="" /></a>
-						<div class="commentinfo">
-							<a href="#profile" class="profilename">Hellothere42</a>
-							<p class="message">
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo
-								quisquam dicta, officiis veritatis numquam autem cupiditate
-								doloribus eligendi architecto odit?
-							</p>
-							<span class="timeago">40m</span>
-							<a href="#like" class="likecomment">
-								<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-									<rect fill="none" height="256" width="256" />
-									<path
-										d="M176,32a60,60,0,0,0-48,24A60,60,0,0,0,20,92c0,71.9,99.9,128.6,104.1,131a7.8,7.8,0,0,0,3.9,1,7.6,7.6,0,0,0,3.9-1,314.3,314.3,0,0,0,51.5-37.6C218.3,154,236,122.6,236,92A60,60,0,0,0,176,32Z"
-									/>
-								</svg>
-								324
-							</a>
-							<a href="#reply" class="replybtn">Reply</a>
-						</div>
-					</div>
-					<div class="comment">
-						<a href="#profile" class="thumb"><img src="" alt="" /></a>
-						<div class="commentinfo">
-							<a href="#profile" class="profilename">Hellothere42</a>
-							<p class="message">
-								Lorem ipsum dolor sit amet consectetur adipisicing elit.
-							</p>
-							<span class="timeago">40m</span>
-							<a href="#like" class="likecomment likedcomment">
-								<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-									<rect fill="none" height="256" width="256" />
-									<path
-										d="M176,32a60,60,0,0,0-48,24A60,60,0,0,0,20,92c0,71.9,99.9,128.6,104.1,131a7.8,7.8,0,0,0,3.9,1,7.6,7.6,0,0,0,3.9-1,314.3,314.3,0,0,0,51.5-37.6C218.3,154,236,122.6,236,92A60,60,0,0,0,176,32Z"
-									/>
-								</svg>
-								324
-							</a>
-							<a href="#reply" class="replybtn">Reply</a>
-						</div>
-					</div>
-					<div class="comment">
-						<a href="#profile" class="thumb"><img src="" alt="" /></a>
-						<div class="commentinfo">
-							<a href="#profile" class="profilename">Hellothere42</a>
-							<p class="message">
-								Lorem ipsum dolor, sit amet consectetur adipisicing elit. Enim,
-								earum accusantium? Corporis quo repellendus eius odio doloribus
-								accusamus possimus sapiente ex ea, eos porro nemo officiis? Eveniet
-								dolorem quos vero.
-							</p>
-							<span class="timeago">40m</span>
-							<a href="#like" class="likecomment">
-								<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-									<rect fill="none" height="256" width="256" />
-									<path
-										d="M176,32a60,60,0,0,0-48,24A60,60,0,0,0,20,92c0,71.9,99.9,128.6,104.1,131a7.8,7.8,0,0,0,3.9,1,7.6,7.6,0,0,0,3.9-1,314.3,314.3,0,0,0,51.5-37.6C218.3,154,236,122.6,236,92A60,60,0,0,0,176,32Z"
-									/>
-								</svg>
-								324
-							</a>
-							<a href="#reply" class="replybtn">Reply</a>
-						</div>
-					</div>
-				</div>
-
-				<div class="writecomment">
-					<div class="thumb"></div>
-					<textarea
-						name=""
-						cols="30"
-						rows="1"
-						placeholder="Add comment..."
-						id="commentinput"
-					></textarea>
-				</div>
-			</div>
+			<div id="comments"></div>
 		</div>
 		<div id="caption"></div>
 		<div id="view-container">
@@ -349,10 +97,10 @@ export const rootHTML = `<div id="outside">
 				</div>
 				<div class="rightbuttons">
 					<div id="likebtn">
-						<span class="hint">Like</span><span class="amount">25.3K</span>
+						<span class="hint">Like</span><span class="amount">0</span>
 					</div>
 					<div id="commentbtn">
-						<span class="hint">Comments</span><span class="amount">1,558</span>
+						<span class="hint">Comments</span><span class="amount">0</span>
 					</div>
 					<div id="infobtn">i<span class="hint">Info & Details</span></div>
 					<div id="sharebtn"><span class="hint">Share</span></div>

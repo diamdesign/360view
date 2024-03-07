@@ -83,7 +83,7 @@ try {
         rel="stylesheet"
     />
     <link rel="stylesheet" href="../css/platform.css">
-    <title>Watch</title>
+    <title>360 -<?php echo $title . " by " . $username;?></title>
 </head>
 <body>
     <div id="content-container">

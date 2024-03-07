@@ -1,4 +1,53 @@
 // Get the value of the 'i' parameter from the URL
+export function formatNumber(number) {
+	if (number >= 1000000) {
+		return (number / 1000000).toFixed(1) + "M";
+	} else if (number >= 10000) {
+		return (number / 1000).toFixed(1) + "k";
+	} else {
+		return number.toLocaleString();
+	}
+}
+
+export function getTimeAgo(timestamp) {
+	const currentDate = new Date();
+	const date = new Date(timestamp);
+	const timeDiff = currentDate - date;
+
+	const seconds = Math.floor(timeDiff / 1000);
+	const minutes = Math.floor(seconds / 60);
+	const hours = Math.floor(minutes / 60);
+	const days = Math.floor(hours / 24);
+	const months = Math.floor(days / 30);
+	const years = Math.floor(days / 365);
+
+	if (years > 0) {
+		return years + "y";
+	} else if (months > 0) {
+		return months + "m";
+	} else if (days > 0) {
+		return days + "d";
+	} else if (hours > 0) {
+		return hours + "h";
+	} else {
+		return minutes + "m";
+	}
+}
+
+export function countComments(data) {
+	let totalCount = 0;
+	data.forEach((item) => {
+		// Count the main comment
+		totalCount++;
+
+		// Count the replies
+		if (item.replies && Array.isArray(item.replies)) {
+			totalCount += item.replies.length;
+		}
+	});
+	return totalCount;
+}
+
 export function getUrlParameter(name) {
 	name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
 	var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
