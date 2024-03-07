@@ -1679,26 +1679,30 @@ input[type="range"]:focus::-moz-range-thumb {
 	}
 }
 
-#info-details .column3 {
+#info-details .column3,
+#info-details .column4 {
 	display: flex;
 	text-align: center;
 	justify-content: space-between;
 	color: rgba(255, 255, 255, 0.5);
 	border-top: 1px solid rgba(255, 255, 255, 0.2);
 	padding: 1rem;
+	font-size: 0.8rem;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-#info-details .column3 span {
+#info-details .column3 span,
+#info-details .column4 span {
 	display: block;
 	text-align: center;
-	font-size: 0.8rem;
+
 	font-weight: 600;
 	color: white;
 }
 
 #info-details .user-details {
 	display: flex;
+	margin-bottom: 1rem;
 }
 
 #info-details .thumbnail {

@@ -40,8 +40,34 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                
         try {
             // Prepare a statement to select all rows from the "locations" table where "i" equals the provided "embed_id"
-            $statement = $pdo->prepare("SELECT id, embed_id, user_id, location_title, file_type, file_name, base_url, duration, captions, info, custom_logo, logo_link, custom_css, ispublic, allowcomments, hasmusic, haspass, registered FROM locations WHERE embed_id = :embed_id");
-            // Bind the parameter
+            $statement = $pdo->prepare("
+                SELECT 
+                    l.id, 
+                    l.embed_id, 
+                    l.user_id, 
+                    l.location_title, 
+                    l.location_description,
+                    l.file_type, 
+                    l.file_name, 
+                    l.base_url, 
+                    l.duration, 
+                    l.captions, 
+                    l.info, 
+                    l.custom_logo, 
+                    l.logo_link, 
+                    l.custom_css, 
+                    l.ispublic, 
+                    l.allowcomments, 
+                    l.hasmusic, 
+                    l.haspass, 
+                    l.registered,
+                    (SELECT COUNT(*) FROM likes WHERE location_id = l.id) AS likes_count
+                    (SELECT COUNT(DISTINCT visitor_ipadress) FROM views WHERE location_id = l.id) AS views_count
+                FROM 
+                    locations l
+                WHERE 
+                    l.embed_id = :embed_id
+            ");            // Bind the parameter
             $statement->bindParam(':embed_id', $embed_id, PDO::PARAM_STR);
             // Execute the statement
             $statement->execute();
@@ -214,7 +240,31 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
 
         try {
             // Retrieve data from the "projects" table
-            $projects_statement = $pdo->prepare("SELECT id, embed_id, user_id, project_title, project_description, map_filename, base_url, custom_logo, logo_link, custom_css, ispublic, hasmusic, haspass, showlocations, overide_location_password, registered FROM projects WHERE embed_id = :embed_id");
+            $projects_statement = $pdo->prepare("
+                SELECT 
+                p.id, 
+                p.embed_id, 
+                p.user_id, 
+                p.project_title, 
+                p.project_description, 
+                p.map_filename, 
+                p.base_url, 
+                p.custom_logo, 
+                p.logo_link, 
+                p.custom_css, 
+                p.ispublic, 
+                p.hasmusic, 
+                p.haspass, 
+                p.showlocations, 
+                p.overide_location_password, 
+                p.registered,
+                (SELECT COUNT(*) FROM likes WHERE project_id = p.id) AS likes_count,
+                (SELECT COUNT(DISTINCT visitor_ipadress) FROM views WHERE project_id = p.id) AS views_count
+            FROM 
+                projects p
+            WHERE 
+                p.embed_id = :embed_id
+        ");
             $projects_statement->bindParam(':embed_id', $embed_id, PDO::PARAM_STR);
             $projects_statement->execute();
             $projects = $projects_statement->fetch(PDO::FETCH_ASSOC); // Use fetch() instead of fetchAll()
@@ -287,8 +337,34 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
 
                 $location_id = $project['location_id'];
                 $order_index = $project['order_index'];
-                $location_statement = $pdo->prepare("SELECT id, embed_id, user_id, location_title, file_type, file_name, base_url, duration, captions, info, custom_logo, logo_link, custom_css, ispublic, allowcomments, hasmusic, haspass, registered FROM locations WHERE id = :location_id");
-                $location_statement->bindParam(':location_id', $location_id, PDO::PARAM_INT);
+                $location_statement = $pdo->prepare("
+                    SELECT 
+                    l.id, 
+                    l.embed_id, 
+                    l.user_id, 
+                    l.location_title, 
+                    l.location_description,
+                    l.file_type, 
+                    l.file_name, 
+                    l.base_url, 
+                    l.duration, 
+                    l.captions, 
+                    l.info, 
+                    l.custom_logo, 
+                    l.logo_link, 
+                    l.custom_css, 
+                    l.ispublic, 
+                    l.allowcomments, 
+                    l.hasmusic, 
+                    l.haspass, 
+                    l.registered,
+                    (SELECT COUNT(*) FROM likes WHERE location_id = l.id) AS likes_count,
+                    (SELECT COUNT(DISTINCT visitor_ipadress) FROM views WHERE location_id = l.id) AS views_count
+                FROM 
+                    locations l
+                WHERE 
+                    l.id = :location_id
+            ");                $location_statement->bindParam(':location_id', $location_id, PDO::PARAM_INT);
                 $location_statement->execute();
                 $locations_data = $location_statement->fetchAll(PDO::FETCH_ASSOC);
 

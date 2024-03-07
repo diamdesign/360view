@@ -1316,9 +1316,22 @@ function start(data) {
 		closeCommentsButton.addEventListener("touchstart", closeComments);
 		closeCommentsButton.addEventListener("selectstart", closeComments);
 
-		commentButton.querySelector(".amount").textContent = formatNumber(
-			countComments(targetObject.comments)
+		const commentCount = countComments(targetObject.comments);
+
+		commentButton.querySelector(".amount").textContent = formatNumber(commentCount);
+
+		likeButton.querySelector(".amount").textContent = formatNumber(targetObject.likes_count);
+		document.querySelector("#info-details .title").textContent = targetObject.location_title;
+		document.querySelector("#info-details .description").textContent =
+			targetObject.location_description;
+		document.querySelector(".details-likes span").textContent = formatNumber(
+			targetObject.likes_count
 		);
+		document.querySelector(".details-views span").textContent = formatNumber(
+			targetObject.views_count
+		);
+		document.querySelector(".details-comments span").textContent = formatNumber(commentCount);
+		document.querySelector(".details-created span").textContent = targetObject.registered;
 
 		camera.updateProjectionMatrix();
 	}

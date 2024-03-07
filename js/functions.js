@@ -35,6 +35,10 @@ export function getTimeAgo(timestamp) {
 }
 
 export function countComments(data) {
+	if (!Array.isArray(data)) {
+		return 0; // or handle the non-array case appropriately
+	}
+
 	let totalCount = 0;
 	data.forEach((item) => {
 		// Count the main comment

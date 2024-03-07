@@ -15,6 +15,7 @@ include("../php/db360.php");
         rel="stylesheet"
     />
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/emoji.css">
     <title>360</title>
 </head>
 <body>

@@ -78,6 +78,7 @@ try {
         embed_id VARCHAR(50) NULL,
         user_id INT(30) NULL,
         location_title VARCHAR(255) NULL,
+        location_description VARCHAR(255) NULL,
         file_type VARCHAR(20) NULL,
         file_name VARCHAR(255) NULL,
         base_url VARCHAR(255) NULL,

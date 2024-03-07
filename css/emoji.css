@@ -1,0 +1,84 @@
+#emojiPlugin {
+	width: 25rem;
+	position: relative;
+	box-sizing: border-box;
+}
+
+#emojiPlugin * {
+	box-sizing: border-box;
+}
+
+#emojiButton {
+	position: absolute;
+	right: 0;
+	top: 0.1rem;
+	border: none;
+	background: transparent;
+	font-size: 1.8rem;
+}
+#emojiButton:hover {
+	cursor: pointer;
+	scale: 1.2;
+}
+#emojiContainer {
+	padding-top: 2.2rem;
+	display: none;
+	position: absolute;
+	background-color: #fff;
+	border: 0.0625rem solid #ccc;
+	height: 15rem;
+	width: 25rem;
+	z-index: 1000;
+	overflow: hidden;
+	border-radius: 0.5rem;
+	overflow: hidden;
+	box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 8px 1px;
+}
+#commentInputField {
+	font-family: Arial, Helvetica, sans-serif;
+	width: 25rem;
+	padding: 1rem;
+	padding-right: 3rem;
+	font-size: 1.2rem;
+	border-radius: 1rem;
+	line-height: 1.2rem;
+	border: none;
+	background-color: #ededed;
+}
+#commentInputField:focus-visible {
+	background-color: white;
+}
+#searchInput {
+	border-top-left-radius: 0.5rem;
+	border-top-right-radius: 0.5rem;
+	font-family: Arial, Helvetica, sans-serif;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	padding: 0.625rem;
+	font-size: 1rem;
+	box-sizing: border-box;
+	border: 0.0625rem solid #ccc;
+	background-color: #f1f1f1;
+	overflow-y: auto;
+	z-index: 1000;
+	border: none;
+}
+#emojiList {
+	background-color: #fff;
+	width: 100%;
+	max-height: 12.5rem;
+	overflow-y: auto;
+	z-index: 1000;
+	display: flex;
+	flex-wrap: wrap;
+	align-content: space-between;
+}
+#emojiList button {
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 0.3125rem;
+	font-size: 1.8rem;
+}

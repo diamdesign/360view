@@ -24,17 +24,21 @@ export const rootHTML = `<div id="outside">
 							<a href="#">Username</a>
 						</div>
 					</div>
+					
+					
+					<div class="column4">
+						<div class="details-likes">Likes<span>0</span></div>
+						<div class="details-views">Views<span>0</span></div>
+						<div class="details-comments">Comments<span>0</span></div>
+						<div class="details-created">Created<span>-</span></div>
+					</div>
 					<h2 class="title">
 						This is the title of the location
 					</h2>
 					<p class="description">
 						Lorem ipsum dolor
 					</p>
-					<div class="column3">
-						<div class="details-likes">Likes<span>0</span></div>
-						<div class="details-views">Views<span>0</span></div>
-						<div class="details-created">Created<span>-</span></div>
-					</div>
+					
 					
 				</div>
 			</div>
