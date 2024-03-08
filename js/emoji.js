@@ -59,6 +59,7 @@ export function installEmoji(elementId) {
 	emojiButton.addEventListener("click", async () => {
 		if (emojiContainer.style.display === "block") {
 			emojiContainer.style.display = "none"; // Use assignment operator here
+			inputField.focus();
 			return;
 		} else {
 			emojiList.innerHTML = ""; // Clear existing content
@@ -68,6 +69,8 @@ export function installEmoji(elementId) {
 			let startIndex = 0;
 			loadEmojis(startIndex, chunkSize, emojisArray);
 			emojiContainer.style.display = "block";
+			const input = document.querySelector("#searchInput");
+			input.focus();
 
 			// Lazy loading more emojis when scroll reaches bottom
 			emojiList.addEventListener("scroll", function () {
@@ -128,6 +131,7 @@ export function installEmoji(elementId) {
 	});
 
 	// Adjust textarea height based on content with a maximum of 12 rows
+
 	function adjustTextAreaHeight() {
 		const lineHeight = parseInt(window.getComputedStyle(inputField).lineHeight);
 		const maxHeight = lineHeight * 12; // Maximum height for 12 rows
