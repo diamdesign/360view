@@ -31,7 +31,7 @@ export function installEmoji(elementId) {
 	// Function to fetch emojis data from the JSON file
 	async function fetchEmojis() {
 		try {
-			const response = await fetch("data/emoji-en-US.json"); // Adjust the path as needed
+			const response = await fetch("../data/emoji-en-US.json"); // Adjust the path as needed
 			emojisData = await response.json();
 		} catch (error) {
 			console.error("Error fetching emojis:", error);

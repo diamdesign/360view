@@ -97,7 +97,7 @@ export function buildComments(props) {
 
             <div class="writecomment">
                 <div class="thumb"></div>
-                <textarea name="" cols="30" rows="1" placeholder="Add comment..." id="commentinput"></textarea>
+                <div id="emojiplugin"></div>
             </div>`;
 
 	commentElement.innerHTML = commentHTML;

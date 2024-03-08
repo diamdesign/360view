@@ -3,6 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { rootHTML, haspassHTML } from "./360template.min.js";
 import { buildComments } from "./comments.min.js";
+import { installEmoji } from "./emoji.min.js";
 import {
 	testInternetSpeed,
 	xhrSend,
@@ -1332,6 +1333,8 @@ function start(data) {
 		);
 		document.querySelector(".details-comments span").textContent = formatNumber(commentCount);
 		document.querySelector(".details-created span").textContent = targetObject.registered;
+
+		installEmoji("emojiplugin");
 
 		camera.updateProjectionMatrix();
 	}

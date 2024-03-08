@@ -909,7 +909,7 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 .writecomment {
 	border-top: 0.0625rem solid #d2d2d2;
-	padding: 3.2rem 1.25rem 0.625rem 1.25rem;
+	padding: 1.25rem 1.25rem 0rem 1.25rem;
 }
 .writecomment textarea {
 	resize: none;
@@ -927,8 +927,10 @@ input[type="range"]:focus::-moz-range-thumb {
 
 .comment .thumb,
 .writecomment .thumb {
-	width: 2.5rem;
-	height: 2.5rem;
+	width: 3rem;
+	height: 3rem;
+	min-height: 3rem;
+	min-width: 3rem;
 	border-radius: 100%;
 	background: #e9e9e9;
 	overflow: hidden;
@@ -1049,6 +1051,11 @@ input[type="range"]:focus::-moz-range-thumb {
 	right: 0 !important;
 }
 
+.commentshow {
+	display: flex !important;
+	flex-direction: column;
+}
+
 .btn-showreplies {
 	font-weight: 600;
 }
@@ -1060,6 +1067,8 @@ input[type="range"]:focus::-moz-range-thumb {
 .reply .thumb {
 	width: 2rem;
 	height: 2rem;
+	min-height: 2rem;
+	min-width: 2rem;
 }
 #info #resizer {
 	content: "";
@@ -1147,7 +1156,7 @@ input[type="range"]:focus::-moz-range-thumb {
 #comments .container {
 	scrollbar-width: thin;
 	scrollbar-color: rgba(0, 0, 0, 0.4) transparent;
-	height: calc(100% - 11.875rem);
+	height: calc(100% - 10rem);
 }
 
 #info .container p,

@@ -1,17 +1,17 @@
-#emojiPlugin {
-	width: 25rem;
+#emojiplugin {
+	width: 100%;
 	position: relative;
 	box-sizing: border-box;
 }
 
-#emojiPlugin * {
+#emojiplugin * {
 	box-sizing: border-box;
 }
 
 #emojiButton {
 	position: absolute;
-	right: 0;
-	top: 0.1rem;
+	right: 0.3rem;
+	top: 0.3rem;
 	border: none;
 	background: transparent;
 	font-size: 1.8rem;
@@ -21,26 +21,27 @@
 	scale: 1.2;
 }
 #emojiContainer {
+	bottom: 100%;
 	padding-top: 2.2rem;
 	display: none;
 	position: absolute;
 	background-color: #fff;
 	border: 0.0625rem solid #ccc;
 	height: 15rem;
-	width: 25rem;
+	width: 100%;
 	z-index: 1000;
 	overflow: hidden;
-	border-radius: 0.5rem;
+	border-radius: 0.4rem;
 	overflow: hidden;
 	box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 8px 1px;
 }
 #commentInputField {
-	font-family: Arial, Helvetica, sans-serif;
-	width: 25rem;
+	font-family: "Archivo", Arial, Helvetica, sans-serif;
+	width: 100%;
 	padding: 1rem;
 	padding-right: 3rem;
-	font-size: 1.2rem;
-	border-radius: 1rem;
+	font-size: 1rem;
+	border-radius: 0.4rem;
 	line-height: 1.2rem;
 	border: none;
 	background-color: #ededed;
@@ -49,8 +50,8 @@
 	background-color: white;
 }
 #searchInput {
-	border-top-left-radius: 0.5rem;
-	border-top-right-radius: 0.5rem;
+	border-top-left-radius: 0.4rem;
+	border-top-right-radius: 0.4rem;
 	font-family: Arial, Helvetica, sans-serif;
 	position: absolute;
 	top: 0;
