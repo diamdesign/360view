@@ -372,7 +372,8 @@ a:hover {
 }
 
 #signup-container,
-#login-container {
+#login-container,
+#forgot-container {
 	display: none;
 	background-color: white;
 	padding: 2rem;
@@ -387,25 +388,29 @@ a:hover {
 }
 
 #signup-container form,
-#login-container form {
+#login-container form,
+#forgot-container form {
 	display: flex;
 	flex-wrap: wrap;
 	flex-direction: column;
 }
 
 #signup-container label,
-#login-container label {
+#login-container label,
+#forgot-container label {
 	font-size: 0.7rem;
 	font-weight: 600;
 	text-transform: uppercase;
 	color: lightgray;
 }
 #signup-container h2,
-#login-container h2 {
+#login-container h2,
+#forgot-container h2 {
 	margin-bottom: 1rem;
 }
 #signup-container input,
-#login-container input {
+#login-container input,
+#forgot-container input {
 	font-family: "Archivo";
 	margin-top: 0.2rem;
 	margin-bottom: 1rem;
@@ -417,7 +422,8 @@ a:hover {
 }
 
 #signup-container button,
-#login-container button {
+#login-container button,
+#forgot-container button {
 	padding: 0.625rem 1.25rem;
 	font-size: 1rem;
 	font-weight: 600;
@@ -428,10 +434,21 @@ a:hover {
 }
 
 #signup-container button:hover,
-#login-container button:hover {
+#login-container button:hover,
+#forgot-container button:hover {
 	background-color: black;
 	cursor: pointer;
 	animation: outlinepush 0.8s ease-out 1 forwards;
+}
+
+#login-container .forgot,
+#forgot-container .backtologin {
+	margin-top: 1rem;
+	font-size: 0.8rem;
+	text-align: center;
+	text-decoration: underline;
+	cursor: pointer;
+	padding: 0.5rem;
 }
 
 @media screen and (max-width: 840px) {

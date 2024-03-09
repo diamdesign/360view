@@ -26,9 +26,48 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
     // Get current user id if user is logged in and session set
     if(isset($_SESSION['user_id'])) {
         $current_user_id = $_SESSION['user_id'];
+        $statement = $pdo->prepare("
+            SELECT id, username, email, thumbnail, coverimage, subscriber, registered 
+            FROM users 
+            WHERE id = :current_user_id
+        ");
+        $statement->bindParam(':current_user_id', $current_user_id, PDO::PARAM_INT);
+        $statement->execute();
+        $userinfo = $statement->fetch(PDO::FETCH_ASSOC);
+        // Check if any rows were found
+        if($userinfo) {
+            $current_userinfo = $userinfo;
+        }
+
+
     } else {
-        $current_user_id = null;
+        $temp = 1;
+        $statement = $pdo->prepare("
+            SELECT id, username, email, thumbnail, coverimage, subscriber, registered 
+            FROM users 
+            WHERE id = :current_user_id
+        ");
+
+        $statement->bindParam(':current_user_id', $temp, PDO::PARAM_INT);
+
+        if ($statement->execute()) {
+            $userinfo = $statement->fetch(PDO::FETCH_ASSOC);
+
+            if ($userinfo) {
+                $current_userinfo = $userinfo;
+            } else {
+                // Handle case where no user was found
+                $response['error'] = "User not found";
+            }
+        } else {
+            // Handle statement execution error
+            $response['error'] = "Error executing statement";
+        }
+
+        $current_user_id = $temp;
     }
+
+
 
 
     // Check and insert visitors information into database
@@ -223,7 +262,8 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                 
                 // Store retrieved data into the response array
                 $response = [
-                    'user' => $user_array,
+                    'user' => $current_userinfo,
+                    'creator' => $user_array,
                     'locations' => [$location_details],
                 ];
                     } else {
@@ -325,7 +365,8 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
             }
 
             $response = [
-                'user' => $user_array,
+                'user' => $current_userinfo,
+                'creator' => $user_array,
                 'project' => $projects,
                 'locations' => [] // Initialize locations array here
             ];

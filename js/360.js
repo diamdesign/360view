@@ -3,7 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { rootHTML, haspassHTML } from "./360template.min.js";
 import { buildComments } from "./comments.min.js";
-import { installEmoji } from "./emoji.min.js";
+
 import {
 	testInternetSpeed,
 	xhrSend,
@@ -1288,22 +1288,7 @@ function start(data) {
 			infoButton.style.display = "none";
 		}
 
-		buildComments(targetObject.comments, data.user);
-
-		// Add event listeners to show replies
-		const viewReply = document.querySelectorAll(".btn-showreplies");
-		viewReply.forEach((btn) => {
-			btn.addEventListener("click", (e) => {
-				e.preventDefault();
-				let container = e.target.parentNode.querySelector(".replies-container");
-				if (container) {
-					container.style.display = "block";
-					e.target.remove();
-				} else {
-					console.error("Replies container not found.");
-				}
-			});
-		});
+		buildComments(targetObject, data.creator, data.user);
 
 		const closeCommentsButton = document.querySelector("#closecommentsbtn");
 
@@ -1333,8 +1318,6 @@ function start(data) {
 		);
 		document.querySelector(".details-comments span").textContent = formatNumber(commentCount);
 		document.querySelector(".details-created span").textContent = targetObject.registered;
-
-		installEmoji("emojiplugin");
 
 		camera.updateProjectionMatrix();
 	}
