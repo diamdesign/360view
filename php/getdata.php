@@ -427,30 +427,30 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                         if ($location_details['allowcomments'] === true) {
                             // Retrieve data from the "comments" table with likes count and check if the current user has liked each comment
                             $comments_statement = $pdo->prepare("
-                                SELECT 
-                                    c.*,
-                                    u.username AS username, 
-                                    u.thumbnail AS thumbnail, 
-                                    COUNT(cl.comment_id) AS likes_count,
-                                    SUM(CASE WHEN cl.user_id = :user_id THEN 1 ELSE 0 END) AS has_liked,
-                                    CASE WHEN c.reply_id IS NOT NULL THEN ru.username ELSE NULL END AS reply_username
-                                FROM 
-                                    comments c
-                                LEFT JOIN 
-                                    comments_likes cl ON c.id = cl.comment_id
-                                LEFT JOIN
-                                    users u ON c.user_id = u.id
-                                LEFT JOIN
-                                    comments rc ON c.reply_id = rc.id
-                                LEFT JOIN
-                                    users ru ON rc.user_id = ru.id
-                                WHERE  
-                                    c.location_id = :location_id
-                                GROUP BY 
-                                    c.id
-                                ORDER BY 
-                                    c.registered ASC;
-                            ");
+                            SELECT 
+                                c.*,
+                                u.username AS username, 
+                                u.thumbnail AS thumbnail, 
+                                COUNT(cl.comment_id) AS likes_count,
+                                SUM(CASE WHEN cl.user_id = :user_id THEN 1 ELSE 0 END) AS has_liked,
+                                CASE WHEN c.reply_id IS NOT NULL THEN ru.username ELSE NULL END AS reply_username
+                            FROM 
+                                comments c
+                            LEFT JOIN 
+                                comments_likes cl ON c.id = cl.comment_id
+                            LEFT JOIN
+                                users u ON c.user_id = u.id
+                            LEFT JOIN
+                                comments rc ON c.reply_id = rc.id
+                            LEFT JOIN
+                                users ru ON rc.user_id = ru.id
+                            WHERE  
+                                c.location_id = :location_id
+                            GROUP BY 
+                                c.id
+                            ORDER BY 
+                                c.parent_id ASC, c.registered ASC;
+                        ");
                             $comments_statement->bindParam(':location_id', $location_id, PDO::PARAM_INT);
                             $comments_statement->bindParam(':user_id', $current_user_id, PDO::PARAM_INT);
                             $comments_statement->execute();
@@ -458,7 +458,6 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
 
                             // Organize comments into a hierarchical structure
                             foreach ($all_comments as $comment) {
-
                                 // Adjust has_liked value to true or false
                                 $has_liked = ($comment['has_liked'] == '1') ? true : false;
                                 
@@ -466,13 +465,17 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                                 $comment['has_liked'] = $has_liked;
 
                                 // If the comment is a reply, find its parent comment
-                                if ($comment['reply_id'] !== null) {
-                                    $parent_id = $comment['reply_id'];
+                                if ($comment['parent_id'] !== null) {
+                                    $parent_id = $comment['parent_id'];
                                     // Search for the parent comment in the $comments array
                                     foreach ($comments as &$parent_comment) {
                                         if ($parent_comment['id'] == $parent_id) {
                                             // If the parent comment is found, append the reply to its 'replies' array
                                             $parent_comment['replies'][] = $comment;
+                                            // Sort the replies chronologically based on registered time
+                                            usort($parent_comment['replies'], function($a, $b) {
+                                                return strtotime($a['registered']) - strtotime($b['registered']);
+                                            });
                                             break; // Stop searching for the parent comment
                                         }
                                     }
@@ -482,17 +485,19 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                                 }
                             }
 
+                            // Sort top-level comments chronologically based on registered time
+                            usort($comments, function($a, $b) {
+                                return strtotime($a['registered']) - strtotime($b['registered']);
+                            });
+
                             // Add comments details to the location details
                             $location_details['comments'] = $comments;
-                        }
 
                         // Append location details to the $response['locations'] array
                         $response['locations'][] = $location_details;
                     }
                 }
-
-
-
+                }
             }
         } catch (PDOException $e) {
                 // If an error occurs, add the error message to the response array

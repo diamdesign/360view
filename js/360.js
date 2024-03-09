@@ -1288,7 +1288,7 @@ function start(data) {
 			infoButton.style.display = "none";
 		}
 
-		buildComments(targetObject.comments);
+		buildComments(targetObject.comments, data.user);
 
 		// Add event listeners to show replies
 		const viewReply = document.querySelectorAll(".btn-showreplies");

@@ -1,6 +1,6 @@
 import { getTimeAgo, formatNumber, countComments } from "./functions.min.js";
 
-export function buildComments(props) {
+export function buildComments(props, user) {
 	console.log("Building comments...");
 	// Count total comments function
 
@@ -20,14 +20,21 @@ export function buildComments(props) {
 	try {
 		props.map((comment) => {
 			commentHTML += `<div class="comment" data-id="${comment.id}">
-                        <a href="${profileBaseUrl + comment.username}" class="thumb">
+                        <a href="${
+							profileBaseUrl + comment.username
+						}" class="thumb"  target="_blank">
                             <img src="${comment.thumbnail}" alt="" />
                         </a>
                         <div class="commentinfo">
-                            <a href="${profileBaseUrl + comment.username}" class="profilename">
-                                ${comment.username}
-                                <span class="creator">· Creator</span>
-                            </a>
+                            <a href="${
+								profileBaseUrl + comment.username
+							}" class="profilename" target="_blank">
+                                ${comment.username}`;
+			if (comment.username === user.username) {
+				commentHTML += `<span class="creator">· Creator</span>`;
+			}
+
+			commentHTML += `</a>
                             <p class="message">${comment.comment}</p>
                             <span class="timeago">${getTimeAgo(comment.registered)}</span>
                             <a href="#like" class="likecomment${
@@ -47,24 +54,39 @@ export function buildComments(props) {
                         </div>
                     </div>`;
 
-			if (comment.replies.length > 0) {
+			if (comment.replies && comment.replies.length > 0) {
 				commentHTML += `<div class="replies"><div class="btn-showreplies">+ View ${comment.replies.length} replies</div><div class="replies-container">`;
 
 				comment.replies.map((reply) => {
 					commentHTML += `<div class="comment reply" data-id="${
 						reply.id
-					}" data-reply_id="${reply.reply_id}">
+					}" data-reply_id="${reply.reply_id}" data-parent_id="${reply.parent_id}">
                                 <a href="${
 									profileBaseUrl + reply.username
-								}" class="thumb"><img src="${reply.thumbnail}" alt="" /></a>
+								}" class="thumb" target="_blank"><img src="${
+						reply.thumbnail
+					}" alt="" /></a>
                                 <div class="commentinfo">
                                     <div class="repliedto">
                                         <a href="${
 											profileBaseUrl + reply.username
-										}" class="profilename">${reply.username}</a>
-                                        <a href="${
-											profileBaseUrl + reply.reply_username
-										}" class="profilename replyto">> ${reply.reply_username}</a>
+										}" class="profilename" target="_blank">${reply.username}`;
+
+					if (reply.username === user.username) {
+						console.log(reply.username, user.username);
+						commentHTML += `<span class="creator">· Creator</span>`;
+					}
+
+					commentHTML += `</a> > <a href="${
+						profileBaseUrl + reply.reply_username
+					}" class="profilename replyto">${reply.reply_username}`;
+
+					if (reply.username === user.username) {
+						console.log(reply.username, user.username);
+						commentHTML += `<span class="creator">· Creator</span>`;
+					}
+
+					commentHTML += `</a>
                                     </div>
                                     <p class="message">${reply.comment}</p>
                                     <span class="timeago">${getTimeAgo(reply.registered)}</span>
@@ -81,7 +103,9 @@ export function buildComments(props) {
                                     </a>
                                     <a href="#reply" class="replybtn" data-id="${
 										reply.id
-									}" data-name="${reply.username}">Reply</a>
+									}" data-parent_id="${reply.parent_id}" data-name="${
+						reply.username
+					}">Reply</a>
                                 </div>
                             </div>`;
 				});
@@ -94,7 +118,6 @@ export function buildComments(props) {
 	}
 
 	commentHTML += `</div>
-
             <div class="writecomment">
                 <div class="thumb"></div>
                 <div id="emojiplugin"></div>
