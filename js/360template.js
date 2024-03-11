@@ -13,36 +13,37 @@ export const rootHTML = `<div id="outside">
 				<div class="show-info">Details</div>
 				<div id="closeinfobtn"></div>
 				<div id="resizer"></div>
-
 				<div id="info-location" class="container"></div>
 				<div id="info-details" class="container">
 					<div class="user-details">
-						<a href="#" class="thumbnail">
-							<img src="https://picsum.photos/400/400" alt="" />
+						<a href="#" class="thumbnail" target="_blank">
+							<img src="" alt="" />
 						</a>
 						<div class="userinfo">
-							<a href="#">Username</a>
+							<a href="#" target="_blank"></a>
 						</div>
 					</div>
-					
-					
 					<div class="column4">
 						<div class="details-likes">Likes<span>0</span></div>
 						<div class="details-views">Views<span>0</span></div>
 						<div class="details-comments">Comments<span>0</span></div>
 						<div class="details-created">Created<span>-</span></div>
 					</div>
-					<h2 class="title">
-						This is the title of the location
-					</h2>
-					<p class="description">
-						Lorem ipsum dolor
-					</p>
-					
+					<h2 class="title"></h2>
+					<p class="description"></p>
+				</div>
+			</div>
+
+			<div id="comments"></div>
+
+			<div id="share">
+				<div id="closesharebtn"></div>
+				<h1>Share</h1>
+				<div class="container">
 					
 				</div>
 			</div>
-			<div id="comments"></div>
+
 		</div>
 		<div id="caption"></div>
 		<div id="view-container">

@@ -102,6 +102,7 @@ canvas {
 
 .locations #indicatorbtn:hover:after,
 #closeinfobtn:hover:after,
+#closesharebtn:hover:after,
 #closecommentsbtn:hover:after {
 	opacity: 1;
 }
@@ -268,6 +269,7 @@ canvas {
 
 #angleIndicator:hover,
 #closeinfobtn:hover,
+#closesharebtn:hover,
 #commentsbtn:hover,
 #closecommentsbtn:hover {
 	cursor: pointer;
@@ -861,6 +863,7 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 #info,
+#share,
 #comments {
 	display: none;
 	position: absolute;
@@ -1152,7 +1155,8 @@ input[type="range"]:focus::-moz-range-thumb {
 	margin-top: -0.5rem;
 }
 
-#info .container {
+#info .container,
+#share .container {
 	border-top: 1px solid rgba(255, 255, 255, 0.1);
 	position: absolute;
 	top: 5rem;
@@ -1316,6 +1320,20 @@ input[type="range"]:focus::-moz-range-thumb {
 	width: 100%;
 }
 
+#share h1 {
+	user-select: text;
+	color: white;
+	font-size: 1.625rem;
+	margin-bottom: 1.25rem;
+	padding-left: 1rem;
+	margin-top: 1.25rem;
+}
+
+#share .container {
+	width: 100%;
+	color: white;
+}
+
 #info .container h1,
 .marker-container h1 {
 	user-select: text;
@@ -1333,6 +1351,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	font-size: 1.25rem;
 }
 #closeinfobtn,
+#closesharebtn,
 #closecommentsbtn {
 	position: absolute;
 	top: 1.25rem;
@@ -1345,6 +1364,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	content: "";
 }
 #closeinfobtn:after,
+#closesharebtn:after,
 #closecommentsbtn:after {
 	position: absolute;
 	top: 0;
@@ -1680,7 +1700,8 @@ input[type="range"]:focus::-moz-range-thumb {
 	}
 
 	#comments,
-	#info {
+	#info,
+	#share {
 		right: -105%;
 		width: 100%;
 		max-width: 100% !important;

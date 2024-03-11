@@ -311,9 +311,11 @@ a:hover {
 }
 
 #profile .content {
-	font-size: 0.9rem;
+	font-size: 1rem;
+	line-height: 1.2rem;
 	margin-top: 1rem;
 	padding-bottom: 3rem;
+	font-family: "Archivo", Arial, Helvetica, sans-serif;
 }
 
 #toggle-leftpanel,

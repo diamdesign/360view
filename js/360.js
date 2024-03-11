@@ -367,6 +367,10 @@ function start(data) {
 	const angleIndicator = document.getElementById("angleIndicator");
 	const locationsIndicatorElem = document.querySelector("#indicatorbtn");
 
+	const closeShareButton = document.querySelector("#closesharebtn");
+	const shareElem = document.querySelector("#share");
+	const shareButton = document.querySelector("#sharebtn");
+
 	const closeInfoButton = document.querySelector("#closeinfobtn");
 	const infoElem = document.querySelector("#info");
 	const infoButton = document.querySelector("#infobtn");
@@ -1307,6 +1311,17 @@ function start(data) {
 		commentButton.querySelector(".amount").textContent = formatNumber(commentCount);
 
 		likeButton.querySelector(".amount").textContent = formatNumber(targetObject.likes_count);
+
+		// Details username & thumbnail
+		const userAnchor = document.querySelector(".user-details .userinfo a");
+		userAnchor.textContent = data.user.username;
+		userAnchor.href = "https://yourwebsite.com/profile/" + data.user.username;
+
+		const userThumb = document.querySelector(".user-details .thumbnail");
+		userThumb.href = "https://yourwebsite.com/profile/" + data.user.username;
+		const userThumbImg = userThumb.querySelector("img");
+		userThumbImg.src = data.user.thumbnail;
+
 		document.querySelector("#info-details .title").textContent = targetObject.location_title;
 		document.querySelector("#info-details .description").textContent =
 			targetObject.location_description;
@@ -1673,18 +1688,9 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 		infoElem.classList.add("infoshow");
 	}
 
-	function openComments() {
-		commentButton.style.opacity = "0";
-		commentsElem.classList.add("commentshow");
-	}
-
 	infoButton.addEventListener("click", openInfo);
 	infoButton.addEventListener("touchstart", openInfo);
 	infoButton.addEventListener("selectstart", openInfo);
-
-	commentButton.addEventListener("click", openComments);
-	commentButton.addEventListener("touchstart", openComments);
-	commentButton.addEventListener("selectstart", openComments);
 
 	function closeInfo() {
 		infoButton.style.opacity = "1";
@@ -1694,6 +1700,33 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 	closeInfoButton.addEventListener("click", closeInfo);
 	closeInfoButton.addEventListener("touchstart", closeInfo);
 	closeInfoButton.addEventListener("selectstart", closeInfo);
+
+	function openShare() {
+		shareButton.style.opacity = "0";
+		shareElem.classList.add("infoshow");
+	}
+
+	shareButton.addEventListener("click", openShare);
+	shareButton.addEventListener("touchstart", openShare);
+	shareButton.addEventListener("selectstart", openShare);
+
+	function closeShare() {
+		shareButton.style.opacity = "1";
+		shareElem.classList.remove("infoshow");
+	}
+
+	closeShareButton.addEventListener("click", closeShare);
+	closeShareButton.addEventListener("touchstart", closeShare);
+	closeShareButton.addEventListener("selectstart", closeShare);
+
+	function openComments() {
+		commentButton.style.opacity = "0";
+		commentsElem.classList.add("commentshow");
+	}
+
+	commentButton.addEventListener("click", openComments);
+	commentButton.addEventListener("touchstart", openComments);
+	commentButton.addEventListener("selectstart", openComments);
 
 	function checkFirstListItem() {
 		const firstListItem = document.querySelector("#locations .container ul li:first-child");
