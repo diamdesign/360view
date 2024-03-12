@@ -6,7 +6,7 @@ minifyFile("js/360.js", "js/360.min.js");
 
 // Minify functions.js
 minifyFile("js/functions.js", "js/functions.min.js");
-
+minifyFile("js/platform.js", "js/platform.min.js");
 minifyFile("js/comments.js", "js/comments.min.js");
 minifyFile("js/emoji.js", "js/emoji.min.js");
 

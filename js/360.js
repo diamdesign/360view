@@ -425,6 +425,25 @@ function start(data) {
 		infoDetailsButton.classList.add("showactive");
 	});
 
+	const ShareLinkButton = document.querySelector(".show-link");
+	const ShareEmbedButton = document.querySelector(".show-embed");
+	const ShareLinkContainer = document.querySelector("#share-link");
+	const ShareEmbedContainer = document.querySelector("#share-embed");
+
+	ShareLinkButton.addEventListener("click", () => {
+		ShareLinkContainer.style.display = "block";
+		ShareEmbedContainer.style.display = "none";
+		ShareLinkButton.classList.add("showactive");
+		ShareEmbedButton.classList.remove("showactive");
+	});
+
+	ShareEmbedButton.addEventListener("click", () => {
+		ShareEmbedContainer.style.display = "block";
+		ShareLinkContainer.style.display = "none";
+		ShareLinkButton.classList.remove("showactive");
+		ShareEmbedButton.classList.add("showactive");
+	});
+
 	// Define the minimum and maximum widths for infoElem (Information popup)
 	const minWidth = 460;
 	const maxWidth = 1800;
