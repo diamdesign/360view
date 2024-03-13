@@ -869,9 +869,10 @@ function start(data) {
 	let locationsHtml = "";
 
 	console.log("Render locations list for project...");
-	// For loop the locations list with data information
-	for (let i = 0; i < data.locations.length; i++) {
-		const content = data.locations[i];
+
+	// Map the locations list with data information
+	data.locations.map((location) => {
+		const content = location;
 		let activeClass = i === 0 && content.file_type === "video" ? "active" : "";
 		let imageUrl = content.file_name.replace(/\.\w+$/, ".jpg");
 		if (content.file_type === "video") {
@@ -892,7 +893,7 @@ function start(data) {
                         </li>`;
 			locationsHtml += itemHtml;
 		}
-	}
+	});
 
 	// Insert the locations list to HTML
 	const locationUl = document.querySelector("#locationlist");
@@ -927,6 +928,19 @@ function start(data) {
 
 	// Init, when all is added to the DOM
 	checkFirstListItem();
+
+	const startlocationsContainer = document.querySelectorAll(".startlocations");
+
+	startlocationsContainer.forEach((container) => {
+		var html = ``;
+		data.locations.map((location) => {
+			html += `<div class="start-location" data-id="${location.id}">
+					<h5 class="title">${location.title}</h5>
+					<img src="${location.image} alt="" />
+				</div>`;
+		});
+		container.innerHTML = html;
+	});
 
 	// Define event listener functions
 	function markerInternalLinksClickHandler(e) {
@@ -1300,35 +1314,47 @@ function start(data) {
 			console.log("Invalid file type");
 		}
 
+		const showLocBtn = document.querySelector(".show-loc");
+		const showInfoBtn = document.querySelector(".show-info");
+
+		// Show/hide buttons if info
 		if (fileInfo !== "" && fileInfo !== null && fileInfo !== undefined) {
+			infoLocationContainer.style.display = "block";
 			infoLocationContainer.innerHTML = fileInfo;
-			infoElem.style.display = "block";
-			infoButton.style.display = "block";
-			infoButton.style.opacity = "1";
+
+			showLocBtn.style.display = "block";
+			showLocBtn.classList.add("showactive");
+			showInfoBtn.classList.remove("showactive");
 		} else {
-			infoElem.style.display = "none";
-			infoButton.style.opacity = "0";
-			infoButton.style.display = "none";
+			infoLocationContainer.style.display = "none";
+			showLocBtn.style.display = "none";
+			showInfoBtn.classList.add("showactive");
 		}
 
+		// Build comments section and add Emoji
 		buildComments(targetObject, data.creator, data.user);
+
+		// Get the total comments
+		const commentCount = countComments(targetObject.comments);
+
+		// Insert the total comments
+		commentButton.querySelector(".amount").textContent = formatNumber(commentCount);
 
 		const closeCommentsButton = document.querySelector("#closecommentsbtn");
 
+		// Function to close comments
 		function closeComments() {
 			let commentButton = document.querySelector("#commentbtn");
 			commentButton.style.opacity = "1";
 			commentsElem.classList.remove("commentshow");
 		}
 
+		// Eventlistener for close comment button
 		closeCommentsButton.addEventListener("click", closeComments);
 		closeCommentsButton.addEventListener("touchstart", closeComments);
 		closeCommentsButton.addEventListener("selectstart", closeComments);
 
-		const commentCount = countComments(targetObject.comments);
-
-		commentButton.querySelector(".amount").textContent = formatNumber(commentCount);
-
+		// Insert the total likes for location
 		likeButton.querySelector(".amount").textContent = formatNumber(targetObject.likes_count);
 
 		// Details username & thumbnail
