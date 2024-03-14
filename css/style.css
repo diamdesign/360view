@@ -162,7 +162,7 @@ canvas {
 
 .locations .container ul li:hover img {
 	user-select: none;
-	scale: 1.1;
+	scale: 1.15;
 }
 
 .flash {
@@ -205,6 +205,192 @@ canvas {
 	border-bottom: 0.1875rem solid royalblue;
 }
 
+.startlocations {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	max-height: calc(100% - 15rem);
+	overflow-y: auto;
+	margin-bottom: 2rem;
+	padding: 2px;
+}
+
+.startlocations .start-location {
+	height: 5rem;
+	position: relative;
+	overflow: hidden;
+	margin-top: 0.5rem;
+	border-radius: 0.4rem;
+	aspect-ratio: 16 / 10;
+}
+
+.startlocations .active {
+	outline: 2px solid white;
+}
+
+.startlocations .start-location .title {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	padding: 0.3rem;
+	width: 100%;
+	font-size: 0.7rem;
+	text-align: center;
+	font-weight: 500;
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 10;
+}
+
+.startlocations .start-location .locimage {
+	width: 100%;
+	aspect-ratio: 16 / 10;
+	position: relative;
+	overflow: hidden;
+}
+
+.startlocations .start-location img {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform-origin: top left;
+	transform: translateX(-50%) translateY(-50%);
+	width: 180%;
+	transition: scale 0.3s ease-in-out;
+	z-index: 0;
+}
+
+.start-location:hover {
+	cursor: pointer;
+	outline: 2px solid white;
+	animation: flash 0.2s ease-in-out 1 forwards;
+}
+
+.start-location:hover img {
+	scale: 1.15;
+}
+
+#lookingat {
+	display: flex;
+	margin-bottom: 2rem;
+	gap: 2rem;
+	font-weight: 700;
+	text-transform: uppercase;
+}
+
+.xyinput input {
+	position: relative;
+	padding: 0.3rem 1rem 0.3rem 3.5rem;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 0.4rem;
+	background: rgba(0, 0, 0, 0.5);
+	color: #dfedff;
+	min-height: 2.7rem;
+	width: 12.2rem;
+	font-size: 1.2rem;
+	font-weight: 600;
+	line-height: 1.6rem;
+}
+.xyinput div {
+	position: relative;
+}
+.xyinput div span {
+	position: absolute;
+	top: 0;
+	left: 0;
+	padding: 0.4rem 1rem;
+	border-right: 1px solid rgba(255, 255, 255, 0.3);
+	color: white;
+	font-size: 1.2rem;
+}
+#embedcode,
+#linktoshare {
+	line-height: 1.6rem;
+	position: relative;
+	padding: 1rem;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 0.4rem;
+	background: rgba(0, 0, 0, 0.5);
+	color: #dfedff;
+	min-height: 3.7rem;
+}
+
+#share h4 {
+	font-size: 1rem;
+	font-weight: 600;
+	margin-bottom: 1rem;
+}
+
+#embedcode {
+	padding: 0;
+}
+
+#embedcode textarea {
+	user-select: all;
+	opacity: 0.5;
+	width: 100%;
+	height: 10rem;
+	resize: none;
+	background: transparent;
+	border: none;
+	overflow-y: scroll;
+	color: #dfedff;
+	font-size: 1rem;
+	padding: 1rem;
+	margin-bottom: -8px;
+}
+
+#embedcode textarea:focus-visible {
+	outline: none;
+	border: none;
+}
+#linktoshare {
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+#linktoshare:after {
+	display: block;
+	content: "";
+	position: absolute;
+	background: linear-gradient(100deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 100%);
+	height: 100%;
+	right: 0;
+	top: 0;
+	width: 20rem;
+	z-index: 0;
+}
+
+#copyembed,
+#copylink {
+	background: rgb(58 59 60);
+	border-radius: 0.3rem;
+	color: white;
+	padding: 0.3rem 1rem;
+	position: absolute;
+	right: 0.7rem;
+	top: 0.7rem;
+	font-size: 0.9rem;
+	font-weight: 600;
+	z-index: 1;
+}
+
+#copyembed {
+	position: relative;
+	right: auto;
+	top: auto;
+	margin-top: 1rem;
+	float: right;
+	line-height: 1.6rem;
+}
+
+#copyembed:hover,
+#copylink:hover {
+	animation: outlinepush 0.8s ease-out 1 forwards;
+	cursor: pointer;
+	filter: invert(1);
+	color: white;
+	background: black !important;
+}
 canvas:hover {
 	cursor: grab;
 }
@@ -589,7 +775,6 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 #infobtn {
 	text-align: center;
-	display: none;
 	color: white;
 	font-style: italic;
 	font-family: Georgia, "Times New Roman", Times, serif;

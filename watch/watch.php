@@ -121,6 +121,6 @@ try {
         ?>
     </div>
      </div>
-    <script src="js/platform.min.js"></script>
+    <script src="../js/platform.min.js"></script>
 </body>
 </html>

@@ -42,43 +42,34 @@ export const rootHTML = `<div id="outside">
 				<div class="show-embed">Embed</div>
 
 				<div id="share-link" class="container">
-					<div id="linktoshare">
-						<div id="copylink" class="button">Copy</div>
-					</div>
+					
 
 					<h4>Start at location</h4>
 					<div class="startlocations">
-						<div class="start-location active">
-							<h5 class="title">Title</h5>
-							<img src="" alt="" />
-						</div>
-						<div class="start-location">
-							<h5 class="title">Title</h5>
-							<img src="" alt="" />
-						</div>
+						
 					</div>
 					
 					<h4>Start looking at</h4>
 					<div id="lookingat">
-						<div class="xyinput">x <input type="number" id="lookatx" value="0" /></div>
-						<div class="xyinput">y <input type="number" id="lookaty" value="0" /></div>
+						<div class="xyinput"><div><span>X</span><input type="number" min="-360" max="360" id="lookatx" value="0" /></div></div>
+						<div class="xyinput"><div><span>Y</span><input type="number" min="-360" max="360" id="lookaty" value="0" /></div></div>
+					</div>
+					<div id="linktoshare">
+						<span></span>
+						<div id="copylink" class="button">Copy</div>
 					</div>
 				</div>
 
 				<div id="share-embed" class="container">
 					<h4>Start at location</h4>
 					<div class="startlocations">
-						<div class="start-location active">
-							<h5 class="title">Title</h5>
-							<img src="" alt="" />
-						</div>
-						<div class="start-location">
-							<h5 class="title">Title</h5>
-							<img src="" alt="" />
-						</div>
+						
 					</div>
-					<div id="embedcode"></div>
+					<div id="embedcode">
+						<textarea></textarea>
+					</div>
 					<div id="copyembed" class="button">Copy</div>
+					
 				</div>
 			</div>
 

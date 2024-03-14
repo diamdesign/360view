@@ -67,7 +67,36 @@ window.addEventListener("load", function () {
 const embedId = getUrlParameter("i");
 const locId = getUrlParameter("loc");
 
+const baseUri = "localhost/360/";
 const uri = "i=" + embedId + "&loc=" + locId;
+
+var startLocX = 0;
+var startLocY = 0;
+var selectStartLocation = locId;
+var shareLink =
+	baseUri +
+	"watch/?=" +
+	embedId +
+	"&loc=" +
+	selectStartLocation +
+	"&x=" +
+	startLocX +
+	"&y=" +
+	startLocY;
+
+function updateShareLink() {
+	shareLink =
+		baseUri +
+		"watch/?=" +
+		embedId +
+		"&loc=" +
+		selectStartLocation +
+		"&x=" +
+		startLocX +
+		"&y=" +
+		startLocY;
+}
+
 const fileCheckData = "../php/checkdata.php";
 const fileGetData = "../php/getdata.php";
 
@@ -183,175 +212,6 @@ function start(data) {
 	console.log("Data Type:", dataType);
 
 	const baseUrl = "http://localhost/360/";
-
-	// Array for Map view
-	/*
-	var mapArray = [
-		{
-			file: "map.png",
-			links: [
-				{
-					name: "Bedroom",
-					top: 20,
-					left: 80,
-					link: 2,
-				},
-				{
-					name: "Kitchen",
-					top: 70,
-					left: 50,
-					link: 3,
-				},
-				{
-					name: "Outside",
-					top: 50,
-					left: 10,
-					link: 4,
-				},
-			],
-		},
-	];
-
-	// Array for Locations list
-	var contentArray = [
-		{
-			id: 1,
-			type: "image",
-			file: "360.jpg",
-			title: "One",
-			likes: 1423524,
-			comments: [
-				{
-					profilename: "Artist84",
-					comment: "This is awesome",
-					date: "2024-10-10 20:32:42",
-				},
-				{
-					profilename: "ThunderBolt",
-					comment: "ROCKING!",
-					date: "2024-10-10 20:32:52",
-				},
-			],
-			info: '<h1>One</h1><img src="https://picsum.photos/600/300" alt="" /><hr><p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. <a href="#">Molestiae distinctio</a> optio consequatur eaque eos asperiores quibusdam rem exercitationem maiores aliquid sequi, a, quae aliquam expedita. Blanditiis saepe esse dolorum molestias.</p><ul><li>One</li><li>Two</li></ul><hr><img src="https://picsum.photos/601/301" alt="" /><p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Molestiae distinctio optio consequatur eaque eos asperiores quibusdam rem exercitationem maiores aliquid sequi, a, quae aliquam expedita. Blanditiis saepe esse dolorum molestias.</p><a href="#" class="button">Testing</a>',
-			markers: [
-				{
-					name: "Some info here",
-					position: { x: 10, y: 0, z: 360 },
-					info: '<h1>One</h1><img src="https://picsum.photos/600/300" alt="" /><hr><p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. <a href="#">Molestiae distinctio</a> optio consequatur eaque eos asperiores quibusdam rem exercitationem maiores aliquid sequi, a, quae aliquam expedita. Blanditiis saepe esse dolorum molestias.</p><ul><li>One</li><li>Two</li></ul><hr><img src="https://picsum.photos/601/301" alt="" /><p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Molestiae distinctio optio consequatur eaque eos asperiores quibusdam rem exercitationem maiores aliquid sequi, a, quae aliquam expedita. Blanditiis saepe esse dolorum molestias.</p><a href="#" class="button">Testing</a>',
-					link: "",
-				},
-				{
-					name: "Link to next scene",
-					position: { x: -5, y: 0, z: -360 },
-					info: "",
-					link: 2,
-				},
-				{
-					name: "DIAM",
-					position: { x: 20, y: -10, z: 360 },
-					info: "",
-					link: "https://diam.se",
-				},
-			],
-		},
-		{
-			id: 2,
-			type: "image",
-			file: "3602.jpg",
-			title: "Two",
-			info: "",
-		},
-		{
-			id: 3,
-			type: "image",
-			file: "3603.jpg",
-			title: "Three",
-			info: "",
-		},
-		{
-			id: 4,
-			type: "image",
-			file: "3604.jpg",
-			title: "Four",
-			info: "",
-		},
-		{
-			id: 5,
-			type: "image",
-			file: "3605.jpg",
-			title: "Five",
-			info: "",
-		},
-		{
-			id: 6,
-			type: "image",
-			file: "3606.jpg",
-			title: "Six",
-			info: "",
-		},
-		{
-			id: 7,
-			type: "image",
-			file: "3607.jpg",
-			title: "Seven",
-			info: "",
-		},
-		{
-			id: 8,
-			type: "video",
-			file: "360_vr_master_series___free_asset_download____bavarian_alps_wimbachklamm (1080p).mp4",
-			duration: "2:00",
-			title: "Bavarian Alps",
-			captions: ["Swedish", "English"],
-			info: "",
-		},
-		{
-			id: 9,
-			type: "video",
-			file: "ayutthaya_-_needs_stabilization_and_horizon_correction___360_vr_master_series___free_download (1080p).mp4",
-			duration: "0:30",
-			title: "Ayutthaya",
-			captions: "",
-			info: "",
-		},
-		{
-			id: 10,
-			type: "video",
-			file: "ayutthaya_-_easy_tripod_paint___360_vr_master_series___free_download (1080p).mp4",
-			duration: "0:25",
-			title: "Ayutthaya Two",
-			captions: "",
-			info: "",
-		},
-		{
-			id: 11,
-			type: "video",
-			file: "360_vr_master_series___free_download___london_park_ducks_swans (1080p).mp4",
-			duration: "1:05",
-			title: "London Park",
-			captions: "",
-			info: "",
-		},
-		{
-			id: 12,
-			type: "video",
-			file: "360_vr_master_series___free_download___london_on_tower_bridge (1080p).mp4",
-			duration: "0:29",
-			title: "London Tower Bridge",
-			captions: "",
-			info: "",
-		},
-		{
-			id: 13,
-			type: "video",
-			file: "360_vr_master_series___free_download___crystal_shower_falls (1080p).mp4",
-			duration: "2:00",
-			title: "Crystal Shower Falls",
-			captions: "",
-			info: "",
-		},
-	];
-	*/
 
 	const rootElement = document.querySelector("#root");
 
@@ -870,9 +730,9 @@ function start(data) {
 
 	console.log("Render locations list for project...");
 
-	// Map the locations list with data information
-	data.locations.map((location) => {
-		const content = location;
+	// For loop the locations list with data information
+	for (let i = 0; i < data.locations.length; i++) {
+		const content = data.locations[i];
 		let activeClass = i === 0 && content.file_type === "video" ? "active" : "";
 		let imageUrl = content.file_name.replace(/\.\w+$/, ".jpg");
 		if (content.file_type === "video") {
@@ -881,7 +741,7 @@ function start(data) {
 			let itemHtml = `<li class="${activeClass}" data-file="${content.file_name}" data-id="${content.id}" data-order_index="${content.order_index}" data-type="${content.file_type}">
                             <span class="icon-video">${content.duration}</span>
                             <div>${content.location_title}</div>
-                            <img src="${baseUrl}video/${fileNameWithoutExtension}.jpg" alt="" />
+                            <img src="${baseUrl}video/${fileNameWithoutExtension}-low.jpg" alt="" />
                         </li>`;
 			locationsHtml += itemHtml;
 		} else {
@@ -893,7 +753,7 @@ function start(data) {
                         </li>`;
 			locationsHtml += itemHtml;
 		}
-	});
+	}
 
 	// Insert the locations list to HTML
 	const locationUl = document.querySelector("#locationlist");
@@ -933,14 +793,112 @@ function start(data) {
 
 	startlocationsContainer.forEach((container) => {
 		var html = ``;
+
 		data.locations.map((location) => {
-			html += `<div class="start-location" data-id="${location.id}">
-					<h5 class="title">${location.title}</h5>
-					<img src="${location.image} alt="" />
+			let imageUrl = location.file_name.replace(/\.\w+$/, ".jpg");
+			const fileNameWithoutExtension = imageUrl.split(".").slice(0, -1).join(".");
+			const mediaType = location.file_type === "video" ? "video" : "img";
+			html += `<div class="start-location" data-id="${location.id}" data-order_index="${location.order_index}">
+					<h5 class="title">${location.location_title}</h5>
+					<div class="locimage">
+						<img src="${baseUrl}${mediaType}/${fileNameWithoutExtension}-low.jpg" alt="" />
+					</div>
 				</div>`;
 		});
 		container.innerHTML = html;
 	});
+
+	const linkToShare = document.querySelector("#linktoshare");
+	const allSelectStartLocation = document.querySelectorAll(".start-location");
+
+	if (data.locations.length < locId) {
+		selectStartLocation = 1;
+	}
+
+	allSelectStartLocation.forEach((item) => {
+		item.addEventListener("click", () => {
+			allSelectStartLocation.forEach((link) => {
+				link.classList.remove("active");
+			});
+
+			const order = item.getAttribute("data-order_index");
+			var filteredStartLocations = Array.from(allSelectStartLocation).filter(function (
+				element
+			) {
+				return element.getAttribute("data-order_index") === order;
+			});
+			filteredStartLocations.forEach((loc) => {
+				loc.classList.add("active");
+			});
+			selectStartLocation = order;
+			updateShareLink();
+			linkToShare.querySelector("span").textContent = shareLink;
+		});
+	});
+
+	var startLocationsWithOrder = document.querySelectorAll(
+		'.start-location[data-order_index="' + selectStartLocation + '"]'
+	);
+
+	startLocationsWithOrder.forEach((loc) => {
+		loc.classList.add("active");
+	});
+
+	updateShareLink();
+	linkToShare.querySelector("span").textContent = shareLink;
+
+	document.querySelector("#lookatx").addEventListener("change", (e) => {
+		startLocX = e.target.value;
+		updateShareLink();
+		updateCameraRotation();
+		linkToShare.querySelector("span").textContent = shareLink;
+	});
+
+	document.querySelector("#lookaty").addEventListener("change", (e) => {
+		startLocY = e.target.value;
+		updateShareLink();
+		updateCameraRotation();
+		linkToShare.querySelector("span").textContent = shareLink;
+	});
+
+	// Function to update camera's rotation based on input values
+	function updateCameraRotation() {
+		const pitch = THREE.MathUtils.degToRad(document.querySelector("#lookaty").value);
+		const yaw = THREE.MathUtils.degToRad(document.querySelector("#lookatx").value);
+
+		// Set camera's rotation based on pitch and yaw
+		camera.rotation.set(yaw, pitch, 0);
+		camera.position.set(yaw, pitch, 0);
+		camera.lookAt(scene.position);
+		camera.updateProjectionMatrix();
+	}
+
+	// Create a custom event dispatcher for the camera
+	const dispatcher = new THREE.EventDispatcher();
+
+	// Function to update input values based on camera rotation
+	function updateInputValues() {
+		// Get the camera's rotation angles
+		const pitch = THREE.MathUtils.radToDeg(camera.rotation.x);
+		const yaw = THREE.MathUtils.radToDeg(camera.rotation.y);
+
+		// Update the input values
+		document.querySelector("#lookatx").value = pitch;
+		document.querySelector("#lookaty").value = yaw;
+		updateShareLink();
+		linkToShare.querySelector("span").textContent = shareLink;
+	}
+
+	// Listen for changes in camera's rotation
+	dispatcher.addEventListener("cameraChange", updateInputValues);
+
+	// Function to dispatch camera change event when camera rotation changes
+	function onCameraChange() {
+		dispatcher.dispatchEvent({ type: "cameraChange" });
+	}
+
+	// Register the event handler to be called when the camera's rotation changes
+	camera.addEventListener("update", onCameraChange);
 
 	// Define event listener functions
 	function markerInternalLinksClickHandler(e) {
