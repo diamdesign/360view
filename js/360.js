@@ -240,6 +240,7 @@ function start(data) {
 	const commentButton = document.querySelector("#commentbtn");
 	const commentsElem = document.querySelector("#comments");
 
+	const btnPlayVideo = document.querySelector("#btn-playvideo");
 	const videoplayer = document.querySelector("#videoplayer");
 	const playVideoButton = document.querySelector("#playvideo");
 	const videoduration = document.querySelector("#videoduration");
@@ -926,8 +927,16 @@ function start(data) {
 		}
 	}
 
+	btnPlayVideo.addEventListener("click", () => {
+		videoplayer.style.display = "flex";
+		video.play();
+		btnPlayVideo.style.display = "none";
+	});
+
 	// Function to update scene with image or video
 	function change360Content(orderId) {
+		btnPlayVideo.style.display = "none";
+		videoplayer.style.display = "none";
 		// Once marker elements are available, add event listeners
 		let markerInternalLinks = document.querySelectorAll(".intlink");
 		let markerInfoLabels = document.querySelectorAll(".infodot");
@@ -1032,7 +1041,6 @@ function start(data) {
 			video.crossOrigin = "anonymous";
 			video.loop = true;
 			video.playsInline = true;
-			video.play();
 
 			// Update the current video source
 			currentVideoSrc = fileName;
@@ -1177,7 +1185,8 @@ function start(data) {
 				return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
 			}
 
-			videoplayer.style.display = "flex";
+			btnPlayVideo.style.display = "block";
+
 			// Create a texture from the video element
 			texture = new THREE.VideoTexture(video);
 			texture.encoding = THREE.LinearEncoding;

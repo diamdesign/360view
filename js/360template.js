@@ -112,7 +112,9 @@ export const rootHTML = `<div id="outside">
 				<div id="reset" class="button">Reset</div>
 			</div>
 
+			<div id="btn-playvideo"></div>
 			<div class="locations" id="locations">
+				
 				<div id="videoplayer">
 					<div id="playvideo"></div>
 					<input type="range" min="0" max="1" id="videoduration" value="0" step="0.01" />

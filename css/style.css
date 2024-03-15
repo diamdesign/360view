@@ -1602,6 +1602,39 @@ input[type="range"]:focus::-moz-range-thumb {
 	transform: translateX(-50%);
 }
 
+#btn-playvideo {
+	display: none;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	width: 5rem;
+	height: 5rem;
+	background: rgba(0, 0, 0, 0.4);
+	content: "";
+	z-index: 10000000;
+	border-radius: 0.75rem;
+	transform: translateX(-50%) translateY(-50%);
+}
+
+#btn-playvideo:after {
+	position: absolute;
+	background-image: url("../img/icon-playbig.svg");
+	background-position: 55% center;
+	background-size: 2.4rem;
+	background-repeat: no-repeat;
+	filter: invert(1);
+	content: "";
+	top: 0;
+	width: 100%;
+	height: 100%;
+	left: 0;
+}
+#btn-playvideo:hover {
+	animation: outlinepush 0.8s ease-out 1 forwards;
+	background: black;
+	cursor: pointer;
+}
+
 #captionselect {
 	display: none;
 	float: left;
