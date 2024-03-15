@@ -6,6 +6,7 @@ if(isset($_GET["i"])) {
 
 
 $embed_id = isset($_GET['i']) ? $_GET['i'] : null;
+$loc = isset($_GET['loc']) ? $_GET['loc'] : null;
 
 // Get the first letter of the 'embed_id' parameter and convert it to uppercase
 $first_letter = strtoupper(substr($embed_id, 0, 1));
@@ -68,6 +69,9 @@ try {
         $response = ['error' => $e->getMessage()];
     
 }
+} else {
+       header("Location: ../");
+    exit; 
 }
 
 ?>
@@ -97,7 +101,7 @@ try {
         ?>
         <div id="center">
             <div class="center-content">
-                <iframe src="http://localhost/360/embed/?i=Pds343GXFfse32&loc=245" frameborder="0" width="100%" id="iframeroot"></iframe>
+                <iframe src="http://localhost/360/embed/?i=<?php echo $embed_id ?>&loc=<?php echo $loc ?>" frameborder="0" width="100%" id="iframeroot"></iframe>
                 <div id="profile">
                     <div class="info">
                         <a class="thumb" href="https://snallapojkar.se/360/profile/<?php echo $username ?>">

@@ -1734,9 +1734,13 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 	function checkFirstListItem() {
 		const firstListItem = document.querySelector("#locations .container ul li:first-child");
 		if (firstListItem) {
-			const orderId = data.locations[0].order_index;
-			change360Content(parseInt(orderId));
-			firstListItem.classList.add("active");
+			if (locId > data.locations.length) {
+				const orderId = data.locations[0].order_index;
+				change360Content(parseInt(orderId));
+				firstListItem.classList.add("active");
+			} else {
+				change360Content(parseInt(locId));
+			}
 		} else {
 			// Retry after a delay if the first list item is not found
 			setTimeout(checkFirstListItem, 1000); // Retry after 1 second

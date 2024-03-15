@@ -202,7 +202,10 @@ canvas {
 
 .locations .container ul li.active div {
 	display: flex;
-	border-bottom: 0.1875rem solid royalblue;
+}
+
+.locations .container ul li.active {
+	outline: 4px solid white;
 }
 
 .startlocations {
