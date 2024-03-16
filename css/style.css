@@ -1104,7 +1104,7 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 .replies:hover {
 	cursor: pointer;
-	color: royalblue;
+	color: #000080;
 }
 .writecomment {
 	border-top: 0.0625rem solid #d2d2d2;
@@ -1166,7 +1166,7 @@ input[type="range"]:focus::-moz-range-thumb {
 
 .comment .replybtn:hover,
 .comment .profilename:hover {
-	color: royalblue;
+	color: #000080;
 }
 
 .comment .message {
@@ -1271,8 +1271,23 @@ input[type="range"]:focus::-moz-range-thumb {
 .hide-replies {
 	font-weight: 600;
 }
+
+.btn-showmorecomments {
+	color: black;
+	text-align: center;
+	font-weight: 600;
+}
+.btn-showmorecomments:hover {
+	color: #000080;
+	cursor: pointer;
+}
 .hide-replies {
 	display: none;
+}
+
+.hide-replies:hover {
+	cursor: pointer;
+	color: #000080;
 }
 
 .replies-container {

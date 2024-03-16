@@ -4,14 +4,9 @@ import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer
 import { rootHTML, haspassHTML } from "./360template.min.js";
 import { buildComments } from "./comments.min.js";
 
-import {
-	testInternetSpeed,
-	xhrSend,
-	getUrlParameter,
-	formatNumber,
-	countComments,
-} from "./functions.min.js";
+import { testInternetSpeed, xhrSend, getUrlParameter, formatNumber } from "./functions.min.js";
 
+var userInteracted = false;
 var dataType = "";
 // Array for markers/labels update per each image/video
 var markerData = [];
@@ -926,12 +921,14 @@ function start(data) {
 			}
 		}
 	}
-
-	btnPlayVideo.addEventListener("click", () => {
-		videoplayer.style.display = "flex";
-		video.play();
-		btnPlayVideo.style.display = "none";
-	});
+	if (!userInteracted) {
+		btnPlayVideo.addEventListener("click", () => {
+			userInteracted = true;
+			videoplayer.style.display = "flex";
+			video.play();
+			btnPlayVideo.style.display = "none";
+		});
+	}
 
 	// Function to update scene with image or video
 	function change360Content(orderId) {
@@ -1185,7 +1182,12 @@ function start(data) {
 				return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
 			}
 
-			btnPlayVideo.style.display = "block";
+			if (!userInteracted) {
+				btnPlayVideo.style.display = "block";
+			} else {
+				videoplayer.style.display = "flex";
+				video.play();
+			}
 
 			// Create a texture from the video element
 			texture = new THREE.VideoTexture(video);
@@ -1301,12 +1303,6 @@ function start(data) {
 		// Build comments section and add Emoji
 		buildComments(targetObject, data.creator, data.user);
 
-		// Get the total comments
-		const commentCount = countComments(targetObject.comments);
-
-		// Insert the total comments
-		commentButton.querySelector(".amount").textContent = formatNumber(commentCount);
-
 		const closeCommentsButton = document.querySelector("#closecommentsbtn");
 
 		// Function to close comments
@@ -1343,8 +1339,12 @@ function start(data) {
 		document.querySelector(".details-views span").textContent = formatNumber(
 			targetObject.views_count
 		);
-		document.querySelector(".details-comments span").textContent = formatNumber(commentCount);
-		document.querySelector(".details-created span").textContent = targetObject.registered;
+		document.querySelector(".details-comments span").textContent = formatNumber(
+			targetObject.total_comments
+		);
+		document.querySelector("#commentbtn .amount").textContent = formatNumber(
+			targetObject.total_comments
+		);
 
 		camera.updateProjectionMatrix();
 	}

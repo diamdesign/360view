@@ -1,6 +1,6 @@
 <?php 
-include("../php/db360.php");
-include("../php/functions.php");
+include("db360.php");
+include("functions.php");
 
 // Initialize an array to store messages and results
 $response = [];
@@ -193,7 +193,7 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                                 $location_details['markers'] = [];
                             }
                         
-
+                        /*
                         if ($location_details['allowcomments'] === true) {
                             // Retrieve data from the "comments" table with likes count and check if the current user has liked each comment
                             $comments_statement = $pdo->prepare("
@@ -258,6 +258,50 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                             // Add comments details to the location details
                             $location_details['comments'] = $comments;
                         }
+                        */
+
+                        if ($location_details['allowcomments'] === true) {
+                            // Retrieve data from the "comments" table with likes count and check if the current user has liked each comment
+                            $comments_statement = $pdo->prepare("
+                                SELECT 
+                                    c.*,
+                                    u.username AS username, 
+                                    u.thumbnail AS thumbnail, 
+                                    COUNT(cl.comment_id) AS likes_count,
+                                    SUM(CASE WHEN cl.user_id = :user_id THEN 1 ELSE 0 END) AS has_liked,
+                                    (SELECT COUNT(*) FROM comments rc WHERE rc.reply_id = c.id) AS reply_count
+                                FROM 
+                                    comments c
+                                LEFT JOIN 
+                                    comments_likes cl ON c.id = cl.comment_id
+                                LEFT JOIN
+                                    users u ON c.user_id = u.id
+                                WHERE  
+                                    c.location_id = :location_id AND
+                                    c.reply_id IS NULL
+                                GROUP BY 
+                                    c.id
+                                ORDER BY 
+                                    c.registered DESC
+                                LIMIT 50;
+                            ");
+
+                            $comments_statement->bindParam(':location_id', $location_id, PDO::PARAM_INT);
+                            $comments_statement->bindParam(':user_id', $current_user_id, PDO::PARAM_INT);
+                            $comments_statement->execute();
+                            $all_comments = $comments_statement->fetchAll(PDO::FETCH_ASSOC);
+
+                            // Adjust the 'has_liked' value to true or false and add reply_count to each comment
+                            foreach ($all_comments as &$comment) {
+                                $comment['has_liked'] = ($comment['has_liked'] == '1') ? true : false;
+                                $comment['reply_count'] = intval($comment['reply_count']); // Convert reply_count to integer
+                            }
+
+                            // Add comments details to the location details
+                            $location_details['comments'] = $all_comments;
+                        }
+
+
                     }
                 
                 // Store retrieved data into the response array
@@ -464,7 +508,7 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                             $location_details['music_list'] = $music_loc;
                         }
                         
-
+                        /*
                         if ($location_details['allowcomments'] === true) {
                             // Retrieve data from the "comments" table with likes count and check if the current user has liked each comment
                             $comments_statement = $pdo->prepare("
@@ -533,11 +577,56 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
 
                             // Add comments details to the location details
                             $location_details['comments'] = $comments;
+                            */
 
-                        // Append location details to the $response['locations'] array
-                        $response['locations'][] = $location_details;
+                            if ($location_details['allowcomments'] === true) {
+                                // Retrieve data from the "comments" table with likes count and check if the current user has liked each comment
+                                $comments_statement = $pdo->prepare("
+                                SELECT 
+                                    c.*,
+                                    u.username AS username, 
+                                    u.thumbnail AS thumbnail, 
+                                    COUNT(cl.comment_id) AS likes_count,
+                                    SUM(CASE WHEN cl.user_id = :user_id THEN 1 ELSE 0 END) AS has_liked,
+                                    (SELECT COUNT(*) FROM comments rc WHERE rc.parent_id = c.id) AS reply_count,
+                                    (SELECT COUNT(*) FROM comments c2 WHERE c2.location_id = :location_id AND c2.parent_id IS NULL) AS total_comments
+                                FROM 
+                                    comments c
+                                LEFT JOIN 
+                                    comments_likes cl ON c.id = cl.comment_id
+                                LEFT JOIN
+                                    users u ON c.user_id = u.id
+                                WHERE  
+                                    c.location_id = :location_id AND
+                                    c.parent_id IS NULL
+                                GROUP BY 
+                                    c.id
+                                ORDER BY 
+                                    c.registered DESC
+                                LIMIT 1;
+                            ");
+
+                                $comments_statement->bindParam(':location_id', $location_id, PDO::PARAM_INT);
+                                $comments_statement->bindParam(':user_id', $current_user_id, PDO::PARAM_INT);
+                                $comments_statement->execute();
+                                $all_comments = $comments_statement->fetchAll(PDO::FETCH_ASSOC);
+
+                                $total_comments = $all_comments ? $all_comments[0]['total_comments'] : 0;
+                                // Adjust the 'has_liked' value to true or false and add reply_count to each comment
+                                foreach ($all_comments as &$comment) {
+                                    $comment['has_liked'] = ($comment['has_liked'] == '1') ? true : false;
+                                    $comment['reply_count'] = intval($comment['reply_count']); // Convert reply_count to integer
+                                }
+
+                            $location_details['total_comments'] = $total_comments;
+                            // Add comments details to the location details
+                            $location_details['comments'] = $all_comments;
+                                
+
+                            // Append location details to the $response['locations'] array
+                            $response['locations'][] = $location_details;
+                        }
                     }
-                }
                 }
             }
         } catch (PDOException $e) {
