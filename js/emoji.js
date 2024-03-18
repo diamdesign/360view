@@ -146,4 +146,15 @@ export function installEmoji(elementId) {
 			inputField.rows = 12; // Limit to 12 rows
 		}
 	}
+
+	function sendText() {
+		let text = inputField.value;
+		console.log(text);
+	}
+
+	inputField.addEventListener("keydown", (e) => {
+		if (e.key === "Enter") {
+			sendText();
+		}
+	});
 }

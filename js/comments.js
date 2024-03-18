@@ -11,6 +11,13 @@ export function buildComments(targetObject, creator, user) {
 
 	const offset = 1;
 
+	function wrapEmojisWithSpan(text) {
+		return text.replace(
+			/([\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}])/gu,
+			'<span class="emoji">$1</span>'
+		);
+	}
+
 	function setupCommentHTML(props) {
 		try {
 			props.map((comment) => {
@@ -27,7 +34,7 @@ export function buildComments(targetObject, creator, user) {
 				}
 
 				commentHTML += `</a>
-					<p class="message">${comment.comment}</p>
+					<p class="message">${wrapEmojisWithSpan(comment.comment)}</p>
 					<span class="timeago">${getTimeAgo(comment.registered)}</span>
 					<a href="#like" class="likecomment${comment.has_liked ? " likedcomment" : ""}" data-hasliked="${
 					comment.has_liked
@@ -48,7 +55,7 @@ export function buildComments(targetObject, creator, user) {
 
 				if (comment.reply_count > 0) {
 					commentHTML += `<div class="replies" data-parent_id="${comment.id}">
-				<div class="btn-showreplies" data-parent_id="${comment.id}">+ View ${comment.reply_count} replies</div>
+				<div class="btn-showreplies" data-parent_id="${comment.id}" data-reply_count="${comment.reply_count}">+ View ${comment.reply_count} replies</div>
 				<div class="replies-container" data-parent_id="${comment.id}"></div>
 			</div>`;
 				}
@@ -86,7 +93,7 @@ export function buildComments(targetObject, creator, user) {
 
 			replyHTML += `</a>
 							</div>
-							<p class="message">${reply.comment}</p>
+							<p class="message">${wrapEmojisWithSpan(reply.comment)}</p>
 							<span class="timeago">${getTimeAgo(reply.registered)}</span>
 							<a href="#like" class="likecomment${reply.has_liked ? " likedcomment" : ""}" data-hasliked="${
 				reply.has_liked
@@ -109,6 +116,9 @@ export function buildComments(targetObject, creator, user) {
 					</div>`;
 		});
 
+		if (totalReplies > offset) {
+			replyHTML += `<div class="btn-showmorereplies">Show more</div>`;
+		}
 		replyHTML += `</div><div class="hide-replies">- Hide replies</div>`;
 	}
 

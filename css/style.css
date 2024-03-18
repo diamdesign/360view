@@ -215,7 +215,7 @@ canvas {
 	max-height: calc(100% - 15rem);
 	overflow-y: auto;
 	margin-bottom: 2rem;
-	padding: 2px;
+	padding: 0.125rem;
 }
 
 .startlocations .start-location {
@@ -339,7 +339,7 @@ canvas {
 	color: #dfedff;
 	font-size: 1rem;
 	padding: 1rem;
-	margin-bottom: -8px;
+	margin-bottom: -0.5rem;
 }
 
 #embedcode textarea:focus-visible {
@@ -1172,11 +1172,17 @@ input[type="range"]:focus::-moz-range-thumb {
 .comment .message {
 	font-family: "Archivo", sans-serif;
 	user-select: text;
-	font-size: 1rem;
-	line-height: 1.2rem;
+	font-size: 1.025rem;
+	line-height: 1.6rem;
 	padding-bottom: 0.25rem;
 	font-weight: 500;
 	color: black;
+}
+
+.comment .message .emoji {
+	font-size: 1.5rem;
+	margin-left: -0.15rem;
+	margin-right: -0.15rem;
 }
 
 .comment .likecomment {
@@ -1189,12 +1195,12 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 .comment .likecomment svg {
-	width: 1.25rem;
-	top: -0.0625rem;
+	width: 1.5rem;
 	position: relative;
 	margin-right: 0.375rem;
 	display: inline;
 	float: left;
+	top: -0.1875rem;
 	opacity: 0.2;
 }
 
@@ -2097,8 +2103,8 @@ input[type="range"]:focus::-moz-range-thumb {
 
 /* HTML: <div class="loader"></div> */
 .loader {
-	width: 50px;
-	padding: 8px;
+	width: 3.125rem;
+	padding: 0.5rem;
 	aspect-ratio: 1;
 	border-radius: 50%;
 	background: white;
