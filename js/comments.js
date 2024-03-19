@@ -9,8 +9,6 @@ export function buildComments(targetObject, creator, user) {
 
 	var commentHTML, replyHTML;
 
-	const offset = 1;
-
 	function wrapEmojisWithSpan(text) {
 		return text.replace(
 			/([\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}])/gu,
@@ -54,10 +52,10 @@ export function buildComments(targetObject, creator, user) {
 			</div>`;
 
 				if (comment.reply_count > 0) {
-					commentHTML += `<div class="replies" data-parent_id="${comment.id}">
-				<div class="btn-showreplies" data-parent_id="${comment.id}" data-reply_count="${comment.reply_count}">+ View ${comment.reply_count} replies</div>
-				<div class="replies-container" data-parent_id="${comment.id}"></div>
-			</div>`;
+					commentHTML += `<div class="replies" data-parent_id="${comment.id}" data-reply_count="${comment.reply_count}">
+					<div class="btn-showreplies" data-parent_id="${comment.id}" data-reply_count="${comment.reply_count}">+ View ${comment.reply_count} replies</div>
+					<div class="replies-container" data-parent_id="${comment.id}" data-reply_count="${comment.reply_count}"></div>
+				</div>`;
 				}
 			});
 		} catch (error) {
@@ -116,9 +114,6 @@ export function buildComments(targetObject, creator, user) {
 					</div>`;
 		});
 
-		if (totalReplies > offset) {
-			replyHTML += `<div class="btn-showmorereplies">Show more</div>`;
-		}
 		replyHTML += `</div><div class="hide-replies">- Hide replies</div>`;
 	}
 
@@ -139,8 +134,8 @@ export function buildComments(targetObject, creator, user) {
 
 	if (allowComments) {
 		setupCommentHTML(props);
-
-		if (totalComments > offset) {
+		const allComments = document.querySelectorAll(".comment:not(.reply)");
+		if (totalComments > allComments) {
 			commentHTML += `<div class="btn-showmorecomments">Show more</div>`;
 		}
 	} else {
@@ -209,6 +204,13 @@ export function buildComments(targetObject, creator, user) {
 			btn.addEventListener("click", showReplies);
 		});
 
+		// Remove existing event listeners for showing replies
+		const viewMoreReply = document.querySelectorAll(".btn-showmorereplies");
+		viewMoreReply.forEach((btn) => {
+			btn.removeEventListener("click", showReplies);
+			btn.addEventListener("click", showReplies);
+		});
+
 		// Remove existing event listeners for hiding replies
 		const hideReply = document.querySelectorAll(".hide-replies");
 		hideReply.forEach((btn) => {
@@ -219,15 +221,29 @@ export function buildComments(targetObject, creator, user) {
 
 	function showReplies(e) {
 		e.preventDefault();
-		let parent_id = e.target.getAttribute("data-parent_id");
-		let replyContainer = e.target.parentNode.querySelector(".replies-container");
-		const replyObjects = replyContainer.querySelectorAll("*");
+		let parent_id, replyContainer, replyCount, replyObjects;
 
-		if (replyObjects.length > 0) {
-			replyContainer.style.display = "block";
-			e.target.style.display = "none";
-			e.target.parentNode.querySelector(".hide-replies").style.display = "block";
-			return;
+		if (e.target.className === "btn-showmorereplies") {
+			parent_id = e.target.parentNode.getAttribute("data-parent_id");
+
+			replyContainer = e.target.parentNode.parentNode.querySelector(".replies-container");
+			replyCount = replyContainer.getAttribute("data-reply_count");
+			replyObjects = replyContainer.querySelectorAll(".reply");
+		} else {
+			parent_id = e.target.getAttribute("data-parent_id");
+
+			replyContainer = e.target.parentNode.querySelector(".replies-container");
+			replyCount = replyContainer.getAttribute("data-reply_count");
+			replyObjects = replyContainer.querySelectorAll(".reply");
+		}
+
+		if (e.target.className !== "btn-showmorereplies") {
+			if (replyObjects.length > 0) {
+				replyContainer.style.display = "block";
+				e.target.style.display = "none";
+				e.target.parentNode.querySelector(".hide-replies").style.display = "block";
+				return;
+			}
 		}
 
 		let currentOffset = replyObjects.length;
@@ -239,15 +255,20 @@ export function buildComments(targetObject, creator, user) {
 				console.log(data);
 				replyHTML = "";
 				setupRepliesHTML(data);
-				const hideRepliesElement = replyContainer.querySelector(".hide-replies");
 
-				// Insert replyHTML before the hide-replies element
-				if (hideRepliesElement) {
+				let hideRepliesElement = replyContainer.querySelector(".hide-replies");
+				let showMoreButton = e.target.closest(".btn-showmorereplies");
+				if (e.target.closest(".btn-showmorereplies")) {
+					showMoreButton.insertAdjacentHTML("beforebegin", replyHTML);
+				} else if (hideRepliesElement) {
 					hideRepliesElement.insertAdjacentHTML("beforebegin", replyHTML);
 				} else {
 					// If hide-replies element is not found, append replyHTML to the end of container
 					replyContainer.insertAdjacentHTML("beforeend", replyHTML);
 				}
+
+				let newReplyCount = replyContainer.querySelectorAll(".reply");
+
 				replyHTML = "";
 
 				if (replyContainer) {
@@ -258,6 +279,32 @@ export function buildComments(targetObject, creator, user) {
 				} else {
 					console.error("Replies container not found.");
 				}
+
+				// Assuming this block of code runs after the replyCount and newReplyCount are updated
+
+				if (replyCount > newReplyCount.length) {
+					// Check if the "Show more" button doesn't already exist before inserting it
+					if (!e.target.querySelector(".btn-showmorereplies")) {
+						let btnhtml = `<div class="btn-showmorereplies">Show more</div>`;
+						hideRepliesElement = replyContainer.querySelector(".hide-replies");
+						hideRepliesElement.insertAdjacentHTML("beforebegin", btnhtml);
+					}
+				} else if (replyCount <= newReplyCount.length) {
+					// Remove the "Show more" button if it exists
+					let showMoreButton = document.querySelector(".btn-showmorereplies");
+					if (showMoreButton) {
+						showMoreButton.remove();
+					}
+				}
+
+				const allhideRepliesElements = replyContainer.querySelectorAll(".hide-replies");
+
+				// Remove all but the first .hide-replies element
+				for (let i = 1; i < allhideRepliesElements.length; i++) {
+					allhideRepliesElements[i].remove();
+				}
+
+				addRepliesEvents();
 			})
 			.catch((error) => {
 				console.error("XHR request failed:", error);
@@ -292,6 +339,7 @@ export function buildComments(targetObject, creator, user) {
 
 		const allReplyButtons = document.querySelectorAll(".replybtn");
 		const commentTextarea = document.querySelector("#commentInputField");
+
 		allReplyButtons.forEach((replybtn) => {
 			replybtn.addEventListener("click", (e) => {
 				let username = e.target.getAttribute("data-name");

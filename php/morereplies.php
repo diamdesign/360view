@@ -30,7 +30,7 @@ if(isset($_GET['id']) || isset($_POST['id'])) {
     }
 
     // Define limit
-    $limit = 1;
+    $limit = 50;
 
     // Define a recursive SQL query to retrieve all replies
     $sql = "

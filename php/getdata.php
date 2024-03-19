@@ -269,7 +269,8 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                                     u.thumbnail AS thumbnail, 
                                     COUNT(cl.comment_id) AS likes_count,
                                     SUM(CASE WHEN cl.user_id = :user_id THEN 1 ELSE 0 END) AS has_liked,
-                                    (SELECT COUNT(*) FROM comments rc WHERE rc.reply_id = c.id) AS reply_count
+                                    (SELECT COUNT(*) FROM comments rc WHERE rc.parent_id = c.id) AS reply_count,
+                                    (SELECT COUNT(*) FROM comments c2 WHERE c2.location_id = :location_id AND c2.parent_id IS NULL) AS total_comments
                                 FROM 
                                     comments c
                                 LEFT JOIN 
@@ -278,7 +279,7 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                                     users u ON c.user_id = u.id
                                 WHERE  
                                     c.location_id = :location_id AND
-                                    c.reply_id IS NULL
+                                    c.parent_id IS NULL
                                 GROUP BY 
                                     c.id
                                 ORDER BY 
@@ -603,7 +604,7 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                                     c.id
                                 ORDER BY 
                                     c.registered DESC
-                                LIMIT 1;
+                                LIMIT 50;
                             ");
 
                                 $comments_statement->bindParam(':location_id', $location_id, PDO::PARAM_INT);
