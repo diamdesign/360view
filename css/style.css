@@ -1183,6 +1183,8 @@ input[type="range"]:focus::-moz-range-thumb {
 	font-size: 1.5rem;
 	margin-left: -0.15rem;
 	margin-right: -0.15rem;
+	top: 0.1rem;
+	position: relative;
 }
 
 .comment .likecomment {
@@ -1569,6 +1571,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	color: white;
 	font-size: 2.625rem;
 	margin-bottom: 1.25rem;
+	line-height: 3.25rem;
 }
 #info .container h2 {
 	font-size: 2.0625rem;

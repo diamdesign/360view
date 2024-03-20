@@ -1339,6 +1339,7 @@ function start(data) {
 		document.querySelector(".details-views span").textContent = formatNumber(
 			targetObject.views_count
 		);
+		document.querySelector(".details-created span").textContent = targetObject.registered;
 		document.querySelector(".details-comments span").textContent = formatNumber(
 			targetObject.total_comments
 		);
