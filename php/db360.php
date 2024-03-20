@@ -16,6 +16,8 @@ try {
         id INT(30) AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(255) NULL,
         email VARCHAR(100) NULL,
+        thumbnail VARCHAR(255) NULL,
+        coverimage VARCHAR(255) NULL,
         user_password VARCHAR(255) NULL,
         apikey VARCHAR(20) NULL,
         subscriber TINYINT(1) NOT NULL DEFAULT 0,
@@ -39,6 +41,7 @@ try {
         hasinventory TINYINT(1) NOT NULL DEFAULT 0,
         showlocations TINYINT(1) NOT NULL DEFAULT 1,
         project_password VARCHAR(255) NULL,
+        overide_location_password TINYINT(1) NOT NULL DEFAULT 0,
         registered DATETIME NULL
     )");
 
@@ -53,15 +56,19 @@ try {
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS markers (
         id INT(30) AUTO_INCREMENT PRIMARY KEY,
-        user_id INT(30) NULL,
         location_id INT(30) NULL,
         marker_title VARCHAR(255) NULL,
         pos_x INT(11) NULL,
         pos_y INT(11) NULL,
         pos_z INT(11) NULL,
         info TEXT NULL,
-        link VARCHAR(255) NULL
+        link VARCHAR(255) NULL,
+        user_id INT(30) NULL,
+        customcss TEXT NULL,
+        sound VARCHAR(255) NULL,
+        autoplay TINYINT(1) NOT NULL DEFAULT 0
     )");
+
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS map_links (
         id INT(30) AUTO_INCREMENT PRIMARY KEY,
@@ -70,7 +77,8 @@ try {
         link_title VARCHAR(255) NULL,
         pos_top INT(4) NULL,
         pos_left INT(4) NULL,
-        link_location_id INT(30) NULL
+        link_location_id INT(30) NULL,
+        link_order_index INT(30) NULL,
     )");
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS locations (
@@ -109,6 +117,7 @@ try {
         id INT(30) AUTO_INCREMENT PRIMARY KEY,
         user_id INT(30) NULL,
         location_id INT(30) NULL,
+        parent_id INT(30) NULL,
         reply_id INT(30) NULL,
         comment TEXT,
         registered DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
