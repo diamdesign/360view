@@ -907,6 +907,7 @@ function start(data) {
 	function markerInfoLabelsClickHandler(e) {
 		if (!e.target.closest(".marker-container")) {
 			e.preventDefault();
+
 			let link = e.target;
 			let hint = link.querySelector(".hint");
 			let content = link.querySelector(".marker-container");
@@ -914,6 +915,25 @@ function start(data) {
 
 			if (computedStyle.display === "none") {
 				content.style.display = "block";
+				if (content) {
+					let soundContainer = content.querySelector(".soundplay");
+					if (soundContainer) {
+						let autoplayValue = soundContainer.getAttribute("data-autoplay");
+						if (autoplayValue === "true") {
+							let audioElement = soundContainer.querySelector("audio");
+							if (audioElement) {
+								if (audioElement.paused) {
+									console.log("audio was paused");
+									audioElement.play();
+								} else {
+									audioElement.pause();
+									audioElement.currentTime = 0;
+									audioElement.play();
+								}
+							}
+						}
+					}
+				}
 				hint.style.display = "none";
 			} else {
 				content.style.display = "none";
@@ -921,6 +941,7 @@ function start(data) {
 			}
 		}
 	}
+
 	if (!userInteracted) {
 		btnPlayVideo.addEventListener("click", () => {
 			userInteracted = true;
@@ -1615,6 +1636,10 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 	settingsVolume.addEventListener("input", () => {
 		const volume = settingsVolume.value; // Get the volume value from the range input
 		video.volume = volume; // Set the volume of the video
+		let audioElements = document.querySelectorAll("audio");
+		audioElements.forEach((audio) => {
+			audio.volume = volume;
+		});
 		settingsVolumeNo.textContent = volume; // Update value of the corresponding input
 	});
 
@@ -1819,7 +1844,7 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 
 	// Function to toggle map
 	function toggleMap() {
-		if (map.style.display === "none") {
+		if (map.style.display === "none" || map.style.display === "") {
 			map.style.display = "flex";
 			updateMapLinkPosition();
 		} else {
@@ -1944,12 +1969,33 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 					}
 				}
 
+				let soundhtml = "";
+				if (sound !== null && sound !== "") {
+					soundhtml += `<div class="soundplay"`;
+
+					if (autoplay) {
+						soundhtml += ` data-autoplay="${autoplay}">`;
+					} else {
+						soundhtml += `>`;
+					}
+
+					soundhtml += `<audio controls id="audio${index}">
+									<source src="../sound/${sound}" type="audio/mpeg">
+								</audio>
+							</div>`;
+				}
+
 				marker.classList.add("marker");
 
-				let html = `<span class="hint">${marker_title}</span><div class="marker-container"></div>`;
+				let html = `<span class="hint">${marker_title}</span><div class="marker-container"><div class="marker-content"></div>`;
 				marker.innerHTML = html;
-				let markerContainer = marker.querySelector(".marker-container");
-				markerContainer.insertAdjacentHTML("afterbegin", info);
+				let markerContent = marker.querySelector(".marker-content");
+				markerContent.insertAdjacentHTML("afterbegin", info);
+
+				if (sound !== null && sound !== "") {
+					let markerContainer = marker.querySelector(".marker-container");
+					markerContainer.insertAdjacentHTML("afterbegin", soundhtml);
+				}
 
 				// Create CSS2DObject for marker/label
 				const cssObject = new CSS2DObject(marker);
