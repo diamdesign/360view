@@ -923,7 +923,6 @@ function start(data) {
 							let audioElement = soundContainer.querySelector("audio");
 							if (audioElement) {
 								if (audioElement.paused) {
-									console.log("audio was paused");
 									audioElement.play();
 								} else {
 									audioElement.pause();
