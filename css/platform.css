@@ -479,7 +479,7 @@ a:hover {
 		border-bottom-left-radius: 0.75rem;
 		border-bottom-right-radius: 0.75rem;
 		background-color: rgba(0, 0, 0, 0.4);
-		z-index: 10000;
+		z-index: 8000;
 	}
 	#showmenu:after {
 		content: "";
@@ -527,7 +527,7 @@ a:hover {
 		padding-top: 1rem;
 		align-items: flex-start;
 		display: none;
-		z-index: 20000;
+		z-index: 9000;
 	}
 
 	#header #btn-browse {

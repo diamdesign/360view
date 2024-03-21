@@ -269,6 +269,7 @@ function start(data) {
 
 	infoLocationButton.addEventListener("click", () => {
 		infoLocationContainer.style.display = "block";
+		document.querySelector("#info-location").scrollTop = 0;
 		infoDetailsContainer.style.display = "none";
 		infoLocationButton.classList.add("showactive");
 		infoDetailsButton.classList.remove("showactive");
@@ -276,6 +277,7 @@ function start(data) {
 
 	infoDetailsButton.addEventListener("click", () => {
 		infoDetailsContainer.style.display = "block";
+		document.querySelector("#info-details").scrollTop = 0;
 		infoLocationContainer.style.display = "none";
 		infoLocationButton.classList.remove("showactive");
 		infoDetailsButton.classList.add("showactive");
@@ -904,6 +906,7 @@ function start(data) {
 		change360Content(parseInt(orderId));
 	}
 
+	// Open Marker Container
 	function markerInfoLabelsClickHandler(e) {
 		if (!e.target.closest(".marker-container")) {
 			e.preventDefault();
@@ -916,6 +919,7 @@ function start(data) {
 			if (computedStyle.display === "none") {
 				content.style.display = "block";
 				if (content) {
+					content.querySelector(".marker-content").scrollTop = 0;
 					let soundContainer = content.querySelector(".soundplay");
 					if (soundContainer) {
 						let autoplayValue = soundContainer.getAttribute("data-autoplay");
@@ -1723,6 +1727,7 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 	function openInfo() {
 		infoButton.style.opacity = "0";
 		infoElem.classList.add("infoshow");
+		document.querySelector("#info-location").scrollTop = 0;
 	}
 
 	infoButton.addEventListener("click", openInfo);

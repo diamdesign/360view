@@ -2026,6 +2026,16 @@ input[type="range"]:focus::-moz-range-thumb {
 	.row span {
 		font-size: 0.75rem;
 	}
+
+	.marker-content {
+		height: 21.8rem;
+	}
+
+	#info .container h1,
+	.marker-container h1 {
+		font-size: 1.6rem;
+		line-height: 2.3rem;
+	}
 }
 
 #info-details .column3,
