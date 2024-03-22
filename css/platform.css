@@ -220,8 +220,97 @@ a:hover {
 	border-left: 1px solid rgba(0, 0, 0, 0.2);
 	position: relative;
 }
+
+#rightmenu #listitems {
+	height: calc(100% - 3rem);
+}
+
+#rightmenu #listitems .listitem {
+	margin: 1rem;
+	font-size: 1rem;
+	border-radius: 0.5rem;
+	position: relative;
+	aspect-ratio: 16/10;
+	overflow: hidden;
+	border: 1px solid transparent;
+}
+
+#rightmenu #listitems .listitem:hover {
+	cursor: pointer;
+	outline: 4px solid black;
+	border: 1px solid white;
+	animation: flash 0.2s ease-in 1 forwards;
+}
+
+#rightmenu #listitems .listitem:hover h2 {
+	text-decoration: underline;
+}
+
+#rightmenu #listitems .listitem:hover img {
+	scale: 1.15;
+}
+
+#rightmenu #listitems .listitem .listimage {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#rightmenu #listitems .listitem .listimage:after {
+	display: block;
+	content: "";
+	width: 100%;
+	height: 70%;
+	background: linear-gradient(0deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	z-index: 0;
+}
+
+#rightmenu #listitems .listitem img {
+	user-select: none;
+	transition: all 0.2s ease-in-out;
+	width: 250%;
+	height: 250%;
+	position: absolute;
+	object-fit: cover;
+}
+
+#rightmenu #listitems .listitem h2 {
+	position: absolute;
+	font-size: 0.85rem;
+	font-weight: 600;
+	bottom: 1.5rem;
+	left: 0.5rem;
+	color: white;
+}
+
 .gridsmall {
 	width: 3rem !important;
+}
+
+#rightmenu.gridsmall #listitems .listitem {
+	width: 2.3rem;
+	margin: 0.3rem;
+	margin-bottom: 0.8rem;
+	border: none;
+	border-radius: 0.3em;
+	position: relative;
+	aspect-ratio: 1 / 1;
+}
+
+#rightmenu.gridsmall #listitems .listimage {
+	border-radius: 0.3em;
+	overflow: hidden;
+}
+
+#rightmenu.gridsmall #listitems .listitem h2 {
+	display: none;
 }
 
 #center {
@@ -271,7 +360,7 @@ a:hover {
 #profile .thumb:hover {
 	cursor: pointer;
 	outline: 4px solid #000080;
-	animation: flash 0.3s ease-in-out 1 forwards;
+	animation: flash 0.2s ease-in-out 1 forwards;
 }
 
 @keyframes outlinepush {

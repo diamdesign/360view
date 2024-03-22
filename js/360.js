@@ -401,7 +401,7 @@ function start(data) {
 		if (e.key === "h" || e.key === "H") {
 			const one = document.querySelector("#view-container");
 			const two = document.querySelector("#outside");
-			const commentInput = document.querySelector("#commentinput");
+			const commentInput = document.querySelector("#commentInputField");
 
 			// Check if the focus is inside the comment input
 			const isFocusInsideInput = commentInput.contains(document.activeElement);
@@ -1072,7 +1072,7 @@ function start(data) {
 				const captionInputHTML = document.querySelector("#captionselect ul");
 				let html = "";
 				targetObject.captions.forEach((caption) => {
-					html += `<li data-caption="${caption}" data-id="${targetObject.id}">${caption}</li>`;
+					html += `<li data-caption="${caption.caption_language}" data-id="${targetObject.id}">${caption.caption_language}</li>`;
 				});
 				html += '<li id="captionoff" class="active">Captions off</li>';
 				captionInputHTML.innerHTML = html;
