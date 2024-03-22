@@ -29,17 +29,17 @@
 
             echo '<div id="listitems">';
             foreach ($projects_result as $project) {
-                    echo '<div class="listitem">
+                    echo '<a href="#" class="listitem">
                     <h2 class="project_title">' . $project['project_title'] . '</h2>
-                    </div>';
+                    </a>';
                 }
 
                 // Render locations
             foreach ($locations_result as $location) {
                 echo '<div class="listitem">
-                    <div class="listimage">
+                    <a href="#" class="listimage">
                         <img src="../img/' . $location['file_name'] . '" alt="" />
-                    </div>
+                    </a>
                     <h2 class="location_title">' . $location['location_title'] . '</h2>
                 </div>';
             }
