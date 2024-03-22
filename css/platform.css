@@ -207,7 +207,8 @@ a:hover {
 #leftmenu {
 	white-space: nowrap;
 	background-color: rgb(239, 239, 241);
-	width: 20rem;
+	width: 100rem;
+	max-width: 15rem;
 	transition: all 0.3s ease;
 	border-right: 1px solid rgba(0, 0, 0, 0.2);
 	position: relative;
@@ -215,7 +216,8 @@ a:hover {
 
 #rightmenu {
 	white-space: nowrap;
-	width: 30rem;
+	width: 100rem;
+	max-width: 15rem;
 	transition: all 0.3s ease;
 	border-left: 1px solid rgba(0, 0, 0, 0.2);
 	position: relative;
