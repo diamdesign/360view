@@ -989,9 +989,10 @@ function start(data) {
 		} else {
 			targetObject = data.locations[0];
 		}
-		console.log("orderID", orderId);
-		console.log(data);
-		console.log(targetObject);
+
+		// Set embedid for comment button
+		document.querySelector("#commentbtn").setAttribute("data-embedid", targetObject.embed_id);
+
 		let fileName = targetObject.file_name;
 		let fileType = targetObject.file_type;
 		let fileInfo = targetObject.info;
@@ -1335,26 +1336,6 @@ function start(data) {
 			showLocBtn.style.display = "none";
 			showInfoBtn.classList.add("showactive");
 		}
-
-		// Build comments section and add Emoji
-		buildComments(targetObject, data.creator, data.user);
-
-		const closeCommentsButton = document.querySelector("#closecommentsbtn");
-
-		// Function to close comments
-		function closeComments() {
-			let commentButton = document.querySelector("#commentbtn");
-			let commentInput = document.querySelector("#commentInputField");
-			commentInput.blur();
-			commentInput.placeholder = "Write your comment";
-			commentButton.style.opacity = "1";
-			commentsElem.classList.remove("commentshow");
-		}
-
-		// Eventlistener for close comment button
-		closeCommentsButton.addEventListener("click", closeComments);
-		closeCommentsButton.addEventListener("touchstart", closeComments);
-		closeCommentsButton.addEventListener("selectstart", closeComments);
 
 		let likeButton = document.querySelector("#likebtn");
 		// Clone the likeButton
@@ -1798,6 +1779,46 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 	closeShareButton.addEventListener("selectstart", closeShare);
 
 	function openComments() {
+		let embedId = document.querySelector("#commentbtn").getAttribute("data-embedid");
+		let fileGetComments = "../php/getcomments.php";
+		let passuri = "i=" + embedId;
+		xhrSend("POST", fileGetComments, passuri)
+			.then((data) => {
+				if (data) {
+					console.log(data);
+					buildComments(data, data.creator, data.user);
+
+					document.querySelector("#commentbtn .amount").textContent = data.total_comments;
+					const closeCommentsButton = document.querySelector("#closecommentsbtn");
+
+					// Function to close comments
+					function closeComments() {
+						let commentButton = document.querySelector("#commentbtn");
+						let commentInput = document.querySelector("#commentInputField");
+						commentInput.blur();
+						commentInput.placeholder = "Write your comment";
+						commentButton.style.opacity = "1";
+						const commentElement = document.querySelector("#comments");
+						commentElement.innerHTML = "";
+						commentsElem.classList.remove("commentshow");
+					}
+
+					// Eventlistener for close comment button
+					closeCommentsButton.removeEventListener("click", closeComments);
+					closeCommentsButton.removeEventListener("touchstart", closeComments);
+					closeCommentsButton.removeEventListener("selectstart", closeComments);
+					closeCommentsButton.addEventListener("click", closeComments);
+					closeCommentsButton.addEventListener("touchstart", closeComments);
+					closeCommentsButton.addEventListener("selectstart", closeComments);
+				} else {
+					console.log("fail");
+				}
+			})
+			.catch((error) => {
+				// Handle any errors
+				console.error("XHR request failed:", error);
+			});
+
 		commentButton.style.opacity = "0";
 		commentsElem.classList.add("commentshow");
 		let commentInput = document.querySelector("#commentInputField");
@@ -1816,6 +1837,10 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 				change360Content(parseInt(orderId));
 				firstListItem.classList.add("active");
 			} else {
+				const listItemWithOrderIndex = document.querySelector(
+					`#locations .container ul li[data-order_index='${locId}']`
+				);
+				listItemWithOrderIndex.classList.add("active");
 				change360Content(parseInt(locId));
 			}
 		} else {

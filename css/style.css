@@ -1648,7 +1648,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	height: 5rem;
 	background: rgba(0, 0, 0, 0.4);
 	content: "";
-	z-index: 10000000;
+	z-index: 10;
 	border-radius: 0.75rem;
 	transform: translateX(-50%) translateY(-50%);
 }
