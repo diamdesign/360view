@@ -18,6 +18,8 @@ var sceneType = "image";
 var listItems;
 var marker;
 
+var overidePassword = false;
+
 // Define the image click handler function
 function imageClickHandler(event) {
 	const rootElement = document.querySelector("#root");
@@ -144,6 +146,7 @@ function buildPasswordHtml() {
 							.then((data) => {
 								// Handle the response data
 								console.log(data); /* Remove this later */
+								overidePassword = true;
 								buildHtml();
 								start(data);
 							})
