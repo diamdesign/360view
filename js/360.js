@@ -60,7 +60,11 @@ window.addEventListener("load", function () {
 });
 
 const embedId = getUrlParameter("i");
-const locId = getUrlParameter("loc");
+var locId = getUrlParameter("loc");
+
+if (!locId) {
+	locId = 1;
+}
 
 const baseUri = "localhost/360/";
 const uri = "i=" + embedId + "&loc=" + locId;
@@ -979,7 +983,15 @@ function start(data) {
 
 		labelContainerElem.innerHTML = "";
 		infoElem.classList.remove("infoshow");
-		let targetObject = data.locations.find((obj) => obj.order_index === orderId);
+		let targetObject;
+		if (dataType === "project" && data.project) {
+			targetObject = data.locations.find((obj) => obj.order_index === orderId);
+		} else {
+			targetObject = data.locations[0];
+		}
+		console.log("orderID", orderId);
+		console.log(data);
+		console.log(targetObject);
 		let fileName = targetObject.file_name;
 		let fileType = targetObject.file_type;
 		let fileInfo = targetObject.info;
@@ -1332,6 +1344,9 @@ function start(data) {
 		// Function to close comments
 		function closeComments() {
 			let commentButton = document.querySelector("#commentbtn");
+			let commentInput = document.querySelector("#commentInputField");
+			commentInput.blur();
+			commentInput.placeholder = "Write your comment";
 			commentButton.style.opacity = "1";
 			commentsElem.classList.remove("commentshow");
 		}
@@ -1341,8 +1356,29 @@ function start(data) {
 		closeCommentsButton.addEventListener("touchstart", closeComments);
 		closeCommentsButton.addEventListener("selectstart", closeComments);
 
+		let likeButton = document.querySelector("#likebtn");
+		// Clone the likeButton
+		const clonedButton = likeButton.cloneNode(true);
+		// Replace likeButton with the cloned button
+		likeButton.parentNode.replaceChild(clonedButton, likeButton);
+		clonedButton.querySelector(".amount").textContent = formatNumber(targetObject.likes_count);
+
 		// Insert the total likes for location
-		likeButton.querySelector(".amount").textContent = formatNumber(targetObject.likes_count);
+		clonedButton.setAttribute("data-id", targetObject.id);
+		clonedButton.classList.remove("liked");
+		// Define the event listener function
+		function toggleLikedClass() {
+			let isLiked = clonedButton.classList.toggle("liked");
+
+			let amountElement = clonedButton.querySelector(".amount");
+			let amount = parseInt(amountElement.textContent.trim());
+
+			amount += isLiked ? 1 : -1;
+			amountElement.textContent = formatNumber(amount);
+		}
+
+		// Add event listener to likeButton
+		clonedButton.addEventListener("click", toggleLikedClass);
 
 		// Details username & thumbnail
 		const userAnchor = document.querySelector(".user-details .userinfo a");
@@ -1764,6 +1800,8 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 	function openComments() {
 		commentButton.style.opacity = "0";
 		commentsElem.classList.add("commentshow");
+		let commentInput = document.querySelector("#commentInputField");
+		commentInput.focus();
 	}
 
 	commentButton.addEventListener("click", openComments);
@@ -1877,17 +1915,21 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 				let markerInternalLinks = document.querySelectorAll(".intlink");
 				let markerInfoLabels = document.querySelectorAll(".infodot");
 
-				if (markerInternalLinks.length > 0 && markerInfoLabels.length > 0) {
+				if (markerInternalLinks.length > 0 || markerInfoLabels.length > 0) {
 					clearInterval(interval); // Stop the interval
 
-					// Add event listeners
-					markerInternalLinks.forEach((link) => {
-						link.addEventListener("click", markerInternalLinksClickHandler);
-					});
+					if (markerInternalLinks.length > 0) {
+						// Add event listeners
+						markerInternalLinks.forEach((link) => {
+							link.addEventListener("click", markerInternalLinksClickHandler);
+						});
+					}
 
-					markerInfoLabels.forEach((link) => {
-						link.addEventListener("click", markerInfoLabelsClickHandler);
-					});
+					if (markerInfoLabels.length > 0) {
+						markerInfoLabels.forEach((link) => {
+							link.addEventListener("click", markerInfoLabelsClickHandler);
+						});
+					}
 
 					// Resolve the promise once all markers are created
 					if (markersCreated === markerData.length) {

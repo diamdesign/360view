@@ -168,7 +168,6 @@ export function buildComments(targetObject, creator, user) {
 
 			xhrSend("POST", "../php/morecomments.php", passuri)
 				.then((data) => {
-					console.log(data);
 					commentHTML = "";
 					setupCommentHTML(data);
 
@@ -188,12 +187,67 @@ export function buildComments(targetObject, creator, user) {
 						showMoreComments.addEventListener("click", loadMoreComments);
 					}
 					addRepliesEvents();
+					addMoreEvents();
 				})
 				.catch((error) => {
 					// Handle any errors
 					console.error("XHR request failed:", error);
 				});
 		}
+	}
+
+	function addMoreEvents() {
+		const allReplyButtons = document.querySelectorAll(".replybtn");
+		const commentTextarea = document.querySelector("#commentInputField");
+		const allLikeComments = document.querySelectorAll(".likecomment");
+
+		// Define the event listener for reply button click
+		function replyButtonClickHandler(e) {
+			let username = e.target.getAttribute("data-name");
+			let replytoid = e.target.getAttribute("data-id");
+
+			// Set placeholder text
+			commentTextarea.placeholder = "Reply to " + username;
+
+			// Set custom attribute using dataset
+			commentTextarea.dataset.replytoid = replytoid;
+			commentTextarea.focus();
+		}
+
+		// Define the event listener for like button click
+		function likeButtonClickHandler(e) {
+			e.preventDefault();
+
+			let thisEl = e.target.closest(".likecomment");
+			let span = thisEl.querySelector("span");
+			let amount = parseInt(span.textContent.trim());
+
+			// Toggle the "likedcomment" class
+			let isLiked = thisEl.classList.toggle("likedcomment");
+
+			// Update the amount based on whether the class was added or removed
+			amount += isLiked ? 1 : -1;
+
+			span.textContent = amount.toString();
+		}
+
+		// Remove existing event listeners from reply buttons
+		allReplyButtons.forEach((replybtn) => {
+			replybtn.onclick = null;
+			replybtn.removeEventListener("click", replyButtonClickHandler);
+			replybtn.addEventListener("click", replyButtonClickHandler);
+		});
+
+		// Remove existing event listeners from like buttons
+		// Loop through all like buttons
+		allLikeComments.forEach((btn) => {
+			// Clone the button without its event listeners
+			let clonedButton = btn.cloneNode(true);
+			btn.parentNode.replaceChild(clonedButton, btn);
+
+			// Add the event listener to the cloned button
+			clonedButton.addEventListener("click", likeButtonClickHandler);
+		});
 	}
 
 	function addRepliesEvents() {
@@ -242,6 +296,7 @@ export function buildComments(targetObject, creator, user) {
 				replyContainer.style.display = "block";
 				e.target.style.display = "none";
 				e.target.parentNode.querySelector(".hide-replies").style.display = "block";
+				addMoreEvents();
 				return;
 			}
 		}
@@ -252,7 +307,6 @@ export function buildComments(targetObject, creator, user) {
 
 		xhrSend("POST", "../php/morereplies.php", passuri)
 			.then((data) => {
-				console.log(data);
 				replyHTML = "";
 				setupRepliesHTML(data);
 
@@ -276,6 +330,7 @@ export function buildComments(targetObject, creator, user) {
 					e.target.style.display = "none";
 					e.target.parentNode.querySelector(".hide-replies").style.display = "block";
 					addRepliesEvents();
+					addMoreEvents();
 				} else {
 					console.error("Replies container not found.");
 				}
@@ -305,6 +360,7 @@ export function buildComments(targetObject, creator, user) {
 				}
 
 				addRepliesEvents();
+				addMoreEvents();
 			})
 			.catch((error) => {
 				console.error("XHR request failed:", error);
@@ -337,40 +393,9 @@ export function buildComments(targetObject, creator, user) {
 
 		installEmoji("emojiplugin");
 
-		const allReplyButtons = document.querySelectorAll(".replybtn");
-		const commentTextarea = document.querySelector("#commentInputField");
+		addMoreEvents();
 
-		allReplyButtons.forEach((replybtn) => {
-			replybtn.addEventListener("click", (e) => {
-				let username = e.target.getAttribute("data-name");
-				let replytoid = e.target.getAttribute("data-id");
-
-				// Set placeholder text
-				commentTextarea.placeholder = "Reply to " + username;
-
-				// Set custom attribute using dataset
-				commentTextarea.dataset.replytoid = replytoid;
-				commentTextarea.focus();
-			});
-		});
-
-		const allLikeComments = document.querySelectorAll(".likecomment");
-		allLikeComments.forEach((btn) => {
-			btn.addEventListener("click", (e) => {
-				e.preventDefault();
-				let thisEl = e.target.closest(".likecomment");
-				let span = thisEl.querySelector("span");
-				let amount = parseInt(span.textContent.trim());
-				if (thisEl.classList.contains("likedcomment")) {
-					thisEl.classList.remove("likedcomment");
-					amount -= 1;
-				} else {
-					thisEl.classList.add("likedcomment");
-					amount += 1;
-				}
-				span.textContent = amount.toString();
-			});
-		});
+		let commentTextarea = document.querySelector("#commentInputField");
 
 		commentTextarea.addEventListener("keydown", (e) => {
 			if (e.key === "Escape") {

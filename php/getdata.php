@@ -100,13 +100,15 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                     l.hasmusic, 
                     l.haspass, 
                     l.registered,
-                    (SELECT COUNT(*) FROM likes WHERE location_id = l.id) AS likes_count
+                    (SELECT COUNT(*) FROM likes WHERE location_id = l.id) AS likes_count,
                     (SELECT COUNT(DISTINCT visitor_ipadress) FROM views WHERE location_id = l.id) AS views_count
                 FROM 
                     locations l
                 WHERE 
                     l.embed_id = :embed_id
-            ");            // Bind the parameter
+            "); 
+         
+            // Bind the parameter
             $statement->bindParam(':embed_id', $embed_id, PDO::PARAM_STR);
             // Execute the statement
             $statement->execute();
@@ -117,22 +119,6 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
 
                 $user_id = $locations['user_id'];
                 $this_location_id = $locations['id'];
-
-                // Count views
-                $views_statement = $pdo->prepare("SELECT COUNT(*) as total_views FROM views WHERE location_id = :location_id");
-                $views_statement->bindParam(':location_id', $this_location_id, PDO::PARAM_INT);
-                $views_statement->execute();
-                $views_result = $views_statement->fetch(PDO::FETCH_ASSOC);
-                $total_views = $views_result['total_views'];
-
-                // Count likes
-                $likes_statement = $pdo->prepare("SELECT COUNT(*) as total_likes FROM likes WHERE location_id = :location_id");
-                $likes_statement->bindParam(':location_id', $this_location_id, PDO::PARAM_INT);
-                $likes_statement->execute();
-                $likes_result = $likes_statement->fetch(PDO::FETCH_ASSOC);
-                $total_likes = $likes_result['total_likes'];
-
-  
 
                  // Get user info
                 $statement = $pdo->prepare("SELECT id, username, email, thumbnail, coverimage, subscriber, registered FROM users WHERE id = :user_id");
@@ -149,10 +135,6 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                 if ($location_details) {
 
                         $location_id = $location_details['id'];
-
-                        // Store counts in $locations array
-                        $location_details['total_views'] = $total_views;
-                        $location_details['total_likes'] = $total_likes;
                         
                         $location_details['ispublic'] = ($location_details['ispublic'] == '1') ? true : false;
                         $location_details['hasmusic'] = ($location_details['hasmusic'] == '1') ? true : false;
@@ -179,7 +161,7 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                         }
 
                             // Fetch markers details from the captions table
-                            $markers_statement = $pdo->prepare("SELECT id, marker_title, pos_x, pos_y, pos_z, info, link FROM markers WHERE location_id = :location_id");
+                            $markers_statement = $pdo->prepare("SELECT id, marker_title, pos_x, pos_y, pos_z, info, link, sound, autoplay, customcss FROM markers WHERE location_id = :location_id");
                             $markers_statement->bindParam(':location_id', $location_id, PDO::PARAM_INT);
                             $markers_statement->execute();
                             $markers_details = $markers_statement->fetchAll(PDO::FETCH_ASSOC);
