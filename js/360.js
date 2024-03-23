@@ -73,6 +73,10 @@ const uri = "i=" + embedId + "&loc=" + locId;
 
 var startLocX = 0;
 var startLocY = 0;
+
+var currentLocX = 0;
+var currentLocY = 0;
+
 var selectStartLocation = locId;
 var shareLink =
 	baseUri +
@@ -547,7 +551,7 @@ function start(data) {
 	let texture;
 
 	// Create a sphere geometry for the 360 photo
-	const geometry = new THREE.SphereGeometry(360, 180, 180); // Increase the radius to 10
+	const geometry = new THREE.SphereGeometry(360, 180, 180);
 
 	// Create a black texture
 	const blackTexture = new THREE.DataTexture(
@@ -594,6 +598,16 @@ function start(data) {
 		labelRenderer.render(scene, camera);
 	}
 
+	// Function to update input values based on camera's rotation
+	function updateInputsFromCameraRotation() {
+		// Extract pitch and yaw angles from the camera's rotation
+		const pitch = THREE.MathUtils.radToDeg(camera.rotation.y);
+		const yaw = THREE.MathUtils.radToDeg(camera.rotation.x);
+		console.log("x:", Math.floor(pitch), "y:", Math.floor(yaw));
+		currentLocX = Math.floor(pitch);
+		currentLocY = Math.floor(yaw);
+	}
+
 	// Function to animate it all
 	function animate() {
 		requestAnimationFrame(animate);
@@ -601,6 +615,8 @@ function start(data) {
 
 		// directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 		render();
+
+		updateInputsFromCameraRotation();
 
 		// Calculate azimuthal angle
 		const azimuthalAngle = Math.atan2(camera.position.x, camera.position.z);
@@ -852,8 +868,10 @@ function start(data) {
 	updateShareLink();
 	linkToShare.querySelector("span").textContent = shareLink;
 
+	// Start looking at share inputs
 	document.querySelector("#lookatx").addEventListener("change", (e) => {
 		startLocX = e.target.value;
+		currentLocX = e.target.value;
 		updateShareLink();
 		updateCameraRotation();
 		linkToShare.querySelector("span").textContent = shareLink;
@@ -861,6 +879,7 @@ function start(data) {
 
 	document.querySelector("#lookaty").addEventListener("change", (e) => {
 		startLocY = e.target.value;
+		currentLocY = e.target.value;
 		updateShareLink();
 		updateCameraRotation();
 		linkToShare.querySelector("span").textContent = shareLink;
@@ -868,42 +887,14 @@ function start(data) {
 
 	// Function to update camera's rotation based on input values
 	function updateCameraRotation() {
-		const pitch = THREE.MathUtils.degToRad(document.querySelector("#lookaty").value);
-		const yaw = THREE.MathUtils.degToRad(document.querySelector("#lookatx").value);
+		// Convert yaw and pitch angles from degrees to radians
+		const pitch = THREE.MathUtils.degToRad(currentLocX);
+		const yaw = THREE.MathUtils.degToRad(currentLocY);
 
-		// Set camera's rotation based on pitch and yaw
-		camera.rotation.set(yaw, pitch, 0);
-		camera.position.set(yaw, pitch, 0);
-		camera.lookAt(scene.position);
+		camera.position.set(pitch, yaw, camera.position.z);
+		camera.lookAt(new THREE.Vector3(pitch, yaw, camera.position.z));
 		camera.updateProjectionMatrix();
 	}
-
-	// Create a custom event dispatcher for the camera
-	const dispatcher = new THREE.EventDispatcher();
-
-	// Function to update input values based on camera rotation
-	function updateInputValues() {
-		// Get the camera's rotation angles
-		const pitch = THREE.MathUtils.radToDeg(camera.rotation.x);
-		const yaw = THREE.MathUtils.radToDeg(camera.rotation.y);
-
-		// Update the input values
-		document.querySelector("#lookatx").value = pitch;
-		document.querySelector("#lookaty").value = yaw;
-		updateShareLink();
-		linkToShare.querySelector("span").textContent = shareLink;
-	}
-
-	// Listen for changes in camera's rotation
-	dispatcher.addEventListener("cameraChange", updateInputValues);
-
-	// Function to dispatch camera change event when camera rotation changes
-	function onCameraChange() {
-		dispatcher.dispatchEvent({ type: "cameraChange" });
-	}
-
-	// Register the event handler to be called when the camera's rotation changes
-	camera.addEventListener("update", onCameraChange);
 
 	// Define event listener functions
 	function markerInternalLinksClickHandler(e) {
@@ -1350,6 +1341,9 @@ function start(data) {
 		// Insert the total likes for location
 		clonedButton.setAttribute("data-id", targetObject.id);
 		clonedButton.classList.remove("liked");
+		if (targetObject.has_liked) {
+			clonedButton.classList.add("liked");
+		}
 		// Define the event listener function
 		function toggleLikedClass() {
 			let isLiked = clonedButton.classList.toggle("liked");
@@ -1443,7 +1437,9 @@ function start(data) {
 				target.closest("#scrollable") !== null ||
 				target.closest("#info") !== null ||
 				target.closest(".marker-container") !== null ||
-				target.closest("#comments") !== null
+				target.closest("#comments") !== null ||
+				target.closest("#music") !== null ||
+				target.closest("#share") !== null
 			);
 		} else {
 			// If event is undefined or null, return false

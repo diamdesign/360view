@@ -854,7 +854,7 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 #likebtn.liked:after {
-	filter: invert(0);
+	filter: invert(0) invert(100%) brightness(0.25) sepia(1) hue-rotate(300deg) saturate(6);
 	color: rgba(233, 15, 15, 0.979);
 }
 

@@ -101,7 +101,8 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                     l.haspass, 
                     l.registered,
                     (SELECT COUNT(*) FROM likes WHERE location_id = l.id) AS likes_count,
-                    (SELECT COUNT(DISTINCT visitor_ipadress) FROM views WHERE location_id = l.id) AS views_count
+                    (SELECT COUNT(DISTINCT visitor_ipadress) FROM views WHERE location_id = l.id) AS views_count,
+                    (SELECT COUNT(*) FROM likes WHERE location_id = l.id AND user_id = :current_user_id) AS has_liked
                 FROM 
                     locations l
                 WHERE 
@@ -110,6 +111,7 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
          
             // Bind the parameter
             $statement->bindParam(':embed_id', $embed_id, PDO::PARAM_STR);
+             $statement->bindParam(':current_user_id', $current_user_id, PDO::PARAM_STR);
             // Execute the statement
             $statement->execute();
             // Fetch all rows as associative arrays
@@ -132,6 +134,17 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                 if ($location_details) {
 
                         $location_id = $location_details['id'];
+
+                         // Check if 'has_liked' exists and is not null
+                        if (isset($location_details['has_liked']) && $location_details['has_liked'] !== null) {
+                                // Convert the count to a boolean value: true if count is greater than 0, otherwise false
+                                $has_liked_project = $location_details['has_liked'] > 0;
+                            } else {
+                                // If 'has_liked' doesn't exist or is null, set $has_liked_project to false
+                                $has_liked_project = false;
+                            }
+
+                        $location_details['has_liked'] = $has_liked_project;
                         
                         $location_details['ispublic'] = ($location_details['ispublic'] == '1') ? true : false;
                         $location_details['hasmusic'] = ($location_details['hasmusic'] == '1') ? true : false;
@@ -242,6 +255,7 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
             // Check if any projects are fetched
             if ($projects) { // Check if a project was fetched
                 // Adjust the 'ispublic' field value if it exists
+
                 $projects['overide_location_password'] = ($projects['overide_location_password'] == '1') ? true : false;
                 $projects['showlocations'] = ($projects['showlocations'] == '1') ? true : false;
                 $projects['ispublic'] = ($projects['ispublic'] == '1') ? true : false;
@@ -315,20 +329,35 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                         l.registered,
                         (SELECT COUNT(*) FROM likes WHERE location_id = l.id) AS likes_count,
                         (SELECT COUNT(*) FROM comments WHERE location_id = l.id) AS total_comments,
-                        (SELECT COUNT(DISTINCT visitor_ipadress) FROM views WHERE location_id = l.id) AS views_count
+                        (SELECT COUNT(DISTINCT visitor_ipadress) FROM views WHERE location_id = l.id) AS views_count,
+                        (SELECT COUNT(*) FROM likes WHERE location_id = l.id AND user_id = :current_user_id) AS has_liked
                     FROM 
                         locations l
                     WHERE 
                         l.id = :location_id
                 ");                
                 $location_statement->bindParam(':location_id', $location_id, PDO::PARAM_INT);
+                $location_statement->bindParam(':current_user_id', $current_user_id, PDO::PARAM_INT);
                 $location_statement->execute();
                 $locations_data = $location_statement->fetchAll(PDO::FETCH_ASSOC);
+
 
                 foreach ($locations_data as &$location_details) {
                     if ($location_details) {
 
+                        // Check if 'has_liked' exists and is not null
+                       if (isset($location_details['has_liked']) && $location_details['has_liked'] !== null) {
+                            // Convert the count to a boolean value: true if count is greater than 0, otherwise false
+                            $has_liked_project = $location_details['has_liked'] > 0;
+                        } else {
+                            // If 'has_liked' doesn't exist or is null, set $has_liked_project to false
+                            $has_liked_project = false;
+                        }
+
+                        // Update the 'has_liked' value in the location_details array
+                        $location_details['has_liked'] = $has_liked_project;
                         $location_details['order_index'] = $order_index;
+                        
                         $location_details['hasmusic'] = ($location_details['hasmusic'] == '1') ? true : false;
                         $location_details['haspass'] = ($location_details['haspass'] == '1') ? true : false;
                         $location_details['ispublic'] = ($location_details['ispublic'] == '1') ? true : false;
@@ -382,7 +411,8 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                                                    
                     }
 
-                   $response['locations'][] = $location_details;
+             
+                    $response['locations'][] = $location_details;
                 }
             }
 

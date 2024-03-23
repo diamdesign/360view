@@ -51,8 +51,8 @@ export const rootHTML = `<div id="outside">
 					
 					<h4>Start looking at</h4>
 					<div id="lookingat">
-						<div class="xyinput"><div><span>X</span><input type="number" min="-360" max="360" id="lookatx" value="0" /></div></div>
-						<div class="xyinput"><div><span>Y</span><input type="number" min="-360" max="360" id="lookaty" value="0" /></div></div>
+						<div class="xyinput"><div><span>X</span><input type="number" min="-180" max="180" id="lookatx" value="0" /></div></div>
+						<div class="xyinput"><div><span>Y</span><input type="number" min="-90" max="90" id="lookaty" value="0" /></div></div>
 					</div>
 					<div id="linktoshare">
 						<span></span>
