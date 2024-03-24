@@ -9,6 +9,33 @@ export function formatNumber(number) {
 	}
 }
 
+export function copyToClipboard(selectorId) {
+	// Find the element with the specified ID
+	const element = document.querySelector(selectorId);
+
+	// Create a temporary textarea element
+	const textarea = document.createElement("textarea");
+	textarea.value = element.textContent; // Set the value to the text content of the element
+	document.body.appendChild(textarea); // Append the textarea to the document body
+
+	// Select the text inside the textarea
+	textarea.select();
+	textarea.setSelectionRange(0, 99999); // For mobile devices
+
+	// Add the 'flash' class to the element
+	element.classList.add("copyflash");
+	setTimeout(() => {
+		// Remove the 'flash' class after 200 milliseconds
+		element.classList.remove("copyflash");
+	}, 300);
+
+	// Copy the selected text to the clipboard
+	document.execCommand("copy");
+
+	// Remove the temporary textarea
+	document.body.removeChild(textarea);
+}
+
 export function getTimeAgo(timestamp) {
 	const currentDate = new Date();
 	const date = new Date(timestamp);

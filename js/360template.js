@@ -65,6 +65,11 @@ export const rootHTML = `<div id="outside">
 					<div class="startlocations">
 						
 					</div>
+					<h4>Embed size in px</h4>
+					<div id="embedsize">
+						<div class="xyinput"><div><span>Width</span><input type="number" min="120" max="6000" id="embedwidth" value="640" /></div></div>
+						<div class="xyinput"><div><span>Height</span><input type="number" min="80" max="6000" id="embedheight" value="480" /></div></div>
+					</div>
 					<div id="embedcode">
 						<textarea></textarea>
 					</div>

@@ -235,6 +235,8 @@ a:hover {
 	aspect-ratio: 16/10;
 	overflow: hidden;
 	border: 1px solid transparent;
+	display: block;
+	background-color: rgba(0, 0, 0, 0.2);
 }
 
 #rightmenu #listitems .listitem:hover {

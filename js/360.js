@@ -4,7 +4,13 @@ import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer
 import { rootHTML, haspassHTML } from "./360template.min.js";
 import { buildComments } from "./comments.min.js";
 
-import { testInternetSpeed, xhrSend, getUrlParameter, formatNumber } from "./functions.min.js";
+import {
+	testInternetSpeed,
+	xhrSend,
+	getUrlParameter,
+	formatNumber,
+	copyToClipboard,
+} from "./functions.min.js";
 
 var userInteracted = false;
 var dataType = "";
@@ -89,6 +95,22 @@ var shareLink =
 	"&y=" +
 	startLocY;
 
+var embedLink =
+	baseUri +
+	"embed/?=" +
+	embedId +
+	"&loc" +
+	selectStartLocation +
+	"&x=" +
+	startLocX +
+	"&y" +
+	startLocY;
+
+var setEmbedWidth = "640";
+var setEmbedHeight = "480";
+
+var embedIframeLink = `<iframe width="${setEmbedWidth}" height="${setEmbedHeight}" src="${embedLink}" title="360 player"></iframe>`;
+
 function updateShareLink() {
 	shareLink =
 		baseUri +
@@ -100,6 +122,10 @@ function updateShareLink() {
 		startLocX +
 		"&y=" +
 		startLocY;
+
+	embedLink = baseUri + "embed/?=" + embedId + "&loc=" + selectStartLocation;
+
+	embedIframeLink = `<iframe width="${setEmbedWidth}" height="${setEmbedHeight}" src="${embedLink}" title="360 player"></iframe>`;
 }
 
 const fileCheckData = "../php/checkdata.php";
@@ -830,6 +856,7 @@ function start(data) {
 	});
 
 	const linkToShare = document.querySelector("#linktoshare");
+	const embedCodeArea = document.querySelector("#embedcode");
 	const allSelectStartLocation = document.querySelectorAll(".start-location");
 
 	if (data.locations.length < locId) {
@@ -854,6 +881,7 @@ function start(data) {
 			selectStartLocation = order;
 			updateShareLink();
 			linkToShare.querySelector("span").textContent = shareLink;
+			embedCodeArea.querySelector("textarea").textContent = embedIframeLink;
 		});
 	});
 
@@ -867,22 +895,36 @@ function start(data) {
 
 	updateShareLink();
 	linkToShare.querySelector("span").textContent = shareLink;
+	embedCodeArea.querySelector("textarea").textContent = embedIframeLink;
+
+	const copyLinkButton = document.querySelector("#copylink");
+	const copyEmbedButton = document.querySelector("#copyembed");
+
+	copyLinkButton.addEventListener("click", () => {
+		copyToClipboard("#linktoshare span");
+	});
+
+	copyEmbedButton.addEventListener("click", () => {
+		copyToClipboard("#embedcode textarea");
+	});
 
 	// Start looking at share inputs
 	document.querySelector("#lookatx").addEventListener("change", (e) => {
-		startLocX = e.target.value;
-		currentLocX = e.target.value;
+		startLocX = parseInt(e.target.value);
+		currentLocX = parseInt(e.target.value);
 		updateShareLink();
 		updateCameraRotation();
 		linkToShare.querySelector("span").textContent = shareLink;
+		embedCodeArea.querySelector("textarea").textContent = embedIframeLink;
 	});
 
 	document.querySelector("#lookaty").addEventListener("change", (e) => {
-		startLocY = e.target.value;
-		currentLocY = e.target.value;
+		startLocY = parseInt(e.target.value);
+		currentLocY = parseInt(e.target.value);
 		updateShareLink();
 		updateCameraRotation();
 		linkToShare.querySelector("span").textContent = shareLink;
+		embedCodeArea.querySelector("textarea").textContent = embedIframeLink;
 	});
 
 	// Function to update camera's rotation based on input values
@@ -892,7 +934,8 @@ function start(data) {
 		const yaw = THREE.MathUtils.degToRad(currentLocY);
 
 		camera.position.set(pitch, yaw, camera.position.z);
-		camera.lookAt(new THREE.Vector3(pitch, yaw, camera.position.z));
+		camera.rotation.set(pitch, yaw, camera.position.z);
+		camera.lookAt(scene.position);
 		camera.updateProjectionMatrix();
 	}
 
