@@ -36,12 +36,12 @@
 
                 // Render locations
             foreach ($locations_result as $location) {
-                echo '<div class="listitem">
-                    <a href="#" class="listimage">
+                echo '<a href="#" class="listitem">
+                    <div  class="listimage">
                         <img src="../img/' . $location['file_name'] . '" alt="" />
-                    </a>
+                    </div>
                     <h2 class="location_title">' . $location['location_title'] . '</h2>
-                </div>';
+                </a>';
             }
 
              echo '</div>';

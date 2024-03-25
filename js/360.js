@@ -26,6 +26,19 @@ var marker;
 
 var overidePassword = false;
 
+window.addEventListener("message", receiveMessage, false);
+
+function receiveMessage(event) {
+	const identifier = "360";
+	// Access the data from the event object
+	const messageData = event.data;
+	if (messageData.identifier === identifier) {
+		console.log("Received message:", messageData);
+	}
+
+	// Process the messageData as needed
+}
+
 // Define the image click handler function
 function imageClickHandler(event) {
 	const rootElement = document.querySelector("#root");
@@ -642,7 +655,7 @@ function start(data) {
 		// directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 		render();
 
-		updateInputsFromCameraRotation();
+		// updateInputsFromCameraRotation();
 
 		// Calculate azimuthal angle
 		const azimuthalAngle = Math.atan2(camera.position.x, camera.position.z);
@@ -1955,9 +1968,15 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 	function toggleMap() {
 		if (map.style.display === "none" || map.style.display === "") {
 			map.style.display = "flex";
+			map.querySelector("img").style.display = "block";
 			updateMapLinkPosition();
 		} else {
-			map.style.display = "none";
+			map.classList.add("removeblur");
+			map.querySelector("img").style.display = "none";
+			setTimeout(() => {
+				map.classList.remove("removeblur");
+				map.style.display = "none";
+			}, 600);
 		}
 	}
 

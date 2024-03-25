@@ -1038,13 +1038,41 @@ input[type="range"]:focus::-moz-range-thumb {
 	justify-content: center;
 	align-items: center;
 	background-color: rgba(0, 0, 0, 0.4);
-	backdrop-filter: blur(2.5rem);
+	backdrop-filter: blur(0rem);
+	transition: backdrop-filter 0.6s;
 	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 100%;
 	z-index: 10;
+	animation: backdropblur 0.6s ease-out 1 forwards;
+}
+
+.removeblur {
+	animation: backdropblurremove 0.6s ease-out 1 forwards !important;
+}
+
+@keyframes backdropblur {
+	0% {
+		background-color: rgba(0, 0, 0, 0);
+		backdrop-filter: blur(0rem);
+	}
+	100% {
+		background-color: rgba(0, 0, 0, 0.4);
+		backdrop-filter: blur(2.5rem);
+	}
+}
+
+@keyframes backdropblurremove {
+	0% {
+		background-color: rgba(0, 0, 0, 0.4);
+		backdrop-filter: blur(2.5rem);
+	}
+	100% {
+		background-color: rgba(0, 0, 0, 0);
+		backdrop-filter: blur(0rem);
+	}
 }
 
 #map #mapimage {

@@ -228,7 +228,7 @@ a:hover {
 }
 
 #rightmenu #listitems .listitem {
-	margin: 1rem;
+	margin: 0.5rem 1rem;
 	font-size: 1rem;
 	border-radius: 0.5rem;
 	position: relative;
@@ -300,8 +300,8 @@ a:hover {
 
 #rightmenu.gridsmall #listitems .listitem {
 	width: 2.3rem;
-	margin: 0.3rem;
-	margin-bottom: 0.8rem;
+	margin: 0 0.3rem;
+	margin-bottom: 0.3rem;
 	border: none;
 	border-radius: 0.3em;
 	position: relative;
