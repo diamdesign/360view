@@ -3,6 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { rootHTML, haspassHTML } from "./360template.min.js";
 import { buildComments } from "./comments.min.js";
+import { receiveMessage } from "./functions.min.js";
 
 import {
 	testInternetSpeed,
@@ -26,18 +27,34 @@ var marker;
 
 var overidePassword = false;
 
-window.addEventListener("message", receiveMessage, false);
+var editmode, userSubscriber; // Variable to store the received message
 
-function receiveMessage(event) {
-	const identifier = "360";
-	// Access the data from the event object
-	const messageData = event.data;
-	if (messageData.identifier === identifier) {
-		console.log("Received message:", messageData);
-	}
+// Add an event listener to listen for messages and assign it to a variable
+const eventListenerPromise = new Promise((resolve) => {
+	// Add an event listener to listen for messages
+	window.addEventListener(
+		"message",
+		function (event) {
+			// Call receiveMessage function to handle the received message
+			const receivedData = receiveMessage(event);
+			if (receivedData) {
+				// Resolve the promise with the received data
+				resolve(receivedData);
+			}
+		},
+		false
+	);
+});
 
-	// Process the messageData as needed
+// Asynchronously wait for the event listener to be added
+async function waitForEventListener() {
+	const result = await eventListenerPromise;
+	editmode = result.editmode;
+	userSubscriber = result.subscriber;
+	console.log("Edit mode:", editmode, "Subscriber:", userSubscriber);
 }
+
+waitForEventListener();
 
 // Define the image click handler function
 function imageClickHandler(event) {
@@ -255,6 +272,10 @@ function start(data) {
 		dataType = "location";
 	}
 	console.log("Data Type:", dataType);
+
+	if (editmode) {
+		document.querySelector("#logo").classList.add("editmode");
+	}
 
 	const baseUrl = "http://localhost/360/";
 

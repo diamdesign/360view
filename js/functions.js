@@ -9,6 +9,17 @@ export function formatNumber(number) {
 	}
 }
 
+export function receiveMessage(event) {
+	const identifier = "360";
+	// Access the data from the event object
+	const messageData = event.data;
+	if (messageData.identifier === identifier) {
+		return messageData;
+	}
+
+	// Process the messageData as needed
+}
+
 export function copyToClipboard(selectorId) {
 	// Find the element with the specified ID
 	const element = document.querySelector(selectorId);

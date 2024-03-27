@@ -111,6 +111,11 @@ try {
         $username = $user["username"];
         $thumbnail = $user["thumbnail"];
     }
+    if($user_id === $current_user_id) {
+        $editmode = true;
+    } else {
+        $editmode = false;
+    }
 
     } catch (PDOException $e) {
         // If an error occurs, add the error message to the response array
@@ -195,9 +200,9 @@ try {
                 const identifier = "360";
                 const message = {
                     identifier: identifier,
-                    userid: <?php echo json_encode($current_user_id); ?>,
+                    creatorid: <?php echo json_encode($current_user_id); ?>,
                     subscriber: <?php echo json_encode($subscriber); ?>,
-                    editmode: true
+                    editmode: <?php echo json_encode($editmode); ?>
                 };
                 const targetOrigin = window.location.origin;
                 iframe.contentWindow.postMessage(message, targetOrigin);

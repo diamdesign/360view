@@ -794,6 +794,28 @@ input[type="range"]:focus::-moz-range-thumb {
 	position: absolute;
 }
 
+#logo.editmode:after {
+	border-radius: 100%;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: -4px;
+	left: -4px;
+	border: 4px dashed white;
+	content: "";
+	display: block;
+	animation: editmodeon 10s linear infinite;
+}
+
+@keyframes editmodeon {
+	0% {
+		rotate: 0deg;
+	}
+	100% {
+		rotate: 360deg;
+	}
+}
+
 #logo div {
 	width: 100%;
 	height: 100%;
