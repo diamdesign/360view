@@ -2301,3 +2301,52 @@ input[type="range"]:focus::-moz-range-thumb {
 		scale: 1;
 	}
 }
+
+.markeron {
+	z-index: 10000 !important;
+}
+
+.edit-mc {
+	display: block;
+	position: relative;
+	min-height: 2rem;
+	border: 1px solid transparent;
+}
+
+.edit-mc:hover {
+	padding-top: 2.5rem;
+	border: 1px solid royalblue;
+}
+.edit-mc:hover .edit-markercontent {
+	display: flex;
+}
+.edit-markercontent {
+	position: absolute;
+	top: 0;
+	z-index: 1;
+	user-select: none;
+	width: 100%;
+	gap: 2px;
+	display: none;
+	justify-content: center;
+}
+
+.firstedit .edit-markercontent {
+	display: flex;
+}
+
+.firstedit:hover {
+	padding-top: 0;
+	border: 1px solid transparent;
+}
+
+.edit-markercontent div {
+	width: 2rem;
+	height: 2rem;
+	background: #36363691;
+}
+
+.edit-markercontent div:hover {
+	background: white;
+	cursor: pointer;
+}

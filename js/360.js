@@ -992,6 +992,7 @@ function start(data) {
 			let computedStyle = getComputedStyle(content);
 
 			if (computedStyle.display === "none") {
+				link.classList.add("markeron");
 				content.style.display = "block";
 				if (content) {
 					content.querySelector(".marker-content").scrollTop = 0;
@@ -1014,6 +1015,7 @@ function start(data) {
 				}
 				hint.style.display = "none";
 			} else {
+				link.classList.remove("markeron");
 				content.style.display = "none";
 				hint.style.display = "block";
 			}
@@ -2093,6 +2095,7 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 
 					let markerContainer = marker.querySelector(".marker-container");
 
+					// Add sound if exist
 					let soundhtml = "";
 					if (sound !== null && sound !== "") {
 						soundhtml += `<div class="soundplay"`;
@@ -2109,6 +2112,31 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 							</div>`;
 
 						markerContainer.insertAdjacentHTML("afterbegin", soundhtml);
+					}
+
+					if (editmode) {
+						// Get all elements inside markerContent and attach the mouseover event listener
+						let allMarkerContent = markerContent.querySelectorAll(".edit-mc");
+
+						if (allMarkerContent.length === 0) {
+							let editmchtml = `<div class="edit-mc firstedit"></div>`;
+							markerContent.insertAdjacentHTML("afterbegin", editmchtml);
+							allMarkerContent = markerContent.querySelectorAll(".edit-mc");
+						}
+
+						allMarkerContent.forEach(function (element) {
+							let edithtml = `<div class="edit-markercontent" data-id="${id}">
+							<div class="btn-add-h1" data-id="${id}"></div>
+							<div class="btn-add-h2" data-id="${id}"></div>
+							<div class="btn-add-p" data-id="${id}"></div>
+							<div class="btn-add-ul" data-id="${id}"></div>
+							<div class="btn-add-button" data-id="${id}"></div>
+							<div class="btn-add-youtube" data-id="${id}"></div>
+							<div class="btn-remove" data-id="${id}"></div>
+						</div>`;
+
+							element.insertAdjacentHTML("afterbegin", edithtml);
+						});
 					}
 				}
 
