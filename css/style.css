@@ -805,6 +805,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	content: "";
 	display: block;
 	animation: editmodeon 10s linear infinite;
+	transition: 0.4s ease-in-out;
 }
 
 @keyframes editmodeon {
@@ -814,6 +815,12 @@ input[type="range"]:focus::-moz-range-thumb {
 	100% {
 		rotate: 360deg;
 	}
+}
+
+.saving:after {
+	transition: 0.4s ease-in-out;
+	border-color: black !important;
+	animation: editmodeon 2s linear infinite !important;
 }
 
 #logo div {
@@ -2243,5 +2250,54 @@ input[type="range"]:focus::-moz-range-thumb {
 @keyframes l3 {
 	to {
 		transform: rotate(1turn);
+	}
+}
+
+.edit-marker {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	z-index: -371;
+	position: absolute;
+	top: -50%;
+	gap: 4px;
+	left: -50%;
+	opacity: 0;
+	width: 100px;
+}
+
+.edit-marker div {
+	width: 2rem;
+	height: 2rem;
+	background: black;
+	border-radius: 100%;
+}
+
+.infodot .edit-marker div {
+	background: white;
+}
+
+.edit-marker div:nth-child(2) {
+	margin-right: 25px;
+}
+
+.marker:hover .edit-marker {
+	animation: editmarker 0.4s ease-in-out 1 forwards;
+}
+
+@keyframes editmarker {
+	0% {
+		display: none;
+		transform: translateX(0%);
+		opacity: 0;
+		scale: 0;
+	}
+	1% {
+		display: block;
+	}
+	100% {
+		opacity: 1;
+		transform: translateX(-35px);
+		scale: 1;
 	}
 }

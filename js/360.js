@@ -2053,6 +2053,7 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 
 			markerData.forEach((data, index) => {
 				const {
+					id,
 					marker_title,
 					pos_x,
 					pos_y,
@@ -2068,10 +2069,10 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 				const positionVector = new THREE.Vector3(pos_x, pos_y, pos_z);
 
 				// Create marker element
-
 				if (typeof link === "string" && link !== "" && !isNaN(link)) {
 					// If the string represents a number
 					marker = document.createElement("div");
+					marker.dataset.id = parseInt(id);
 					marker.dataset.order_index = parseInt(link); // Convert the string to a number
 					marker.classList.add("intlink");
 				} else if (typeof link === "string" && link !== "") {
@@ -2084,7 +2085,34 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 					// If it's neither a string nor a number
 					marker = document.createElement("div");
 					marker.classList.add("infodot");
+
+					let html = `<span class="hint">${marker_title}</span><div class="marker-container" data-id="${id}"><div class="marker-content" data-id="${id}"></div>`;
+					marker.innerHTML = html;
+					let markerContent = marker.querySelector(".marker-content");
+					markerContent.insertAdjacentHTML("afterbegin", info);
+
+					let markerContainer = marker.querySelector(".marker-container");
+
+					let soundhtml = "";
+					if (sound !== null && sound !== "") {
+						soundhtml += `<div class="soundplay"`;
+
+						if (autoplay) {
+							soundhtml += ` data-autoplay="${autoplay}">`;
+						} else {
+							soundhtml += `>`;
+						}
+
+						soundhtml += `<audio controls id="audio${index}">
+									<source src="../sound/${sound}" type="audio/mpeg">
+								</audio>
+							</div>`;
+
+						markerContainer.insertAdjacentHTML("afterbegin", soundhtml);
+					}
 				}
+
+				marker.classList.add("marker");
 
 				let markerindex = index;
 				marker.id = "marker" + markerindex;
@@ -2122,32 +2150,14 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 					}
 				}
 
-				let soundhtml = "";
-				if (sound !== null && sound !== "") {
-					soundhtml += `<div class="soundplay"`;
+				if (editmode) {
+					let edithtml = `<div class="edit-marker" data-id="${id}">
+						<div class="btn-marker-edit" data-id="${id}"></div>
+						<div class="btn-marker-move" data-id="${id}"></div>
+						<div class="btn-marker-delete" data-id="${id}"></div>
+					</div>`;
 
-					if (autoplay) {
-						soundhtml += ` data-autoplay="${autoplay}">`;
-					} else {
-						soundhtml += `>`;
-					}
-
-					soundhtml += `<audio controls id="audio${index}">
-									<source src="../sound/${sound}" type="audio/mpeg">
-								</audio>
-							</div>`;
-				}
-
-				marker.classList.add("marker");
-
-				let html = `<span class="hint">${marker_title}</span><div class="marker-container"><div class="marker-content"></div>`;
-				marker.innerHTML = html;
-				let markerContent = marker.querySelector(".marker-content");
-				markerContent.insertAdjacentHTML("afterbegin", info);
-
-				if (sound !== null && sound !== "") {
-					let markerContainer = marker.querySelector(".marker-container");
-					markerContainer.insertAdjacentHTML("afterbegin", soundhtml);
+					marker.insertAdjacentHTML("beforeend", edithtml);
 				}
 
 				// Create CSS2DObject for marker/label
