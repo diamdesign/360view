@@ -241,11 +241,24 @@ function saveInput(event) {
 
 	// If the entered value is empty, remove the edit-mc div
 	if (enteredValue === "") {
-		editMC.remove();
+		let parent = editMC.parentNode;
+
+		let all = parent.querySelectorAll(".edit-mc");
+
+		if (all.length === 2) {
+			parent.querySelector(".edit-mc").style.display = "block";
+			editMC.remove();
+		}
+
 		return;
+	} else {
+		document.querySelector("#logo").classList.add("saving");
 	}
 
 	event.target.parentNode.innerHTML = enteredValue;
+	setTimeout(() => {
+		document.querySelector("#logo").classList.remove("saving");
+	}, 2000);
 }
 
 xhrSend("POST", fileCheckData, uri)
@@ -1455,11 +1468,15 @@ function start(data) {
 			// Get all elements inside markerContent and attach the mouseover event listener
 			let allInfoContent = infoLocationContainer.querySelectorAll(".edit-mc");
 
-			if (allInfoContent.length === 0) {
-				let editmchtml = `<div class="edit-mc firstedit"></div>`;
-				infoLocationContainer.insertAdjacentHTML("afterbegin", editmchtml);
-				allInfoContent = infoLocationContainer.querySelectorAll(".edit-mc");
+			let editmchtml = `<div class="edit-mc firstedit"`;
+
+			if (allInfoContent.length > 0) {
+				editmchtml += ` style="display:none"`;
 			}
+
+			editmchtml += `></div>`;
+			infoLocationContainer.insertAdjacentHTML("afterbegin", editmchtml);
+			allInfoContent = infoLocationContainer.querySelectorAll(".edit-mc");
 
 			allInfoContent.forEach(function (element) {
 				element.setAttribute("data-location_id", targetObject.id);
@@ -1484,6 +1501,7 @@ function start(data) {
 			});
 		}
 
+		// Add element inside content function
 		function addElement(e, element) {
 			let editMC = e.target.closest(".edit-mc");
 
@@ -1551,8 +1569,57 @@ function start(data) {
 				.querySelector(".btn-add-p")
 				.addEventListener("click", (e) => addElement(e, "p"));
 
+			nextEditMC
+				.querySelector(".btn-remove")
+				.addEventListener("click", (e) => removeElement(e));
+
 			if (editMC.classList.value.includes("firstedit")) {
-				editMC.remove();
+				editMC.style.display = "none";
+			}
+		}
+
+		function removeElement(e) {
+			let eMC = e.target.closest(".edit-mc"); // Find the closest .edit-mc element
+
+			let eMContent = eMC.closest(".marker-content"); // Finding the closest .marker-content element
+
+			let allContent = eMContent.querySelectorAll(".edit-mc");
+			if (allContent.length === 0) {
+				let edithtml = `<div class="edit-mc firstedit">
+            <div class="edit-markercontent">
+                <div class="btn-add-h1">H1</div>
+                <div class="btn-add-h2">H2</div>
+                <div class="btn-add-p"></div>
+                <div class="btn-add-ul"></div>
+                <div class="btn-add-button"></div>
+                <div class="btn-add-youtube"></div>`;
+				if (!isInfo) {
+					edithtml += `<div class="btn-add-audio"></div>`;
+				}
+
+				edithtml += `<div class="btn-content-edit"></div>
+            <div class="btn-remove"></div>
+        </div>
+    </div>`;
+				eMC.remove(); // Correcting the variable name to eMC
+				eMContent.insertAdjacentHTML("afterbegin", edithtml);
+
+				// Attaching event listeners after reinserting the element
+				eMContent
+					.querySelector(".btn-add-h1")
+					.addEventListener("click", (e) => addElement(e, "h1"));
+
+				eMContent
+					.querySelector(".btn-add-h2")
+					.addEventListener("click", (e) => addElement(e, "h2"));
+
+				eMContent
+					.querySelector(".btn-add-p")
+					.addEventListener("click", (e) => addElement(e, "p"));
+
+				eMContent
+					.querySelector(".btn-remove")
+					.addEventListener("click", (e) => removeElement(e)); // Attaching the event listener for removing elements
 			}
 		}
 
@@ -1564,6 +1631,9 @@ function start(data) {
 		});
 		document.querySelectorAll(".btn-add-p").forEach((item) => {
 			item.addEventListener("click", (e) => addElement(e, "p"));
+		});
+		document.querySelectorAll(".btn-remove").forEach((item) => {
+			item.addEventListener("click", (e) => removeElement(e));
 		});
 
 		// Add event listener to likeButton
@@ -2236,11 +2306,16 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 						// Get all elements inside markerContent and attach the mouseover event listener
 						let allMarkerContent = markerContent.querySelectorAll(".edit-mc");
 
-						if (allMarkerContent.length === 0) {
-							let editmchtml = `<div class="edit-mc firstedit"></div>`;
-							markerContent.insertAdjacentHTML("afterbegin", editmchtml);
-							allMarkerContent = markerContent.querySelectorAll(".edit-mc");
+						let editmchtml = `<div class="edit-mc firstedit"`;
+
+						if (allMarkerContent.length > 0) {
+							editmchtml += ` style="display:none"`;
 						}
+
+						editmchtml += `></div>`;
+
+						markerContent.insertAdjacentHTML("afterbegin", editmchtml);
+						allMarkerContent = markerContent.querySelectorAll(".edit-mc");
 
 						allMarkerContent.forEach((element) => {
 							element.setAttribute("data-id", id);

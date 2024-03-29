@@ -1669,8 +1669,10 @@ input[type="range"]:focus::-moz-range-thumb {
 	margin-bottom: 1.25rem;
 	line-height: 3.25rem;
 }
-#info .container h2 {
-	font-size: 2.0625rem;
+#info .container h2,
+.marker-content h2 {
+	font-size: 1.5625rem;
+	font-weight: 600;
 }
 #info .container h3 {
 	font-size: 1.625rem;
@@ -2527,7 +2529,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	background: rgba(255, 255, 255, 0.2);
 	border: none;
 	color: white;
-	font-size: 1.5rem;
+	font-size: 1.5625rem;
 	font-weight: 600;
 	line-height: 2rem;
 }
