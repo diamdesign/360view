@@ -247,8 +247,8 @@ function saveInput(event) {
 
 		if (all.length === 2) {
 			parent.querySelector(".edit-mc").style.display = "block";
-			editMC.remove();
 		}
+		editMC.remove();
 
 		return;
 	} else {
