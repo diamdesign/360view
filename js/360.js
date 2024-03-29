@@ -231,6 +231,23 @@ function buildPasswordHtml() {
 	});
 }
 
+// Define the saveInput function in the global scope
+function saveInput(event) {
+	// Get the entered value from the textarea
+	var enteredValue = event.target.value.trim();
+
+	// Get the parent edit-mc div
+	var editMC = event.target.closest(".edit-mc");
+
+	// If the entered value is empty, remove the edit-mc div
+	if (enteredValue === "") {
+		editMC.remove();
+		return;
+	}
+
+	event.target.parentNode.innerHTML = enteredValue;
+}
+
 xhrSend("POST", fileCheckData, uri)
 	.then((data) => {
 		// Handle the response data
@@ -1434,6 +1451,121 @@ function start(data) {
 			amountElement.textContent = formatNumber(amount);
 		}
 
+		if (editmode) {
+			// Get all elements inside markerContent and attach the mouseover event listener
+			let allInfoContent = infoLocationContainer.querySelectorAll(".edit-mc");
+
+			if (allInfoContent.length === 0) {
+				let editmchtml = `<div class="edit-mc firstedit"></div>`;
+				infoLocationContainer.insertAdjacentHTML("afterbegin", editmchtml);
+				allInfoContent = infoLocationContainer.querySelectorAll(".edit-mc");
+			}
+
+			allInfoContent.forEach(function (element) {
+				element.setAttribute("data-location_id", targetObject.id);
+				let edithtml = `<div class="edit-markercontent">
+							<div class="btn-add-h1">H1</div>
+							<div class="btn-add-h2">H2</div>
+							<div class="btn-add-p"></div>
+							<div class="btn-add-ul"></div>
+							<div class="btn-add-button"></div>
+							<div class="btn-add-youtube"></div>
+							<div class="btn-content-edit"></div>
+							<div class="btn-remove"></div>
+						</div>`;
+
+				element.insertAdjacentHTML("afterbegin", edithtml);
+			});
+		} else {
+			let allEditMC = document.querySelectorAll(".edit-mc");
+			allEditMC.forEach((element) => {
+				element.classList.add("contain-html");
+				element.classList.remove("edit-mc");
+			});
+		}
+
+		function addElement(e, element) {
+			let editMC = e.target.closest(".edit-mc");
+
+			let id = editMC.getAttribute("data-id");
+			let html, idHTML, isInfo;
+
+			if (id === null || id === undefined) {
+				id = editMC.getAttribute("data-location_id");
+				idHTML = `data-location_id="${id}"`;
+				isInfo = true;
+			} else {
+				idHTML = `data-id="${id}"`;
+				isInfo = false;
+			}
+
+			if (element === "h1") {
+				html = `<div class="edit-mc" ${idHTML}><h1><textarea class="editheader" type="text" placeholder="Header 1"></textarea></h1></div>`;
+			} else if (element === "h2") {
+				html = `<div class="edit-mc" ${idHTML}><h2><textarea class="editheader2" type="text" placeholder="Header 2"></textarea></h2></div>`;
+			} else if (element === "p") {
+				html = `<div class="edit-mc" ${idHTML}><p><textarea class="editp" type="text" placeholder="Write text here..."></textarea></p></div>`;
+			}
+
+			editMC.insertAdjacentHTML("afterend", html);
+
+			let edithtml = `<div class="edit-markercontent">
+							<div class="btn-add-h1">H1</div>
+							<div class="btn-add-h2">H2</div>
+							<div class="btn-add-p"></div>
+							<div class="btn-add-ul"></div>
+							<div class="btn-add-button"></div>
+							<div class="btn-add-youtube"></div>`;
+			if (!isInfo) {
+				edithtml += `<div class="btn-add-audio"></div>`;
+			}
+
+			edithtml += `<div class="btn-content-edit"></div>
+							<div class="btn-remove"></div>
+						</div>`;
+
+			let nextEditMC = editMC.nextElementSibling;
+			nextEditMC.insertAdjacentHTML("afterbegin", edithtml);
+
+			// Add saveinput event
+			if (element === "h1" || element === "h2" || element === "p") {
+				nextEditMC.querySelector("textarea").addEventListener("blur", (event) => {
+					saveInput(event);
+				});
+			}
+
+			// Focus the input
+			if (element === "h1" || element === "h2" || element === "p") {
+				nextEditMC.querySelector("textarea").focus();
+			}
+
+			nextEditMC
+				.querySelector(".btn-add-h1")
+				.addEventListener("click", (e) => addElement(e, "h1"));
+
+			nextEditMC
+				.querySelector(".btn-add-h2")
+				.addEventListener("click", (e) => addElement(e, "h2"));
+
+			nextEditMC
+				.querySelector(".btn-add-p")
+				.addEventListener("click", (e) => addElement(e, "p"));
+
+			if (editMC.classList.value.includes("firstedit")) {
+				editMC.remove();
+			}
+		}
+
+		document.querySelectorAll(".btn-add-h1").forEach((item) => {
+			item.addEventListener("click", (e) => addElement(e, "h1"));
+		});
+		document.querySelectorAll(".btn-add-h2").forEach((item) => {
+			item.addEventListener("click", (e) => addElement(e, "h2"));
+		});
+		document.querySelectorAll(".btn-add-p").forEach((item) => {
+			item.addEventListener("click", (e) => addElement(e, "p"));
+		});
+
 		// Add event listener to likeButton
 		clonedButton.addEventListener("click", toggleLikedClass);
 
@@ -1869,6 +2001,11 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 					document.querySelector("#commentbtn .amount").textContent = data.total_comments;
 					const closeCommentsButton = document.querySelector("#closecommentsbtn");
 
+					commentButton.style.opacity = "0";
+					commentsElem.classList.add("commentshow");
+					let commentInput = document.querySelector("#commentInputField");
+					commentInput.focus();
+
 					// Function to close comments
 					function closeComments() {
 						let commentButton = document.querySelector("#commentbtn");
@@ -1896,11 +2033,6 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 				// Handle any errors
 				console.error("XHR request failed:", error);
 			});
-
-		commentButton.style.opacity = "0";
-		commentsElem.classList.add("commentshow");
-		let commentInput = document.querySelector("#commentInputField");
-		commentInput.focus();
 	}
 
 	commentButton.addEventListener("click", openComments);
@@ -1935,80 +2067,85 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 	const mapImage = document.getElementById("mapimage");
 	const mapImg = document.getElementById("mapimg");
 
-	mapImg.src = "https://snallapojkar.se/360/img/" + data.project.map_filename; // Set the source attribute for the image
+	if (data.project.map_filename !== null) {
+		mapButton.style.display = "block";
+		mapImg.src = "https://snallapojkar.se/360/img/" + data.project.map_filename; // Set the source attribute for the image
 
-	data.project.map_links.forEach((maplink) => {
-		// Adjust to access the first element of mapArray
-		let textrightClass = maplink.pos_left > 50 ? " linktextleft" : ""; // Conditionally add 'textright' class
-		let html = `<div class="maplink ${textrightClass}" data-id="${maplink.link_location_id}" data-order_index="${maplink.link_order_index}" style="top: ${maplink.pos_top}%; left: ${maplink.pos_left}%">
+		data.project.map_links.forEach((maplink) => {
+			// Adjust to access the first element of mapArray
+			let textrightClass = maplink.pos_left > 50 ? " linktextleft" : ""; // Conditionally add 'textright' class
+			let html = `<div class="maplink ${textrightClass}" data-id="${maplink.link_location_id}" data-order_index="${maplink.link_order_index}" style="top: ${maplink.pos_top}%; left: ${maplink.pos_left}%">
             <span class="hint">${maplink.link_title}</span>
         </div>`;
-		mapImage.insertAdjacentHTML("beforeend", html); // Adjust to add HTML at the end of mapImage
-	});
-
-	const mapLinks = document.querySelectorAll(".maplink");
-	mapLinks.forEach((link) => {
-		link.addEventListener("click", (event) => {
-			const orderId = parseInt(event.target.getAttribute("data-order_index"));
-			map.style.display = "none";
-			listItems.forEach((listItem) => {
-				listItem.classList.remove("active");
-			});
-
-			const activeListItem = document.querySelector(`#locations [data-id="${orderId}"]`);
-			activeListItem.classList.add("active");
-			change360Content(parseInt(orderId));
+			mapImage.insertAdjacentHTML("beforeend", html); // Adjust to add HTML at the end of mapImage
 		});
-	});
 
-	// Function to update the map link positions depending on the image size
-	function updateMapLinkPosition() {
-		mapImage.style.width = "100%";
-		mapImage.style.height = "100%";
-		const containerWidth = mapImage.clientWidth;
-		const containerHeight = mapImage.clientHeight;
-
-		const imgWidth = mapImg.naturalWidth;
-		const imgHeight = mapImg.naturalHeight;
-
-		let displayWidth, displayHeight;
-
-		// Calculate the displayed size of the image
-		if (containerWidth / containerHeight < imgWidth / imgHeight) {
-			displayWidth = containerWidth;
-			displayHeight = (containerWidth / imgWidth) * imgHeight;
-		} else {
-			displayHeight = containerHeight;
-			displayWidth = (containerHeight / imgHeight) * imgWidth;
-		}
-
-		// Set the width and height of #mapimage to match the image dimensions
-		mapImage.style.width = displayWidth + "px";
-		mapImage.style.height = displayHeight + "px";
-	}
-
-	// Function to toggle map
-	function toggleMap() {
-		if (map.style.display === "none" || map.style.display === "") {
-			map.style.display = "flex";
-			map.querySelector("img").style.display = "block";
-			updateMapLinkPosition();
-		} else {
-			map.classList.add("removeblur");
-			map.querySelector("img").style.display = "none";
-			setTimeout(() => {
-				map.classList.remove("removeblur");
+		const mapLinks = document.querySelectorAll(".maplink");
+		mapLinks.forEach((link) => {
+			link.addEventListener("click", (event) => {
+				const orderId = parseInt(event.target.getAttribute("data-order_index"));
 				map.style.display = "none";
-			}, 600);
+				listItems.forEach((listItem) => {
+					listItem.classList.remove("active");
+				});
+
+				const activeListItem = document.querySelector(`#locations [data-id="${orderId}"]`);
+				activeListItem.classList.add("active");
+				change360Content(parseInt(orderId));
+			});
+		});
+
+		// Function to update the map link positions depending on the image size
+		function updateMapLinkPosition() {
+			mapImage.style.width = "100%";
+			mapImage.style.height = "100%";
+			const containerWidth = mapImage.clientWidth;
+			const containerHeight = mapImage.clientHeight;
+
+			const imgWidth = mapImg.naturalWidth;
+			const imgHeight = mapImg.naturalHeight;
+
+			let displayWidth, displayHeight;
+
+			// Calculate the displayed size of the image
+			if (containerWidth / containerHeight < imgWidth / imgHeight) {
+				displayWidth = containerWidth;
+				displayHeight = (containerWidth / imgWidth) * imgHeight;
+			} else {
+				displayHeight = containerHeight;
+				displayWidth = (containerHeight / imgHeight) * imgWidth;
+			}
+
+			// Set the width and height of #mapimage to match the image dimensions
+			mapImage.style.width = displayWidth + "px";
+			mapImage.style.height = displayHeight + "px";
 		}
+
+		// Function to toggle map
+		function toggleMap() {
+			if (map.style.display === "none" || map.style.display === "") {
+				map.style.display = "flex";
+				map.querySelector("img").style.display = "block";
+				updateMapLinkPosition();
+			} else {
+				map.classList.add("removeblur");
+				map.querySelector("img").style.display = "none";
+				setTimeout(() => {
+					map.classList.remove("removeblur");
+					map.style.display = "none";
+				}, 600);
+			}
+		}
+
+		// Add eventlistener for toggle map
+		mapButton.addEventListener("click", toggleMap);
+		mapButton.addEventListener("touchstart", toggleMap);
+		mapButton.addEventListener("selectstart", toggleMap);
+
+		updateMapLinkPosition();
+	} else {
+		mapButton.style.display = "none";
 	}
-
-	// Add eventlistener for toggle map
-	mapButton.addEventListener("click", toggleMap);
-	mapButton.addEventListener("touchstart", toggleMap);
-	mapButton.addEventListener("selectstart", toggleMap);
-
-	updateMapLinkPosition();
 
 	// Function to create labels/markers
 	async function createMarkers(markerData) {
@@ -2095,6 +2232,34 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 
 					let markerContainer = marker.querySelector(".marker-container");
 
+					if (editmode) {
+						// Get all elements inside markerContent and attach the mouseover event listener
+						let allMarkerContent = markerContent.querySelectorAll(".edit-mc");
+
+						if (allMarkerContent.length === 0) {
+							let editmchtml = `<div class="edit-mc firstedit"></div>`;
+							markerContent.insertAdjacentHTML("afterbegin", editmchtml);
+							allMarkerContent = markerContent.querySelectorAll(".edit-mc");
+						}
+
+						allMarkerContent.forEach((element) => {
+							element.setAttribute("data-id", id);
+							let edithtml = `<div class="edit-markercontent">
+							<div class="btn-add-h1">H1</div>
+							<div class="btn-add-h2">H2</div>
+							<div class="btn-add-p"></div>
+							<div class="btn-add-ul"></div>
+							<div class="btn-add-button"></div>
+							<div class="btn-add-youtube"></div>
+							<div class="btn-add-audio"></div>
+							<div class="btn-content-edit"></div>
+							<div class="btn-remove"></div>
+						</div>`;
+
+							element.insertAdjacentHTML("afterbegin", edithtml);
+						});
+					}
+
 					// Add sound if exist
 					let soundhtml = "";
 					if (sound !== null && sound !== "") {
@@ -2106,37 +2271,17 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 							soundhtml += `>`;
 						}
 
+						if (editmode) {
+							soundhtml += `<div class="btn-content-edit" data-id=${id}></div>
+							<div class="btn-remove" data-id=${id}></div>`;
+						}
+
 						soundhtml += `<audio controls id="audio${index}">
 									<source src="../sound/${sound}" type="audio/mpeg">
 								</audio>
 							</div>`;
 
 						markerContainer.insertAdjacentHTML("afterbegin", soundhtml);
-					}
-
-					if (editmode) {
-						// Get all elements inside markerContent and attach the mouseover event listener
-						let allMarkerContent = markerContent.querySelectorAll(".edit-mc");
-
-						if (allMarkerContent.length === 0) {
-							let editmchtml = `<div class="edit-mc firstedit"></div>`;
-							markerContent.insertAdjacentHTML("afterbegin", editmchtml);
-							allMarkerContent = markerContent.querySelectorAll(".edit-mc");
-						}
-
-						allMarkerContent.forEach(function (element) {
-							let edithtml = `<div class="edit-markercontent" data-id="${id}">
-							<div class="btn-add-h1" data-id="${id}"></div>
-							<div class="btn-add-h2" data-id="${id}"></div>
-							<div class="btn-add-p" data-id="${id}"></div>
-							<div class="btn-add-ul" data-id="${id}"></div>
-							<div class="btn-add-button" data-id="${id}"></div>
-							<div class="btn-add-youtube" data-id="${id}"></div>
-							<div class="btn-remove" data-id="${id}"></div>
-						</div>`;
-
-							element.insertAdjacentHTML("afterbegin", edithtml);
-						});
 					}
 				}
 

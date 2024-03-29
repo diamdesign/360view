@@ -1074,7 +1074,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	z-index: 10;
+	z-index: 900;
 	animation: backdropblur 0.6s ease-out 1 forwards;
 }
 
@@ -1526,12 +1526,18 @@ input[type="range"]:focus::-moz-range-thumb {
 .marker-container p a {
 	user-select: text;
 	color: white;
-	padding: 0.25rem 1rem 0.25rem 0.375rem;
+	padding: 0.25rem 0.5rem 0.25rem 0.5rem;
 	border-radius: 0.25rem;
 	background-color: rgba(255, 255, 255, 0.2);
 }
-#info .container p a:after,
-.marker-container p a:after {
+
+#info .container p a[data-external="true"],
+.marker-container p a[data-external="true"] {
+	padding: 0.25rem 1rem 0.25rem 0.375rem;
+}
+
+#info .container p a[data-external="true"]:after,
+.marker-container p a[data-external="true"]:after {
 	opacity: 0.5;
 	background-image: url("../img/icon-link.svg");
 	background-repeat: no-repeat;
@@ -2273,6 +2279,10 @@ input[type="range"]:focus::-moz-range-thumb {
 	border-radius: 100%;
 }
 
+.edit-marker div:hover {
+	scale: 1.2;
+}
+
 .infodot .edit-marker div {
 	background: white;
 }
@@ -2303,7 +2313,7 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 .markeron {
-	z-index: 10000 !important;
+	z-index: 800 !important;
 }
 
 .edit-mc {
@@ -2316,6 +2326,7 @@ input[type="range"]:focus::-moz-range-thumb {
 .edit-mc:hover {
 	padding-top: 2.5rem;
 	border: 1px solid royalblue;
+	box-shadow: 0 0 12px 0 royalblue;
 }
 .edit-mc:hover .edit-markercontent {
 	display: flex;
@@ -2338,15 +2349,185 @@ input[type="range"]:focus::-moz-range-thumb {
 .firstedit:hover {
 	padding-top: 0;
 	border: 1px solid transparent;
+	box-shadow: none;
 }
 
 .edit-markercontent div {
 	width: 2rem;
 	height: 2rem;
+	display: flex;
+	font-weight: bold;
+	font-size: 0.9rem;
+	justify-content: center;
+	align-items: center;
 	background: #36363691;
 }
 
 .edit-markercontent div:hover {
 	background: white;
+	color: black;
 	cursor: pointer;
+}
+.edit-markercontent div:hover:after {
+	filter: invert(0);
+}
+
+.btn-add-p:after {
+	display: block;
+	width: 100%;
+	height: 100%;
+	content: "";
+	background-image: url("../img/icon-paragraph.svg");
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: 1.2rem;
+	filter: invert(1);
+}
+
+.btn-add-ul:after {
+	display: block;
+	width: 100%;
+	height: 100%;
+	content: "";
+	background-image: url("../img/icon-ul.svg");
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: 1rem;
+	filter: invert(1);
+}
+
+.btn-add-youtube:after {
+	display: block;
+	width: 100%;
+	height: 100%;
+	content: "";
+	background-image: url("../img/icon-youtube.svg");
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: 1.4rem;
+	filter: invert(1);
+}
+
+.btn-add-button:after {
+	display: block;
+	width: 100%;
+	height: 100%;
+	content: "";
+	background-image: url("../img/icon-button.svg");
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: 1.3rem;
+	filter: invert(1);
+}
+
+.btn-add-audio:after {
+	display: block;
+	width: 100%;
+	height: 100%;
+	content: "";
+	background-image: url("../img/icon-audio.svg");
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: 1rem;
+	filter: invert(1);
+}
+
+.btn-content-edit:after,
+.btn-marker-edit:after {
+	display: block;
+	width: 100%;
+	height: 100%;
+	content: "";
+	background-image: url("../img/icon-edit.svg");
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: 1rem;
+	filter: invert(1);
+}
+
+.btn-remove:after,
+.btn-marker-delete:after {
+	display: block;
+	width: 100%;
+	height: 100%;
+	content: "";
+	background-image: url("../img/icon-delete.svg");
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: 1.1rem;
+	filter: invert(1);
+}
+
+.soundplay .btn-remove {
+	display: none;
+	width: 2rem;
+	height: 2rem;
+	right: 10px;
+	position: absolute;
+	top: -19px;
+	z-index: 10;
+	filter: invert(1);
+	background-color: black;
+}
+
+.soundplay:hover .btn-remove,
+.soundplay:hover .btn-content-edit {
+	display: block;
+}
+
+.soundplay .btn-remove:hover {
+	filter: invert(0);
+	cursor: pointer;
+}
+
+.soundplay .btn-content-edit {
+	display: none;
+	width: 2rem;
+	height: 2rem;
+	right: 44px;
+	position: absolute;
+	top: -19px;
+	z-index: 10;
+	filter: invert(1);
+	background-color: black;
+}
+
+.soundplay .btn-content-edit:hover {
+	filter: invert(0);
+	cursor: pointer;
+}
+
+.infodot .btn-marker-delete:after {
+	filter: invert(0);
+}
+
+.infodot .btn-marker-edit:after {
+	filter: invert(0);
+}
+
+.firstedit .btn-content-edit,
+.firstedit .btn-remove {
+	display: none;
+}
+
+.editheader {
+	min-width: 100%;
+	max-width: 100%;
+	background: rgba(255, 255, 255, 0.2);
+	border: none;
+	color: white;
+	font-size: 2.5rem;
+	font-weight: bold;
+	line-height: 3rem;
+}
+
+.editheader2 {
+	min-width: 100%;
+	max-width: 100%;
+	background: rgba(255, 255, 255, 0.2);
+	border: none;
+	color: white;
+	font-size: 1.5rem;
+	font-weight: 600;
+	line-height: 2rem;
 }
