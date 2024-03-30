@@ -231,35 +231,8 @@ function buildPasswordHtml() {
 	});
 }
 
+const parser = new DOMParser();
 // Define the saveInput function in the global scope
-function saveInput(event) {
-	// Get the entered value from the textarea
-	var enteredValue = event.target.value.trim();
-
-	// Get the parent edit-mc div
-	var editMC = event.target.closest(".edit-mc");
-
-	// If the entered value is empty, remove the edit-mc div
-	if (enteredValue === "") {
-		let parent = editMC.parentNode;
-
-		let all = parent.querySelectorAll(".edit-mc");
-
-		if (all.length === 2) {
-			parent.querySelector(".edit-mc").style.display = "block";
-		}
-		editMC.remove();
-
-		return;
-	} else {
-		document.querySelector("#logo").classList.add("saving");
-	}
-
-	event.target.parentNode.innerHTML = enteredValue;
-	setTimeout(() => {
-		document.querySelector("#logo").classList.remove("saving");
-	}, 2000);
-}
 
 xhrSend("POST", fileCheckData, uri)
 	.then((data) => {
@@ -405,12 +378,182 @@ function start(data) {
 
 	// Define the minimum and maximum widths for infoElem (Information popup)
 	const minWidth = 460;
-	const maxWidth = 1800;
+	const maxWidth = 680;
 
 	// Define resizing variables for infoElem
 	let isResizing = false;
 	let startResizeX;
 	let startResizeWidth;
+
+	function saveInput(event, adding = null) {
+		// Get the parent edit-mc div
+		var editMC = event.target.closest(".edit-mc");
+		var parent, id, type, saveContent;
+
+		if (editMC) {
+			var dataid = editMC.getAttribute("data-id");
+			if (dataid) {
+				id = editMC.getAttribute("data-id");
+				type = "marker";
+				parent = document.querySelector('.marker-content[data-id="' + id + '"]');
+			} else {
+				id = editMC.getAttribute("data-location_id");
+				type = "info";
+				parent = document.getElementById("info-location");
+			}
+		}
+		// Get the entered value from the textarea
+		if (adding === "h1" || adding === "h2" || adding === "p" || adding === "ul") {
+			var enteredValue = event.target.value.trim();
+
+			// If the entered value is empty, remove the edit-mc div
+			if (enteredValue === "") {
+				let parent = editMC.parentNode;
+
+				let all = parent.querySelectorAll(".edit-mc");
+
+				if (all.length === 2) {
+					parent.querySelector(".edit-mc").style.display = "block";
+				}
+				editMC.remove();
+
+				return;
+			} else {
+				document.querySelector("#logo").classList.add("saving");
+			}
+
+			// Convert text if UL to UL
+			function convertToUl(enteredValue) {
+				// Regular expression to match text within curly braces
+				var regex = /{([^}]*)}/g;
+
+				// Check if the enteredValue contains the pattern
+				if (!regex.test(enteredValue)) {
+					return enteredValue; // Return the original value if the pattern is not found
+				}
+
+				// Match all occurrences of text within curly braces and store them in an array
+				var matches = enteredValue.match(regex);
+
+				// Start building the converted value with the opening <ul> tag
+				var convertedValue = "<ul>";
+
+				// Iterate over each match and convert it to an <li> element
+				matches.forEach(function (match) {
+					// Extract text within curly braces and trim any leading or trailing whitespace
+					var trimmedText = match.replace(/{|}/g, "").trim();
+
+					// Wrap the text in <li> tags and append it to the converted value
+					convertedValue += "<li>" + trimmedText + "</li>";
+				});
+
+				// Close the <ul> tag to complete the list
+				convertedValue += "</ul>";
+
+				return convertedValue;
+			}
+
+			var convertedValue = convertToUl(enteredValue);
+
+			event.target.parentNode.innerHTML = convertedValue;
+		} else if (adding === "button") {
+			let buttonType;
+			var parentDiv = event.target.closest(".edit-mc");
+			var buttonLinkEl = parentDiv.querySelector(".addbuttonlink");
+			var buttonTextEl = parentDiv.querySelector(".addbuttontext");
+
+			if (buttonLinkEl && buttonTextEl) {
+				var buttonLink = buttonLinkEl.value.trim();
+				var buttonText = buttonTextEl.value.trim();
+			} else {
+				console.log("Input elements not found");
+				return;
+			}
+			var buttonElement;
+			if (buttonLink.startsWith("http")) {
+				buttonType = "external";
+				buttonElement = `<a href="${buttonLink}" class="button externallink" target="_blank" data-external="true">${buttonText}</a>`;
+			} else if (isNaN(buttonLink) || !Number.isInteger(Number(buttonLink))) {
+				alert("You can only have a number or start your link with http.");
+				return;
+			} else {
+				buttonType = "internal";
+				buttonElement = `<div class="button gotobutton" data-order_id="${parseInt(
+					buttonLink
+				)}">${buttonText}</div>`;
+			}
+
+			event.target.parentNode.insertAdjacentHTML("beforeend", buttonElement);
+
+			if (buttonType === "internal") {
+				parentDiv.querySelector(".gotobutton").addEventListener("click", (e) => {
+					let tempOrderId = e.target.getAttribute("data-order_id");
+					change360Content(parseInt(tempOrderId));
+				});
+			}
+			// Remove all other child elements except the last child button
+			var childElements = event.target.parentNode.querySelectorAll("*");
+			childElements.forEach((item) => {
+				if (
+					!item.classList.contains("gotobutton") &&
+					!item.classList.contains("externallink")
+				) {
+					item.remove();
+				}
+			});
+		} else {
+			document.querySelector("#logo").classList.add("saving");
+		}
+
+		saveContent = parent.innerHTML;
+
+		// Convert the HTML string to a DOM object
+		let htmlDoc = parser.parseFromString(saveContent, "text/html");
+
+		// Remove all divs not important
+		let editMarkerContentDivs = htmlDoc.querySelectorAll(".edit-markercontent");
+		editMarkerContentDivs.forEach((div) => {
+			div.parentNode.removeChild(div);
+		});
+		htmlDoc.querySelector(".firstedit").remove();
+
+		// Remove data-id attributes from all elements with the class .edit-mc
+		let editMcElements = htmlDoc.querySelectorAll(".edit-mc");
+		editMcElements.forEach((element) => {
+			element.removeAttribute("data-id");
+		});
+
+		// Remove all span
+		let spanElements = htmlDoc.querySelectorAll("span");
+		spanElements.forEach((element) => {
+			element.remove();
+		});
+
+		// Get the modified HTML string without edit-markercontent divs
+		let modifiedSaveContent = htmlDoc.body.innerHTML;
+
+		var jsonData = {
+			type: type,
+			id: id,
+			html: modifiedSaveContent,
+		};
+
+		var jsonString = JSON.stringify(jsonData);
+
+		const saveContentPHP = "../php/savecontent.php";
+
+		xhrSend("POST", saveContentPHP, jsonString)
+			.then((data) => {
+				console.log("Content saved...");
+				setTimeout(() => {
+					document.querySelector("#logo").classList.remove("saving");
+				}, 1000);
+			})
+			.catch((error) => {
+				// Handle any errors
+				console.error("XHR request failed:", error);
+			});
+	}
 
 	// Function to handle resize down event (mouse or touch)
 	function onResizeDown(event) {
@@ -1501,6 +1644,22 @@ function start(data) {
 			});
 		}
 
+		// Remove element
+		function removeElement(e) {
+			let eMC = e.target.closest(".edit-mc");
+
+			let eMContent = eMC.parentNode;
+
+			let allContent = eMContent.querySelectorAll(".edit-mc");
+
+			if (allContent.length === 2) {
+				let firstEditElement = eMContent.querySelector(".firstedit");
+				firstEditElement.style.display = "block";
+			}
+			eMC.remove();
+			saveInput(e);
+		}
+
 		// Add element inside content function
 		function addElement(e, element) {
 			let editMC = e.target.closest(".edit-mc");
@@ -1523,6 +1682,10 @@ function start(data) {
 				html = `<div class="edit-mc" ${idHTML}><h2><textarea class="editheader2" type="text" placeholder="Header 2"></textarea></h2></div>`;
 			} else if (element === "p") {
 				html = `<div class="edit-mc" ${idHTML}><p><textarea class="editp" type="text" placeholder="Write text here..."></textarea></p></div>`;
+			} else if (element === "ul") {
+				html = `<div class="edit-mc" ${idHTML}><p><span>"Enclose each list item within curly braces. For example: {This is line one}"</span><textarea class="editul" type="text" placeholder="Example: {This is line one}"></textarea></p></div>`;
+			} else if (element === "button") {
+				html = `<div class="edit-mc" ${idHTML}><div><span>Enter an external link beginning with 'http' or type the location's order number to navigate within your project.</span><input class="editbutton addbuttonlink"  type="text" placeholder="https://example.com/externallink" /><input class="editbutton addbuttontext" type="text" placeholder="Button text" /><div class="button addbuttonsave">Save</div></div></div>`;
 			}
 
 			editMC.insertAdjacentHTML("afterend", html);
@@ -1546,15 +1709,35 @@ function start(data) {
 			nextEditMC.insertAdjacentHTML("afterbegin", edithtml);
 
 			// Add saveinput event
-			if (element === "h1" || element === "h2" || element === "p") {
+			if (element === "h1" || element === "h2" || element === "p" || element === "ul") {
 				nextEditMC.querySelector("textarea").addEventListener("blur", (event) => {
-					saveInput(event);
+					saveInput(event, element);
+				});
+			} else if (element === "button") {
+				nextEditMC.querySelector(".addbuttonsave").addEventListener("click", (event) => {
+					let parentDiv = event.target.closest(".edit-mc");
+					let inputLinkEl = parentDiv.querySelector(".addbuttonlink");
+					let inputTextEl = parentDiv.querySelector(".addbuttontext");
+					let inputLink = inputLinkEl.value;
+					let inputText = inputTextEl.value;
+					if (inputText === "" || inputLink === "") {
+						alert(
+							"Please provide both button text and a valid link. Use 'http' for external links or a location order number for internal navigation."
+						);
+						return;
+					} else if (!inputLink.startsWith("http") && isNaN(parseInt(inputLink))) {
+						alert("You can only write a http link or a number.");
+						return;
+					}
+					saveInput(event, element);
 				});
 			}
 
 			// Focus the input
-			if (element === "h1" || element === "h2" || element === "p") {
+			if (element === "h1" || element === "h2" || element === "p" || element === "ul") {
 				nextEditMC.querySelector("textarea").focus();
+			} else if (element === "button") {
+				nextEditMC.querySelector("input").focus();
 			}
 
 			nextEditMC
@@ -1570,6 +1753,14 @@ function start(data) {
 				.addEventListener("click", (e) => addElement(e, "p"));
 
 			nextEditMC
+				.querySelector(".btn-add-ul")
+				.addEventListener("click", (e) => addElement(e, "ul"));
+
+			nextEditMC
+				.querySelector(".btn-add-button")
+				.addEventListener("click", (e) => addElement(e, "button"));
+
+			nextEditMC
 				.querySelector(".btn-remove")
 				.addEventListener("click", (e) => removeElement(e));
 
@@ -1578,51 +1769,7 @@ function start(data) {
 			}
 		}
 
-		function removeElement(e) {
-			let eMC = e.target.closest(".edit-mc"); // Find the closest .edit-mc element
-
-			let eMContent = eMC.closest(".marker-content"); // Finding the closest .marker-content element
-
-			let allContent = eMContent.querySelectorAll(".edit-mc");
-			if (allContent.length === 0) {
-				let edithtml = `<div class="edit-mc firstedit">
-            <div class="edit-markercontent">
-                <div class="btn-add-h1">H1</div>
-                <div class="btn-add-h2">H2</div>
-                <div class="btn-add-p"></div>
-                <div class="btn-add-ul"></div>
-                <div class="btn-add-button"></div>
-                <div class="btn-add-youtube"></div>`;
-				if (!isInfo) {
-					edithtml += `<div class="btn-add-audio"></div>`;
-				}
-
-				edithtml += `<div class="btn-content-edit"></div>
-            <div class="btn-remove"></div>
-        </div>
-    </div>`;
-				eMC.remove(); // Correcting the variable name to eMC
-				eMContent.insertAdjacentHTML("afterbegin", edithtml);
-
-				// Attaching event listeners after reinserting the element
-				eMContent
-					.querySelector(".btn-add-h1")
-					.addEventListener("click", (e) => addElement(e, "h1"));
-
-				eMContent
-					.querySelector(".btn-add-h2")
-					.addEventListener("click", (e) => addElement(e, "h2"));
-
-				eMContent
-					.querySelector(".btn-add-p")
-					.addEventListener("click", (e) => addElement(e, "p"));
-
-				eMContent
-					.querySelector(".btn-remove")
-					.addEventListener("click", (e) => removeElement(e)); // Attaching the event listener for removing elements
-			}
-		}
-
+		// Add eventlisteners to all current content edit buttons
 		document.querySelectorAll(".btn-add-h1").forEach((item) => {
 			item.addEventListener("click", (e) => addElement(e, "h1"));
 		});
@@ -1631,6 +1778,12 @@ function start(data) {
 		});
 		document.querySelectorAll(".btn-add-p").forEach((item) => {
 			item.addEventListener("click", (e) => addElement(e, "p"));
+		});
+		document.querySelectorAll(".btn-add-ul").forEach((item) => {
+			item.addEventListener("click", (e) => addElement(e, "ul"));
+		});
+		document.querySelectorAll(".btn-add-button").forEach((item) => {
+			item.addEventListener("click", (e) => addElement(e, "button"));
 		});
 		document.querySelectorAll(".btn-remove").forEach((item) => {
 			item.addEventListener("click", (e) => removeElement(e));
@@ -2278,24 +2431,30 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 				const positionVector = new THREE.Vector3(pos_x, pos_y, pos_z);
 
 				// Create marker element
+				let hint = `<span class="hint">${marker_title}</span>`;
 				if (typeof link === "string" && link !== "" && !isNaN(link)) {
 					// If the string represents a number
 					marker = document.createElement("div");
 					marker.dataset.id = parseInt(id);
 					marker.dataset.order_index = parseInt(link); // Convert the string to a number
 					marker.classList.add("intlink");
+
+					marker.innerHTML = hint;
 				} else if (typeof link === "string" && link !== "") {
 					// If it's a regular string
 					marker = document.createElement("a");
 					marker.href = link;
 					marker.target = "_blank";
 					marker.classList.add("extlink");
+					marker.innerHTML = hint;
 				} else {
 					// If it's neither a string nor a number
 					marker = document.createElement("div");
 					marker.classList.add("infodot");
 
-					let html = `<span class="hint">${marker_title}</span><div class="marker-container" data-id="${id}"><div class="marker-content" data-id="${id}"></div>`;
+					let html =
+						hint +
+						`<div class="marker-container" data-id="${id}"><div class="marker-content" data-id="${id}"></div>`;
 					marker.innerHTML = html;
 					let markerContent = marker.querySelector(".marker-content");
 					markerContent.insertAdjacentHTML("afterbegin", info);
