@@ -14,6 +14,7 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
          $embed_id = $_POST['i'];
     }
 
+
         // Get current user id if user is logged in and session set
     if(isset($_SESSION['user_id'])) {
         $current_user_id = $_SESSION['user_id'];
@@ -58,7 +59,7 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
         $current_user_id = $temp;
     }
 
-    // Get userid for creator info
+
     $statement = $pdo->prepare("
         SELECT 
             l.id AS location_id, 
@@ -71,10 +72,16 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
             l.embed_id = :embed_id
     ");
 
-
-    $statement->bindParam(':embed_id', $embed_id, PDO::PARAM_INT);
+    $statement->bindParam(':embed_id', $embed_id, PDO::PARAM_STR); // Correct parameter type if embed_id is a string
     $statement->execute();
+
+    if ($statement->errorCode() != '00000') {
+        $errors = $statement->errorInfo();
+        echo "Error executing SQL: " . $errors[2];
+    }
+
     $creator = $statement->fetch(PDO::FETCH_ASSOC);
+
 
     $creator_id = $creator['user_id'];
     $location_id = $creator['location_id']; // Corrected variable name
@@ -83,7 +90,6 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
 
     $total_comments = $creator['total_comments'];
 
-    
     // Get creator info
     $statement = $pdo->prepare("SELECT id, username, email, thumbnail, coverimage, subscriber, registered FROM users WHERE id = :creator_id");
     $statement->bindParam(':creator_id', $creator_id, PDO::PARAM_INT);

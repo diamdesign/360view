@@ -12,5 +12,5 @@ xhrSend("POST", file, data)
 	})
 	.catch((error) => {
 		// Handle any errors
-		console.error("XHR request failed:", error);
+		console.error("Watch.js XHR request failed:", error);
 	});

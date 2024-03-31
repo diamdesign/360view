@@ -166,6 +166,7 @@ export function buildComments(targetObject, creator, user) {
 			const clonedShowMoreComments = showMoreComments.cloneNode(true);
 			showMoreComments.remove();
 
+			// Get more comments
 			xhrSend("POST", "../php/morecomments.php", passuri)
 				.then((data) => {
 					commentHTML = "";
@@ -191,7 +192,7 @@ export function buildComments(targetObject, creator, user) {
 				})
 				.catch((error) => {
 					// Handle any errors
-					console.error("XHR request failed:", error);
+					console.error("More comments. XHR request failed:", error);
 				});
 		}
 	}
@@ -305,6 +306,7 @@ export function buildComments(targetObject, creator, user) {
 
 		const passuri = "id=" + parent_id + "&user=" + user.id + "&offset=" + currentOffset;
 
+		// Get more replies
 		xhrSend("POST", "../php/morereplies.php", passuri)
 			.then((data) => {
 				replyHTML = "";
@@ -363,7 +365,7 @@ export function buildComments(targetObject, creator, user) {
 				addMoreEvents();
 			})
 			.catch((error) => {
-				console.error("XHR request failed:", error);
+				console.error("More replies. XHR request failed:", error);
 			});
 	}
 

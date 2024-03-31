@@ -196,12 +196,15 @@ function buildPasswordHtml() {
 		} else {
 			const fileCheckPass = "../php/checkpass.php";
 			const passuri = "i=" + embedId + "&loc=" + locId + "&pass=" + password;
+
+			// Check password
 			xhrSend("POST", fileCheckPass, passuri)
 				.then((data) => {
 					console.log(data);
 					if (data.success) {
 						document.querySelector("#haspass-login").remove();
 
+						// Correct password
 						xhrSend("POST", fileGetData, uri)
 							.then((data) => {
 								// Handle the response data
@@ -212,7 +215,10 @@ function buildPasswordHtml() {
 							})
 							.catch((error) => {
 								// Handle any errors
-								console.error("XHR request failed:", error);
+								console.error(
+									"Start after password check. XHR request failed:",
+									error
+								);
 							});
 					} else {
 						setTimeout(() => {
@@ -225,15 +231,15 @@ function buildPasswordHtml() {
 				})
 				.catch((error) => {
 					// Handle any errors
-					console.error("XHR request failed:", error);
+					console.error("Check password. XHR request failed:", error);
 				});
 		}
 	});
 }
 
 const parser = new DOMParser();
-// Define the saveInput function in the global scope
 
+// Check if it has password
 xhrSend("POST", fileCheckData, uri)
 	.then((data) => {
 		// Handle the response data
@@ -249,7 +255,7 @@ xhrSend("POST", fileCheckData, uri)
 				})
 				.catch((error) => {
 					// Handle any errors
-					console.error("XHR request failed:", error);
+					console.error("Start. XHR request failed:", error);
 				});
 		} else if (data.haspass && data.ispublic) {
 			console.log("This has password ON.");
@@ -265,9 +271,10 @@ xhrSend("POST", fileCheckData, uri)
 	})
 	.catch((error) => {
 		// Handle any errors
-		console.error("XHR request failed:", error);
+		console.error("Check if it has password. XHR request failed:", error);
 	});
 
+// Start all functions
 function start(data) {
 	if (data.hasOwnProperty("project")) {
 		dataType = "project";
@@ -404,9 +411,10 @@ function start(data) {
 		}
 		// Get the entered value from the textarea
 		if (adding === "h1" || adding === "h2" || adding === "p" || adding === "ul") {
-			var enteredValue = event.target.value.trim();
+			let enteredValue = event.target.value.trim();
 
 			// If the entered value is empty, remove the edit-mc div
+
 			if (enteredValue === "") {
 				let parent = editMC.parentNode;
 
@@ -421,7 +429,6 @@ function start(data) {
 			} else {
 				document.querySelector("#logo").classList.add("saving");
 			}
-
 			// Convert text if UL to UL
 			function convertToUl(enteredValue) {
 				// Regular expression to match text within curly braces
@@ -488,6 +495,16 @@ function start(data) {
 			if (buttonType === "internal") {
 				parentDiv.querySelector(".gotobutton").addEventListener("click", (e) => {
 					let tempOrderId = e.target.getAttribute("data-order_id");
+
+					listItems.forEach((listItem) => {
+						listItem.classList.remove("active");
+					});
+
+					const activeListItem = document.querySelector(
+						`#locations [data-id="${tempOrderId}"]`
+					);
+					activeListItem.classList.add("active");
+
 					change360Content(parseInt(tempOrderId));
 				});
 			}
@@ -501,6 +518,35 @@ function start(data) {
 					item.remove();
 				}
 			});
+		} else if (adding === "youtube") {
+			var embedCode = event.target.value.trim();
+
+			if (embedCode === "") {
+				let parent = editMC.parentNode;
+
+				let all = parent.querySelectorAll(".edit-mc");
+
+				if (all.length === 2) {
+					parent.querySelector(".edit-mc").style.display = "block";
+				}
+				editMC.remove();
+
+				return;
+			} else {
+				document.querySelector("#logo").classList.add("saving");
+			}
+			// Regular expression pattern to match YouTube embed codes
+			var youtubeEmbedRegex =
+				/<iframe.*?src=".*?\/\/(?:www\.|)youtu(?:\.be\/|be\.com\/embed\/)([a-zA-Z0-9_-]+)(?:\?[^"]*)?".*?<\/iframe>/;
+
+			// Check if embedCode matches the regex pattern
+			if (youtubeEmbedRegex.test(embedCode)) {
+				event.target.parentNode.innerHTML = embedCode;
+				document.querySelector("#logo").classList.add("saving");
+			} else {
+				alert("We did not recognize the embeded code as a youtube embed.");
+				return;
+			}
 		} else {
 			document.querySelector("#logo").classList.add("saving");
 		}
@@ -521,6 +567,15 @@ function start(data) {
 		let editMcElements = htmlDoc.querySelectorAll(".edit-mc");
 		editMcElements.forEach((element) => {
 			element.removeAttribute("data-id");
+			let containsInputOrTextarea = Array.from(
+				element.querySelectorAll("input, textarea")
+			).some((inputOrTextarea) => {
+				return inputOrTextarea.matches("input, textarea");
+			});
+
+			if (containsInputOrTextarea) {
+				element.remove();
+			}
 		});
 
 		// Remove all span
@@ -542,6 +597,7 @@ function start(data) {
 
 		const saveContentPHP = "../php/savecontent.php";
 
+		// Save content
 		xhrSend("POST", saveContentPHP, jsonString)
 			.then((data) => {
 				console.log("Content saved...");
@@ -551,7 +607,7 @@ function start(data) {
 			})
 			.catch((error) => {
 				// Handle any errors
-				console.error("XHR request failed:", error);
+				console.error("Saving content. XHR request failed:", error);
 			});
 	}
 
@@ -1206,6 +1262,10 @@ function start(data) {
 
 	// Function to update scene with image or video
 	function change360Content(orderId) {
+		closeComments();
+		closeInfo();
+		closeShare();
+
 		btnPlayVideo.style.display = "none";
 		videoplayer.style.display = "none";
 		// Once marker elements are available, add event listeners
@@ -1236,8 +1296,9 @@ function start(data) {
 			targetObject = data.locations[0];
 		}
 
+		let targetEmbedId = targetObject.embed_id;
 		// Set embedid for comment button
-		document.querySelector("#commentbtn").setAttribute("data-embedid", targetObject.embed_id);
+		document.querySelector("#commentbtn").setAttribute("data-embedid", targetEmbedId);
 
 		let fileName = targetObject.file_name;
 		let fileType = targetObject.file_type;
@@ -1248,6 +1309,9 @@ function start(data) {
 		// Remove all markers/labels
 		root.clear();
 
+		const showLocBtn = document.querySelector(".show-loc");
+		const showInfoBtn = document.querySelector(".show-info");
+
 		if (markerData !== "" && markerData !== null && markerData !== undefined) {
 			// Call createMarkers function asynchronously
 			console.log("Creating markers...");
@@ -1257,9 +1321,9 @@ function start(data) {
 					zoomImages = document.querySelectorAll(".zoom-image");
 					zoomImages.forEach((image) => {
 						image.addEventListener("click", imageClickHandler);
-						console.log(image);
 					});
-					console.log("Added eventlistener to images...", zoomImages);
+
+					console.log("Added eventlistener to images...");
 					console.log("Markers created.");
 				}, 100);
 			});
@@ -1305,10 +1369,7 @@ function start(data) {
 			}
 
 			// Extract the file name without extension
-			const fileNameWithoutExtension = targetObject.file_name
-				.split(".")
-				.slice(0, -1)
-				.join(".");
+			const fileNameWithoutExtension = fileName.split(".").slice(0, -1).join(".");
 			if (!highSpeed) {
 				videoFile = fileNameWithoutExtension + "-low.mp4";
 				// Function to preload high-quality video
@@ -1343,10 +1404,7 @@ function start(data) {
 					let targetObj = data.locations.find((obj) => obj.id === parseInt(targetId));
 
 					const captiontag = event.target.getAttribute("data-caption");
-					const fileNameWithoutExtension = targetObj.file_name
-						.split(".")
-						.slice(0, -1)
-						.join(".");
+					const fileNameWithoutExtension = fileName.split(".").slice(0, -1).join(".");
 
 					// Construct the new file name with the desired caption
 					const newSRTName = `${baseUrl}video/${fileNameWithoutExtension}-${captiontag}.srt`;
@@ -1527,10 +1585,7 @@ function start(data) {
 			}
 
 			// Extract the file name without extension
-			const fileNameWithoutExtension = targetObject.file_name
-				.split(".")
-				.slice(0, -1)
-				.join(".");
+			const fileNameWithoutExtension = fileName.split(".").slice(0, -1).join(".");
 			let imageFile = baseUrl + "img/" + fileName;
 			if (!highSpeed) {
 				imageFile = baseUrl + "img/" + fileNameWithoutExtension + "-low.jpg";
@@ -1562,25 +1617,9 @@ function start(data) {
 			}
 
 			currentImageSrc = fileName;
+			console.log("Image type done...");
 		} else {
 			console.log("Invalid file type");
-		}
-
-		const showLocBtn = document.querySelector(".show-loc");
-		const showInfoBtn = document.querySelector(".show-info");
-
-		// Show/hide buttons if info
-		if (fileInfo !== "" && fileInfo !== null && fileInfo !== undefined) {
-			infoLocationContainer.style.display = "block";
-			infoLocationContainer.innerHTML = fileInfo;
-
-			showLocBtn.style.display = "block";
-			showLocBtn.classList.add("showactive");
-			showInfoBtn.classList.remove("showactive");
-		} else {
-			infoLocationContainer.style.display = "none";
-			showLocBtn.style.display = "none";
-			showInfoBtn.classList.add("showactive");
 		}
 
 		let likeButton = document.querySelector("#likebtn");
@@ -1686,6 +1725,8 @@ function start(data) {
 				html = `<div class="edit-mc" ${idHTML}><p><span>"Enclose each list item within curly braces. For example: {This is line one}"</span><textarea class="editul" type="text" placeholder="Example: {This is line one}"></textarea></p></div>`;
 			} else if (element === "button") {
 				html = `<div class="edit-mc" ${idHTML}><div><span>Enter an external link beginning with 'http' or type the location's order number to navigate within your project.</span><input class="editbutton addbuttonlink"  type="text" placeholder="https://example.com/externallink" /><input class="editbutton addbuttontext" type="text" placeholder="Button text" /><div class="button addbuttonsave">Save</div></div></div>`;
+			} else if (element === "youtube") {
+				html = `<div class="edit-mc" ${idHTML}><div><span>Paste your youtube embed code into the textarea.</span><textarea class="edityoutube" type="text" placeholder="Paste your Youtube embed code here..."></textarea></div></div>`;
 			}
 
 			editMC.insertAdjacentHTML("afterend", html);
@@ -1709,7 +1750,13 @@ function start(data) {
 			nextEditMC.insertAdjacentHTML("afterbegin", edithtml);
 
 			// Add saveinput event
-			if (element === "h1" || element === "h2" || element === "p" || element === "ul") {
+			if (
+				element === "h1" ||
+				element === "h2" ||
+				element === "p" ||
+				element === "ul" ||
+				element === "youtube"
+			) {
 				nextEditMC.querySelector("textarea").addEventListener("blur", (event) => {
 					saveInput(event, element);
 				});
@@ -1734,7 +1781,13 @@ function start(data) {
 			}
 
 			// Focus the input
-			if (element === "h1" || element === "h2" || element === "p" || element === "ul") {
+			if (
+				element === "h1" ||
+				element === "h2" ||
+				element === "p" ||
+				element === "ul" ||
+				element === "youtube"
+			) {
 				nextEditMC.querySelector("textarea").focus();
 			} else if (element === "button") {
 				nextEditMC.querySelector("input").focus();
@@ -1761,6 +1814,10 @@ function start(data) {
 				.addEventListener("click", (e) => addElement(e, "button"));
 
 			nextEditMC
+				.querySelector(".btn-add-youtube")
+				.addEventListener("click", (e) => addElement(e, "youtube"));
+
+			nextEditMC
 				.querySelector(".btn-remove")
 				.addEventListener("click", (e) => removeElement(e));
 
@@ -1785,9 +1842,50 @@ function start(data) {
 		document.querySelectorAll(".btn-add-button").forEach((item) => {
 			item.addEventListener("click", (e) => addElement(e, "button"));
 		});
+		document.querySelectorAll(".btn-add-youtube").forEach((item) => {
+			item.addEventListener("click", (e) => addElement(e, "youtube"));
+		});
 		document.querySelectorAll(".btn-remove").forEach((item) => {
 			item.addEventListener("click", (e) => removeElement(e));
 		});
+
+		// console.log("Edit mode on...");
+
+		// Show/hide buttons if info
+		if (fileInfo !== "" && fileInfo !== null && fileInfo !== undefined) {
+			infoLocationContainer.style.display = "block";
+			infoLocationContainer.innerHTML = fileInfo;
+
+			showLocBtn.style.display = "block";
+			showLocBtn.classList.add("showactive");
+			showInfoBtn.classList.remove("showactive");
+		} else {
+			infoLocationContainer.style.display = "none";
+			showLocBtn.style.display = "none";
+			showInfoBtn.classList.add("showactive");
+		}
+		// console.log("Location info inserted...");
+
+		// Add event listener to all goto buttons
+		let allGotoButtons = document.querySelectorAll(".gotobutton");
+		allGotoButtons.forEach((btn) => {
+			btn.addEventListener("click", function () {
+				let tempOrderId = this.getAttribute("data-order_id");
+
+				listItems.forEach((listItem) => {
+					listItem.classList.remove("active");
+				});
+
+				const activeListItem = document.querySelector(
+					`#locations [data-id="${tempOrderId}"]`
+				);
+				activeListItem.classList.add("active");
+
+				change360Content(parseInt(tempOrderId));
+			});
+		});
+
+		console.log("Added events to all goto buttons...");
 
 		// Add event listener to likeButton
 		clonedButton.addEventListener("click", toggleLikedClass);
@@ -1820,6 +1918,7 @@ function start(data) {
 		);
 
 		camera.updateProjectionMatrix();
+		console.log("End of the content creation function...");
 	}
 	// End change360Content
 
@@ -2211,10 +2310,27 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 	closeShareButton.addEventListener("touchstart", closeShare);
 	closeShareButton.addEventListener("selectstart", closeShare);
 
+	// Function to close comments
+	function closeComments() {
+		let commentButton = document.querySelector("#commentbtn");
+		let commentInput = document.querySelector("#commentInputField");
+		if (commentInput) {
+			commentInput.blur();
+			commentInput.placeholder = "Write your comment";
+		}
+		commentButton.style.opacity = "1";
+		const commentElement = document.querySelector("#comments");
+		commentElement.innerHTML = "";
+		commentsElem.classList.remove("commentshow");
+	}
+
 	function openComments() {
 		let embedId = document.querySelector("#commentbtn").getAttribute("data-embedid");
 		let fileGetComments = "../php/getcomments.php";
 		let passuri = "i=" + embedId;
+		console.log("Comments URI:", passuri);
+
+		// Get comments
 		xhrSend("POST", fileGetComments, passuri)
 			.then((data) => {
 				if (data) {
@@ -2229,18 +2345,6 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 					let commentInput = document.querySelector("#commentInputField");
 					commentInput.focus();
 
-					// Function to close comments
-					function closeComments() {
-						let commentButton = document.querySelector("#commentbtn");
-						let commentInput = document.querySelector("#commentInputField");
-						commentInput.blur();
-						commentInput.placeholder = "Write your comment";
-						commentButton.style.opacity = "1";
-						const commentElement = document.querySelector("#comments");
-						commentElement.innerHTML = "";
-						commentsElem.classList.remove("commentshow");
-					}
-
 					// Eventlistener for close comment button
 					closeCommentsButton.removeEventListener("click", closeComments);
 					closeCommentsButton.removeEventListener("touchstart", closeComments);
@@ -2254,7 +2358,7 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 			})
 			.catch((error) => {
 				// Handle any errors
-				console.error("XHR request failed:", error);
+				console.error("Get comments. XHR request failed:", error);
 			});
 	}
 
