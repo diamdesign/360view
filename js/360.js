@@ -501,8 +501,9 @@ function start(data) {
 					});
 
 					const activeListItem = document.querySelector(
-						`#locations [data-id="${tempOrderId}"]`
+						`#locationlist [data-id="${tempOrderId.toString()}"]`
 					);
+
 					activeListItem.classList.add("active");
 
 					change360Content(parseInt(tempOrderId));
@@ -1867,22 +1868,29 @@ function start(data) {
 		// console.log("Location info inserted...");
 
 		// Add event listener to all goto buttons
-		let allGotoButtons = document.querySelectorAll(".gotobutton");
-		allGotoButtons.forEach((btn) => {
-			btn.addEventListener("click", function () {
-				let tempOrderId = this.getAttribute("data-order_id");
 
-				listItems.forEach((listItem) => {
-					listItem.classList.remove("active");
-				});
+		function gotoButton(e) {
+			let tempOrderId = e.target.getAttribute("data-order_id");
 
-				const activeListItem = document.querySelector(
-					`#locations [data-id="${tempOrderId}"]`
-				);
-				activeListItem.classList.add("active");
-
-				change360Content(parseInt(tempOrderId));
+			listItems.forEach((listItem) => {
+				listItem.classList.remove("active");
 			});
+
+			const activeListItem = document.querySelector(
+				`#locationlist [data-id="${tempOrderId.toString()}"]`
+			);
+			console.log(activeListItem);
+			activeListItem.classList.add("active");
+
+			change360Content(parseInt(tempOrderId));
+		}
+
+		let allGotoButtons = document.querySelectorAll(".gotobutton");
+
+		allGotoButtons.forEach((btn) => {
+			// Remove previous event listener before adding a new one
+			btn.removeEventListener("click", gotoButton);
+			btn.addEventListener("click", gotoButton);
 		});
 
 		console.log("Added events to all goto buttons...");
