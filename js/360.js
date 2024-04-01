@@ -3,7 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 import { rootHTML, haspassHTML } from "./360template.min.js";
 import { buildComments } from "./comments.min.js";
-import { receiveMessage } from "./functions.min.js";
+import { receiveMessage, dataURItoBlob } from "./functions.min.js";
 
 import {
 	testInternetSpeed,
@@ -65,6 +65,13 @@ function imageClickHandler(event) {
 	const divId = "zoom-div-" + Date.now(); // Generate unique ID
 	newDiv.id = divId; // Assign unique ID to the new div
 	newDiv.classList.add("zoomedimage");
+
+	// Check if the image source starts with "../" and contains "-low" before the file extension
+	if (clonedImage.src.match(/\.\.\/.*\/.*-low\.\w+$/)) {
+		// Remove "-low" from the image source
+		clonedImage.src = clonedImage.src.replace(/-low(\.\w+)$/, "$1");
+	}
+
 	clonedImage.classList.remove("zoom-image");
 	newDiv.appendChild(clonedImage);
 	rootElement.appendChild(newDiv);
@@ -414,7 +421,7 @@ function start(data) {
 				type = "marker";
 				parent = document.querySelector('.marker-content[data-id="' + id + '"]');
 			} else {
-				id = editMC.getAttribute("data-location_id");
+				id = locationID;
 				type = "info";
 				parent = document.getElementById("info-location");
 			}
@@ -559,9 +566,15 @@ function start(data) {
 				return;
 			}
 		} else if (adding === "image") {
-			var imageInput = parent.querySelector(".editimage").value.trim();
-			var imageFileInput = parent.querySelector(".imageInput").files[0];
+			var imageInputEl = parent.querySelector(".editimage");
+			var imageInput = imageInputEl.value.trim();
+			var imageFileInputEl = parent.querySelector(".new-image img");
+			var imageFileInput = imageFileInputEl.src;
+
+			console.log(imageFileInput);
+
 			if (imageInput === "" && !imageFileInput) {
+				console.log("Empty fields");
 				let parent = editMC.parentNode;
 
 				let all = parent.querySelectorAll(".edit-mc");
@@ -577,22 +590,56 @@ function start(data) {
 			}
 			let parentDivEl = editMC.querySelector(".edit-image");
 
-			if (imageFileInput && imageFileInput.type.startsWith("image/")) {
+			if (imageFileInput) {
+				var blob = dataURItoBlob(imageFileInput);
+				console.log("Image found");
 				const reader = new FileReader();
-				reader.readAsDataURL(imageFileInput);
-				console.log(reader, reader.result);
+				reader.readAsDataURL(blob);
+
 				reader.onload = function () {
-					const img = new Image();
-					img.src = reader.result;
-					img.style.maxWidth = "100%";
+					console.log(reader, reader.result);
+					console.log("XHR Start");
 					parentDivEl.innerHTML = ""; // Clear any existing content
 
-					parentDivEl.appendChild(img); // Append the image to the parent div
-					parentDivEl.classList.add("image", "zoom-image");
-					editMC
-						.querySelector(".zoom-image")
-						.addEventListener("click", imageClickHandler); // Attach event listener
-					parentDivEl.classList.remove("edit-image");
+					var jsonData = {
+						user_id: userID,
+						projectid: projectID,
+						locationid: locationID,
+						image: reader.result,
+					};
+
+					var jsonString = JSON.stringify(jsonData);
+					console.log(jsonData);
+
+					const saveImagePHP = "../php/saveimage.php";
+
+					// Save image
+					xhrSend("POST", saveImagePHP, jsonString)
+						.then((data) => {
+							if (data.error) {
+								console.error("Save image. XHR response ERROR:", data.error);
+							}
+							console.log("XHR sent...");
+							console.log(data);
+							let newPath = data.path.replace(/(\.[^.]+)$/, "-low$1");
+							const img = new Image();
+							img.src = newPath;
+							img.style.maxWidth = "100%";
+							parentDivEl.appendChild(img); // Append the image to the parent div
+							parentDivEl.classList.add("image", "zoom-image");
+							editMC
+								.querySelector(".zoom-image")
+								.addEventListener("click", imageClickHandler); // Attach event listener
+							parentDivEl.classList.remove("edit-image");
+
+							setTimeout(() => {
+								document.querySelector("#logo").classList.remove("saving");
+							}, 1000);
+						})
+						.catch((error) => {
+							// Handle any errors
+							console.error("Saving content. XHR request failed:", error);
+						});
 				};
 			} else {
 				const img = new Image();
@@ -644,13 +691,15 @@ function start(data) {
 
 		// Get the modified HTML string without edit-markercontent divs
 		let modifiedSaveContent = htmlDoc.body.innerHTML;
+		let encodedContent = modifiedSaveContent;
 
 		var jsonData = {
 			type: type,
 			id: id,
-			html: modifiedSaveContent,
+			html: encodedContent,
 		};
 
+		console.log(jsonData);
 		var jsonString = JSON.stringify(jsonData);
 
 		const saveContentPHP = "../php/savecontent.php";
@@ -658,6 +707,9 @@ function start(data) {
 		// Save content
 		xhrSend("POST", saveContentPHP, jsonString)
 			.then((data) => {
+				if (data.error) {
+					console.error("Save content. XHR response ERROR:", data.error);
+				}
 				console.log("Content saved...");
 				setTimeout(() => {
 					document.querySelector("#logo").classList.remove("saving");
@@ -1713,7 +1765,7 @@ function start(data) {
 		}
 
 		// Show/hide buttons if info
-		if (fileInfo !== "" && fileInfo !== null && fileInfo !== undefined) {
+		if ((fileInfo !== "" && fileInfo !== null && fileInfo !== undefined) || editmode) {
 			infoLocationContainer.style.display = "block";
 			infoLocationContainer.innerHTML = fileInfo;
 
@@ -1724,6 +1776,10 @@ function start(data) {
 			infoLocationContainer.style.display = "none";
 			showLocBtn.style.display = "none";
 			showInfoBtn.classList.add("showactive");
+			infoDetailsContainer.style.display = "block";
+			document.querySelector("#info-details").scrollTop = 0;
+			infoLocationButton.classList.remove("showactive");
+			infoDetailsButton.classList.add("showactive");
 		}
 
 		if (editmode) {
@@ -2513,7 +2569,6 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 		let embedId = document.querySelector("#commentbtn").getAttribute("data-embedid");
 		let fileGetComments = "../php/getcomments.php";
 		let passuri = "i=" + embedId;
-		console.log("Comments URI:", passuri);
 
 		// Get comments
 		xhrSend("POST", fileGetComments, passuri)

@@ -17,12 +17,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
         $type = $data["type"];
         $html = $data["html"];
 
+        /*
         if(isset($_SESSION['user_id'])) {
             $user_id = $_SESSION['user_id'];
         } else {
              $response = ['error' => "User not logged in."];
             exit;
-        }
+        }*/
 
 
         if($type === "info") {
@@ -31,15 +32,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
                 $stmt = $pdo->prepare("UPDATE locations SET info = :html WHERE id = :id");
                 $stmt->bindParam(":html", $html);
                 $stmt->bindParam(":id", $id);
-                $stmt->execute();
+    
 
                 // Check if the update was successful
-                if ($stmt->rowCount() > 0) {
+                if ($stmt->execute()) {
                     // Update successful
                     $response = ['success' => true];
                 } else {
-                    // No rows updated (id not found)
-                    $response = ['error' => "ID not found"];
+                
+                    $response = ['error' => "Did not execute"];
                 }
             } catch (PDOException $e) {
                 // Error occurred during database operation
@@ -52,15 +53,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
                 $stmt = $pdo->prepare("UPDATE markers SET info = :html WHERE id = :id");
                 $stmt->bindParam(":html", $html);
                 $stmt->bindParam(":id", $id);
-                $stmt->execute();
+     
 
                 // Check if the update was successful
-                if ($stmt->rowCount() > 0) {
+                if ($stmt->execute()) {
                     // Update successful
                     $response = ['success' => true];
                 } else {
-                    // No rows updated (id not found)
-                    $response = ['error' => "ID not found"];
+                  
+                    $response = ['error' => "Did not execute"];
                 }
             } catch (PDOException $e) {
                 // Error occurred during database operation

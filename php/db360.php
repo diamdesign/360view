@@ -86,6 +86,25 @@ try {
         videos_id INT(30) NULL
     )");
 
+    
+    $pdo->exec("CREATE TABLE IF NOT EXISTS sounds (
+        id INT(30) AUTO_INCREMENT PRIMARY KEY,
+        user_id INT(30) NULL,
+        file_name VARCHAR(255) NULL,
+        fullpath VARCHAR(255) NULL,
+        duration VARCHAR(20) NULL,
+        artist VARCHAR(255) NULL,
+        album VARCHAR(255) NULL
+    )");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS project_sounds (
+        id INT(30) AUTO_INCREMENT PRIMARY KEY,
+        user_id INT(30) NULL,
+        project_id INT(30) NULL,
+        location_id INT(30) NULL,
+        sounds_id INT(30) NULL
+    )");
+
     $pdo->exec("CREATE TABLE IF NOT EXISTS markers (
         id INT(30) AUTO_INCREMENT PRIMARY KEY,
         location_id INT(30) NULL,
@@ -169,23 +188,6 @@ try {
         caption_language VARCHAR(255)
     )");
 
-    $pdo->exec("CREATE TABLE IF NOT EXISTS sounds (
-        id INT(30) AUTO_INCREMENT PRIMARY KEY,
-        user_id INT(30) NULL,
-        file_name VARCHAR(255) NULL,
-        fullpath VARCHAR(255) NULL,
-        duration VARCHAR(20) NULL,
-        artist VARCHAR(255) NULL,
-        album VARCHAR(255) NULL
-    )");
-
-    $pdo->exec("CREATE TABLE IF NOT EXISTS project_sounds (
-        id INT(30) AUTO_INCREMENT PRIMARY KEY,
-        user_id INT(30) NULL,
-        project_id INT(30) NULL,
-        location_id INT(30) NULL,
-        sounds_id INT(30) NULL
-    )");
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS inventory (
         id INT(30) AUTO_INCREMENT PRIMARY KEY,

@@ -20,6 +20,18 @@ export function receiveMessage(event) {
 	// Process the messageData as needed
 }
 
+// Function to convert data URI to Blob
+export function dataURItoBlob(dataURI) {
+	var byteString = atob(dataURI.split(",")[1]);
+	var mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
+	var ab = new ArrayBuffer(byteString.length);
+	var ia = new Uint8Array(ab);
+	for (var i = 0; i < byteString.length; i++) {
+		ia[i] = byteString.charCodeAt(i);
+	}
+	return new Blob([ab], { type: mimeString });
+}
+
 export function copyToClipboard(selectorId) {
 	// Find the element with the specified ID
 	const element = document.querySelector(selectorId);
