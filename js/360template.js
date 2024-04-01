@@ -9,7 +9,7 @@ export const rootHTML = `<div id="outside">
 				</div>
 			</div>
 			<div id="info">
-				<div class="show-loc showactive">Location</div>
+				<div class="show-loc showactive">Information</div>
 				<div class="show-info">Details</div>
 				<div id="closeinfobtn"></div>
 				<div id="resizer"></div>
