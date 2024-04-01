@@ -108,6 +108,11 @@ if (!locId) {
 const baseUri = "localhost/360/";
 const uri = "i=" + embedId + "&loc=" + locId;
 
+var userID = null;
+var creatorID = null;
+var projectID = null;
+var locationID = null;
+
 var startLocX = 0;
 var startLocY = 0;
 
@@ -279,9 +284,13 @@ xhrSend("POST", fileCheckData, uri)
 function start(data) {
 	if (data.hasOwnProperty("project")) {
 		dataType = "project";
+		projectID = data.project.id;
 	} else {
 		dataType = "location";
 	}
+	userID = data.user.id;
+	creatorID = data.creator.id;
+
 	console.log("Data Type:", dataType);
 
 	if (editmode) {
@@ -1350,6 +1359,8 @@ function start(data) {
 		} else {
 			targetObject = data.locations[0];
 		}
+
+		locationID = targetObject.id;
 
 		let targetEmbedId = targetObject.embed_id;
 		// Set embedid for comment button

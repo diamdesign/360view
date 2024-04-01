@@ -56,7 +56,8 @@ try {
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS images (
         id INT(30) AUTO_INCREMENT PRIMARY KEY,
-        user_id INT(30) NOT NULL,
+        user_id INT(30) NULL,
+        file_name VARCHAR(255) NULL,
         fullpath VARCHAR(255) NULL,
         uploaded DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     )");
@@ -71,7 +72,8 @@ try {
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS videos (
         id INT(30) AUTO_INCREMENT PRIMARY KEY,
-        user_id INT(30) NOT NULL,
+        user_id INT(30) NULL,
+        file_name VARCHAR(255) NULL,
         fullpath VARCHAR(255) NULL,
         uploaded DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     )");
@@ -170,6 +172,7 @@ try {
     $pdo->exec("CREATE TABLE IF NOT EXISTS sounds (
         id INT(30) AUTO_INCREMENT PRIMARY KEY,
         user_id INT(30) NULL,
+        file_name VARCHAR(255) NULL,
         fullpath VARCHAR(255) NULL,
         duration VARCHAR(20) NULL,
         artist VARCHAR(255) NULL,

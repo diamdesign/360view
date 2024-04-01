@@ -22,9 +22,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
             exit;
         }
 
+        $userId = $data["user_id"];
+
+        if($userId !== $user_id) {
+            $response = ['error' => "User ID's does not match."];
+            exit;
+        }
+
         $userData = getUserInfo($pdo, $user_id);
 
+        $username = $userData["username"];
+
+        $projectId = $data["projectid"];
+        $locationId = $data["locationid"];
         $image = $data["image"];
+
         // Check if the image data is not empty
         if (!empty($image)) {
             // Get the MIME type of the image
@@ -57,7 +69,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
                 imagedestroy($resized_image);
             }
 
-            // Respond with the filenames
+            try {
+                // Insert into images table
+                $imageStatement = $pdo->prepare("
+                    INSERT INTO images (userId, fullpath) 
+                    VALUES (:userId, :fullpath)
+                ");
+                $imageStatement->bindParam(':userId', $userId, PDO::PARAM_INT);
+                $imageStatement->bindParam(':fullpath', $original_path, PDO::PARAM_STR);
+                $imageStatement->execute();
+
+                // Get the last inserted image ID
+                $imageId = $pdo->lastInsertId();
+
+                // Insert into projects_images table
+                $projectImageStatement = $pdo->prepare("
+                    INSERT INTO projects_images (user_id, project_id, location_id, images_id)
+                    VALUES (:userId, :projectId, :locationId, :imageId)
+                ");
+                $projectImageStatement->bindParam(':userId', $userId, PDO::PARAM_INT);
+                $projectImageStatement->bindParam(':projectId', $projectId, PDO::PARAM_INT);
+                $projectImageStatement->bindParam(':locationId', $locationId, PDO::PARAM_INT);
+                $projectImageStatement->bindParam(':imageId', $imageId, PDO::PARAM_INT);
+                $projectImageStatement->execute();
+
+
+            } catch (PDOException $e) {
+                $response = ['error' => $e->getMessage()];
+            }
+
+            // Respond with the path
             $response = ['path' => $original_path];
         }
     }
