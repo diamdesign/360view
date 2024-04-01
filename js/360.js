@@ -434,7 +434,7 @@ function start(data) {
 				// Regular expression to match text within curly braces
 				var regex = /{([^}]*)}/g;
 
-				// Check if the enteredValue contains the pattern
+				// Check if the enteredValue has the pattern
 				if (!regex.test(enteredValue)) {
 					return enteredValue; // Return the original value if the pattern is not found
 				}
@@ -702,12 +702,17 @@ function start(data) {
 		if (e.key === "h" || e.key === "H") {
 			const one = document.querySelector("#view-container");
 			const two = document.querySelector("#outside");
-			const commentInput = document.querySelector("#commentInputField");
 
-			// Check if the focus is inside the comment input
-			const isFocusInsideInput = commentInput.contains(document.activeElement);
+			// Check if the focus is inside any input or textarea
+			const inputsAndTextareas = document.querySelectorAll("input, textarea");
+			let isFocusInsideInput = false;
+			inputsAndTextareas.forEach((element) => {
+				if (element.contains(document.activeElement)) {
+					isFocusInsideInput = true;
+				}
+			});
 
-			// If the focus is inside the input, don't toggle the UI
+			// If the focus is inside any input/textarea, don't toggle the UI
 			if (isFocusInsideInput) {
 				return;
 			}
@@ -1647,6 +1652,20 @@ function start(data) {
 			amountElement.textContent = formatNumber(amount);
 		}
 
+		// Show/hide buttons if info
+		if (fileInfo !== "" && fileInfo !== null && fileInfo !== undefined) {
+			infoLocationContainer.style.display = "block";
+			infoLocationContainer.innerHTML = fileInfo;
+
+			showLocBtn.style.display = "block";
+			showLocBtn.classList.add("showactive");
+			showInfoBtn.classList.remove("showactive");
+		} else {
+			infoLocationContainer.style.display = "none";
+			showLocBtn.style.display = "none";
+			showInfoBtn.classList.add("showactive");
+		}
+
 		if (editmode) {
 			// Get all elements inside markerContent and attach the mouseover event listener
 			let allInfoContent = infoLocationContainer.querySelectorAll(".edit-mc");
@@ -1852,19 +1871,6 @@ function start(data) {
 
 		// console.log("Edit mode on...");
 
-		// Show/hide buttons if info
-		if (fileInfo !== "" && fileInfo !== null && fileInfo !== undefined) {
-			infoLocationContainer.style.display = "block";
-			infoLocationContainer.innerHTML = fileInfo;
-
-			showLocBtn.style.display = "block";
-			showLocBtn.classList.add("showactive");
-			showInfoBtn.classList.remove("showactive");
-		} else {
-			infoLocationContainer.style.display = "none";
-			showLocBtn.style.display = "none";
-			showInfoBtn.classList.add("showactive");
-		}
 		// console.log("Location info inserted...");
 
 		// Add event listener to all goto buttons
