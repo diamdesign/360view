@@ -272,14 +272,20 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
             $projects['map_links'] = $maps;
 
             if($projects['hasmusic'] === true) {
-                // Retrieve data from the "map_links" table
-                $music_statement = $pdo->prepare("SELECT id, file_name, base_url, artist, album, duration FROM music WHERE project_id = :project_id");
+                // Retrieve data from the "project_sounds" and "sounds" tables using a JOIN
+                $music_statement = $pdo->prepare("
+                    SELECT s.id, s.fullpath, s.artist, s.album, s.duration
+                    FROM project_sounds ps
+                    INNER JOIN sounds s ON ps.sounds_id = s.id
+                    WHERE ps.project_id = :project_id
+                ");
                 $music_statement->bindParam(':project_id', $project_id, PDO::PARAM_INT);
                 $music_statement->execute();
                 $music = $music_statement->fetchAll(PDO::FETCH_ASSOC);
 
                 $projects['music_list'] = $music;
             }
+
 
             // Retrieve data from the "project_list" table
             $project_list_statement = $pdo->prepare("SELECT * FROM project_list WHERE embed_id = :embed_id ORDER BY order_index");
@@ -400,13 +406,17 @@ if(isset($_GET['i']) || isset($_POST['i'])) {
                         }
 
                         if($location_details['hasmusic'] === true) {
-                            // Retrieve data from the "map_links" table
-                            $music_loc_statement = $pdo->prepare("SELECT id, file_name, base_url, artist, album, duration FROM music WHERE location_id = :location_id");
-                            $music_loc_statement->bindParam(':location_id', $location_id, PDO::PARAM_INT);
-                            $music_loc_statement->execute();
-                            $music_loc = $music_loc_statement->fetchAll(PDO::FETCH_ASSOC);
+                            $music_statement = $pdo->prepare("
+                                SELECT s.id, s.fullpath, s.artist, s.album, s.duration
+                                FROM project_sounds ps
+                                INNER JOIN sounds s ON ps.sounds_id = s.id
+                                WHERE ps.location_id = :location_id
+                            ");
+                            $music_statement->bindParam(':location_id', $location_id, PDO::PARAM_INT);
+                            $music_statement->execute();
+                            $music = $music_statement->fetchAll(PDO::FETCH_ASSOC);
 
-                            $location_details['music_list'] = $music_loc;
+                            $projects['music_list'] = $music;
                         }
                                                    
                     }

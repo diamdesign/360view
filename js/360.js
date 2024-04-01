@@ -58,6 +58,7 @@ waitForEventListener();
 
 // Define the image click handler function
 function imageClickHandler(event) {
+	event.stopPropagation();
 	const rootElement = document.querySelector("#root");
 	const newDiv = document.createElement("div");
 	const clonedImage = event.target.cloneNode(true);
@@ -550,7 +551,7 @@ function start(data) {
 			}
 		} else if (adding === "image") {
 			var imageInput = parent.querySelector(".editimage").value.trim();
-			var imageFileInput = parentarent.querySelector(".imageInput").files[0];
+			var imageFileInput = parent.querySelector(".imageInput").files[0];
 			if (imageInput === "" && !imageFileInput) {
 				let parent = editMC.parentNode;
 
@@ -564,6 +565,36 @@ function start(data) {
 				return;
 			} else {
 				document.querySelector("#logo").classList.add("saving");
+			}
+			let parentDivEl = editMC.querySelector(".edit-image");
+
+			if (imageFileInput && imageFileInput.type.startsWith("image/")) {
+				const reader = new FileReader();
+				reader.readAsDataURL(imageFileInput);
+				console.log(reader, reader.result);
+				reader.onload = function () {
+					const img = new Image();
+					img.src = reader.result;
+					img.style.maxWidth = "100%";
+					parentDivEl.innerHTML = ""; // Clear any existing content
+
+					parentDivEl.appendChild(img); // Append the image to the parent div
+					parentDivEl.classList.add("image", "zoom-image");
+					editMC
+						.querySelector(".zoom-image")
+						.addEventListener("click", imageClickHandler); // Attach event listener
+					parentDivEl.classList.remove("edit-image");
+				};
+			} else {
+				const img = new Image();
+				img.src = imageInput;
+				img.style.maxWidth = "100%";
+				parentDivEl.innerHTML = ""; // Clear any existing content
+
+				parentDivEl.appendChild(img); // Append the image to the parent div
+				parentDivEl.classList.add("image", "zoom-image");
+				editMC.querySelector(".zoom-image").addEventListener("click", imageClickHandler); // Attach event listener
+				parentDivEl.classList.remove("edit-image");
 			}
 		} else {
 			document.querySelector("#logo").classList.add("saving");
@@ -1714,76 +1745,196 @@ function start(data) {
 
 				element.insertAdjacentHTML("afterbegin", edithtml);
 			});
-		} else {
-			let allEditMC = document.querySelectorAll(".edit-mc");
-			allEditMC.forEach((element) => {
-				element.classList.add("contain-html");
-				element.classList.remove("edit-mc");
-			});
-		}
 
-		// Remove element
-		function removeElement(e) {
-			let eMC = e.target.closest(".edit-mc");
+			// Remove element
+			function removeElement(e) {
+				let eMC = e.target.closest(".edit-mc");
 
-			let eMContent = eMC.parentNode;
+				let eMContent = eMC.parentNode;
 
-			let allContent = eMContent.querySelectorAll(".edit-mc");
+				let allContent = eMContent.querySelectorAll(".edit-mc");
 
-			if (allContent.length === 2) {
-				let firstEditElement = eMContent.querySelector(".firstedit");
-				firstEditElement.style.display = "block";
-			}
-			eMC.remove();
-			saveInput(e);
-		}
-
-		// Add element inside content function
-		function addElement(e, element) {
-			let editMC = e.target.closest(".edit-mc");
-
-			let id = editMC.getAttribute("data-id");
-			let html, idHTML, isInfo;
-
-			if (id === null || id === undefined) {
-				id = editMC.getAttribute("data-location_id");
-				idHTML = `data-location_id="${id}"`;
-				isInfo = true;
-			} else {
-				idHTML = `data-id="${id}"`;
-				isInfo = false;
+				if (allContent.length === 2) {
+					let firstEditElement = eMContent.querySelector(".firstedit");
+					firstEditElement.style.display = "block";
+				}
+				eMC.remove();
+				saveInput(e);
 			}
 
-			if (element === "h1") {
-				html = `<div class="edit-mc" ${idHTML}><h1><textarea class="editheader" type="text" placeholder="Header 1"></textarea></h1></div>`;
-			} else if (element === "h2") {
-				html = `<div class="edit-mc" ${idHTML}><h2><textarea class="editheader2" type="text" placeholder="Header 2"></textarea></h2></div>`;
-			} else if (element === "p") {
-				html = `<div class="edit-mc" ${idHTML}><p><textarea class="editp" type="text" placeholder="Write text here..."></textarea></p></div>`;
-			} else if (element === "image") {
-				html = `<div class="edit-mc" ${idHTML}>
-					<div>
+			function addSaveEvent(event, element) {
+				const editMC = event.target.closest(".edit-mc");
+				let nextEditMC = editMC.nextElementSibling;
+				// Add saveinput event
+				if (
+					element === "h1" ||
+					element === "h2" ||
+					element === "p" ||
+					element === "ul" ||
+					element === "youtube"
+				) {
+					nextEditMC.querySelector("textarea").addEventListener("blur", (event) => {
+						saveInput(event, element);
+					});
+				} else if (element === "button") {
+					nextEditMC
+						.querySelector(".addbuttonsave")
+						.addEventListener("click", (event) => {
+							let parentDiv = event.target.closest(".edit-mc");
+							let inputLinkEl = parentDiv.querySelector(".addbuttonlink");
+							let inputTextEl = parentDiv.querySelector(".addbuttontext");
+							let inputLink = inputLinkEl.value;
+							let inputText = inputTextEl.value;
+							if (inputText === "" || inputLink === "") {
+								alert(
+									"Please provide both button text and a valid link. Use 'http' for external links or a location order number for internal navigation."
+								);
+								return;
+							} else if (
+								!inputLink.startsWith("http") &&
+								isNaN(parseInt(inputLink))
+							) {
+								alert("You can only write a http link or a number.");
+								return;
+							}
+							saveInput(event, element);
+						});
+				} else if (element === "image") {
+					const dropzone = nextEditMC.querySelector(".dropzone");
+					const fileInput = nextEditMC.querySelector(".imageInput");
+
+					dropzone.addEventListener("dragover", (e) => {
+						e.preventDefault();
+						dropzone.classList.add("dragover");
+					});
+
+					dropzone.addEventListener("dragleave", () => {
+						dropzone.classList.remove("dragover");
+					});
+
+					dropzone.addEventListener("drop", (e) => {
+						e.preventDefault();
+						dropzone.classList.remove("dragover");
+						const files = e.dataTransfer.files;
+						handleFiles(files);
+					});
+
+					fileInput.addEventListener("change", (e) => {
+						const files = e.target.files;
+						handleFiles(files);
+					});
+
+					function handleFiles(files) {
+						for (const file of files) {
+							if (file.type.startsWith("image/")) {
+								const reader = new FileReader();
+								reader.readAsDataURL(file);
+								reader.onload = function () {
+									const newImageDiv = document.createElement("div");
+									newImageDiv.classList.add("new-image");
+
+									dropzone.querySelector(".button-wrap").style.display = "none";
+
+									const img = new Image();
+									img.src = reader.result;
+									img.style.maxWidth = "100%";
+
+									const deleteButton = document.createElement("button");
+
+									deleteButton.addEventListener("click", function () {
+										newImageDiv.remove();
+										fileInput.value = "";
+										dropzone.querySelector(".button-wrap").style.display =
+											"block";
+									});
+
+									newImageDiv.appendChild(img);
+									newImageDiv.appendChild(deleteButton);
+									dropzone.appendChild(newImageDiv);
+								};
+							} else {
+								alert("Please drop only image files.");
+							}
+						}
+					}
+
+					nextEditMC.querySelector(".addimagesave").addEventListener("click", (event) => {
+						event.stopPropagation();
+						let parentDiv = event.target.closest(".edit-mc");
+						let inputImageLinkEl = parentDiv.querySelector(".editimage");
+						let inputImageDropEl = parentDiv.querySelector(".imageInput");
+						let inputImageLink = inputImageLinkEl.value.trim();
+						let inputImageDrop = inputImageDropEl.files[0];
+						if (inputImageLink !== "" && inputImageDrop) {
+							alert("You can only save one image, either a link or upload image.");
+							return;
+						}
+						saveInput(event, element);
+					});
+				}
+
+				// Focus the input
+				if (
+					element === "h1" ||
+					element === "h2" ||
+					element === "p" ||
+					element === "ul" ||
+					element === "youtube"
+				) {
+					nextEditMC.querySelector("textarea").focus();
+				} else if (element === "button") {
+					nextEditMC.querySelector("input").focus();
+				} else if (element === "image") {
+					nextEditMC.querySelector(".editimage").focus();
+				}
+			}
+
+			// Add element inside content function
+			function addElement(e, element) {
+				let editMC = e.target.closest(".edit-mc");
+
+				let id = editMC.getAttribute("data-id");
+				let html, idHTML, isInfo;
+
+				if (id === null || id === undefined) {
+					id = editMC.getAttribute("data-location_id");
+					idHTML = `data-location_id="${id}"`;
+					isInfo = true;
+				} else {
+					idHTML = `data-id="${id}"`;
+					isInfo = false;
+				}
+
+				if (element === "h1") {
+					html = `<div class="edit-mc" ${idHTML}><h1><textarea class="editheader" type="text" placeholder="Header 1"></textarea></h1></div>`;
+				} else if (element === "h2") {
+					html = `<div class="edit-mc" ${idHTML}><h2><textarea class="editheader2" type="text" placeholder="Header 2"></textarea></h2></div>`;
+				} else if (element === "p") {
+					html = `<div class="edit-mc" ${idHTML}><p><textarea class="editp" type="text" placeholder="Write text here..."></textarea></p></div>`;
+				} else if (element === "image") {
+					html = `<div class="edit-mc" ${idHTML}>
+					<div class="edit-image">
 						<input type="text" class="editimage" placeholder="https://pathtoimage.com" />
 						<div class="dropzone" id="dropzone">
 							<div class="button-wrap">
-								<label class="button" for="upload">Drop/Select Image</label>
+								<label class="button" for="imageInput">Drop/Select Image</label>
 								<input type="file" id="imageInput" class="imageInput" accept="image/*">
 							</div>
 						</div>
 						<div class="button addimagesave">Save</div>
 					</div>
 				</div>`;
-			} else if (element === "ul") {
-				html = `<div class="edit-mc" ${idHTML}><p><span>"Enclose each list item within curly braces. For example: {This is line one}"</span><textarea class="editul" type="text" placeholder="Example: {This is line one}"></textarea></p></div>`;
-			} else if (element === "button") {
-				html = `<div class="edit-mc" ${idHTML}><div><span>Enter an external link beginning with 'http' or type the location's order number to navigate within your project.</span><input class="editbutton addbuttonlink" type="text" placeholder="https://example.com/externallink" /><input class="editbutton addbuttontext" type="text" placeholder="Button text" /><div class="button addbuttonsave">Save</div></div></div>`;
-			} else if (element === "youtube") {
-				html = `<div class="edit-mc" ${idHTML}><div><span>Paste your youtube embed code into the textarea.</span><textarea class="edityoutube" type="text" placeholder="Paste your Youtube embed code here..."></textarea></div></div>`;
-			}
+				} else if (element === "ul") {
+					html = `<div class="edit-mc" ${idHTML}><p><span>"Enclose each list item within curly braces. For example: {This is line one}"</span><textarea class="editul" type="text" placeholder="Example: {This is line one}"></textarea></p></div>`;
+				} else if (element === "button") {
+					html = `<div class="edit-mc" ${idHTML}><div><span>Enter an external link beginning with 'http' or type the location's order number to navigate within your project.</span><input class="editbutton addbuttonlink" type="text" placeholder="https://example.com/externallink" /><input class="editbutton addbuttontext" type="text" placeholder="Button text" /><div class="button addbuttonsave">Save</div></div></div>`;
+				} else if (element === "youtube") {
+					html = `<div class="edit-mc" ${idHTML}><div><span>Paste your youtube embed code into the textarea.</span><textarea class="edityoutube" type="text" placeholder="Paste your Youtube embed code here..."></textarea></div></div>`;
+				}
 
-			editMC.insertAdjacentHTML("afterend", html);
+				editMC.insertAdjacentHTML("afterend", html);
 
-			let edithtml = `<div class="edit-markercontent">
+				let edithtml = `<div class="edit-markercontent">
 							<div class="btn-add-h1">H1</div>
 							<div class="btn-add-h2">H2</div>
 							<div class="btn-add-p"></div>
@@ -1791,194 +1942,88 @@ function start(data) {
 							<div class="btn-add-ul"></div>
 							<div class="btn-add-button"></div>
 							<div class="btn-add-youtube"></div>`;
-			if (!isInfo) {
-				edithtml += `<div class="btn-add-audio"></div>`;
-			}
+				if (!isInfo) {
+					edithtml += `<div class="btn-add-audio"></div>`;
+				}
 
-			edithtml += `<div class="btn-content-edit"></div>
+				edithtml += `<div class="btn-content-edit"></div>
 							<div class="btn-remove"></div>
 						</div>`;
 
-			let nextEditMC = editMC.nextElementSibling;
-			nextEditMC.insertAdjacentHTML("afterbegin", edithtml);
+				let nextEditMC = editMC.nextElementSibling;
+				nextEditMC.insertAdjacentHTML("afterbegin", edithtml);
 
-			// Add saveinput event
-			if (
-				element === "h1" ||
-				element === "h2" ||
-				element === "p" ||
-				element === "ul" ||
-				element === "youtube"
-			) {
-				nextEditMC.querySelector("textarea").addEventListener("blur", (event) => {
-					saveInput(event, element);
-				});
-			} else if (element === "button") {
-				nextEditMC.querySelector(".addbuttonsave").addEventListener("click", (event) => {
-					let parentDiv = event.target.closest(".edit-mc");
-					let inputLinkEl = parentDiv.querySelector(".addbuttonlink");
-					let inputTextEl = parentDiv.querySelector(".addbuttontext");
-					let inputLink = inputLinkEl.value;
-					let inputText = inputTextEl.value;
-					if (inputText === "" || inputLink === "") {
-						alert(
-							"Please provide both button text and a valid link. Use 'http' for external links or a location order number for internal navigation."
-						);
-						return;
-					} else if (!inputLink.startsWith("http") && isNaN(parseInt(inputLink))) {
-						alert("You can only write a http link or a number.");
-						return;
-					}
-					saveInput(event, element);
-				});
-			} else if (element === "image") {
-				const dropzone = nextEditMC.querySelector(".dropzone");
-				const fileInput = nextEditMC.querySelector(".imageInput");
+				addSaveEvent(event, element);
 
-				dropzone.addEventListener("dragover", (e) => {
-					e.preventDefault();
-					dropzone.classList.add("dragover");
-				});
+				nextEditMC
+					.querySelector(".btn-add-h1")
+					.addEventListener("click", (e) => addElement(e, "h1"));
 
-				dropzone.addEventListener("dragleave", () => {
-					dropzone.classList.remove("dragover");
-				});
+				nextEditMC
+					.querySelector(".btn-add-h2")
+					.addEventListener("click", (e) => addElement(e, "h2"));
 
-				dropzone.addEventListener("drop", (e) => {
-					e.preventDefault();
-					dropzone.classList.remove("dragover");
-					const files = e.dataTransfer.files;
-					handleFiles(files);
-				});
+				nextEditMC
+					.querySelector(".btn-add-p")
+					.addEventListener("click", (e) => addElement(e, "p"));
 
-				fileInput.addEventListener("change", (e) => {
-					const files = e.target.files;
-					handleFiles(files);
-				});
+				nextEditMC
+					.querySelector(".btn-add-image")
+					.addEventListener("click", (e) => addElement(e, "image"));
 
-				function handleFiles(files) {
-					for (const file of files) {
-						if (file.type.startsWith("image/")) {
-							const reader = new FileReader();
-							reader.readAsDataURL(file);
-							reader.onload = function () {
-								const newImageDiv = document.createElement("div");
-								newImageDiv.classList.add("new-image");
+				nextEditMC
+					.querySelector(".btn-add-ul")
+					.addEventListener("click", (e) => addElement(e, "ul"));
 
-								fileInput.style.display = "none";
-								const img = new Image();
-								img.src = reader.result;
-								img.style.maxWidth = "100%";
+				nextEditMC
+					.querySelector(".btn-add-button")
+					.addEventListener("click", (e) => addElement(e, "button"));
 
-								const deleteButton = document.createElement("button");
+				nextEditMC
+					.querySelector(".btn-add-youtube")
+					.addEventListener("click", (e) => addElement(e, "youtube"));
 
-								deleteButton.addEventListener("click", function () {
-									newImageDiv.remove();
-									fileInput.value = "";
-									fileInput.style.display = "block";
-								});
+				nextEditMC
+					.querySelector(".btn-remove")
+					.addEventListener("click", (e) => removeElement(e));
 
-								newImageDiv.appendChild(img);
-								newImageDiv.appendChild(deleteButton);
-								dropzone.appendChild(newImageDiv);
-							};
-						} else {
-							alert("Please drop only image files.");
-						}
-					}
+				if (editMC.classList.value.includes("firstedit")) {
+					editMC.style.display = "none";
 				}
-
-				nextEditMC.querySelector(".addimagesave").addEventListener("click", (event) => {
-					let parentDiv = event.target.closest(".edit-mc");
-					let inputImageLinkEl = parentDiv.querySelector(".editimage");
-					let inputImageDropEl = parentDiv.querySelector(".imageInput");
-					let inputImageLink = inputImageLinkEl.value.trim();
-					let inputImageDrop = inputImageDropEl.files[0];
-					if (inputImageLink !== "" && inputImageDrop) {
-						alert("You can only save one image, either a link or upload image.");
-						return;
-					}
-					saveInput(event, element);
-				});
 			}
 
-			// Focus the input
-			if (
-				element === "h1" ||
-				element === "h2" ||
-				element === "p" ||
-				element === "ul" ||
-				element === "youtube"
-			) {
-				nextEditMC.querySelector("textarea").focus();
-			} else if (element === "button") {
-				nextEditMC.querySelector("input").focus();
-			} else if (element === "image") {
-				nextEditMC.querySelector(".editimage").focus();
-			}
-
-			nextEditMC
-				.querySelector(".btn-add-h1")
-				.addEventListener("click", (e) => addElement(e, "h1"));
-
-			nextEditMC
-				.querySelector(".btn-add-h2")
-				.addEventListener("click", (e) => addElement(e, "h2"));
-
-			nextEditMC
-				.querySelector(".btn-add-p")
-				.addEventListener("click", (e) => addElement(e, "p"));
-
-			nextEditMC
-				.querySelector(".btn-add-image")
-				.addEventListener("click", (e) => addElement(e, "image"));
-
-			nextEditMC
-				.querySelector(".btn-add-ul")
-				.addEventListener("click", (e) => addElement(e, "ul"));
-
-			nextEditMC
-				.querySelector(".btn-add-button")
-				.addEventListener("click", (e) => addElement(e, "button"));
-
-			nextEditMC
-				.querySelector(".btn-add-youtube")
-				.addEventListener("click", (e) => addElement(e, "youtube"));
-
-			nextEditMC
-				.querySelector(".btn-remove")
-				.addEventListener("click", (e) => removeElement(e));
-
-			if (editMC.classList.value.includes("firstedit")) {
-				editMC.style.display = "none";
-			}
+			// Add eventlisteners to all current content edit buttons
+			document.querySelectorAll(".btn-add-h1").forEach((item) => {
+				item.addEventListener("click", (e) => addElement(e, "h1"));
+			});
+			document.querySelectorAll(".btn-add-h2").forEach((item) => {
+				item.addEventListener("click", (e) => addElement(e, "h2"));
+			});
+			document.querySelectorAll(".btn-add-p").forEach((item) => {
+				item.addEventListener("click", (e) => addElement(e, "p"));
+			});
+			document.querySelectorAll(".btn-add-image").forEach((item) => {
+				item.addEventListener("click", (e) => addElement(e, "image"));
+			});
+			document.querySelectorAll(".btn-add-ul").forEach((item) => {
+				item.addEventListener("click", (e) => addElement(e, "ul"));
+			});
+			document.querySelectorAll(".btn-add-button").forEach((item) => {
+				item.addEventListener("click", (e) => addElement(e, "button"));
+			});
+			document.querySelectorAll(".btn-add-youtube").forEach((item) => {
+				item.addEventListener("click", (e) => addElement(e, "youtube"));
+			});
+			document.querySelectorAll(".btn-remove").forEach((item) => {
+				item.addEventListener("click", (e) => removeElement(e));
+			});
+		} else {
+			let allEditMC = document.querySelectorAll(".edit-mc");
+			allEditMC.forEach((element) => {
+				element.classList.add("contain-html");
+				element.classList.remove("edit-mc");
+			});
 		}
-
-		// Add eventlisteners to all current content edit buttons
-		document.querySelectorAll(".btn-add-h1").forEach((item) => {
-			item.addEventListener("click", (e) => addElement(e, "h1"));
-		});
-		document.querySelectorAll(".btn-add-h2").forEach((item) => {
-			item.addEventListener("click", (e) => addElement(e, "h2"));
-		});
-		document.querySelectorAll(".btn-add-p").forEach((item) => {
-			item.addEventListener("click", (e) => addElement(e, "p"));
-		});
-		document.querySelectorAll(".btn-add-image").forEach((item) => {
-			item.addEventListener("click", (e) => addElement(e, "image"));
-		});
-		document.querySelectorAll(".btn-add-ul").forEach((item) => {
-			item.addEventListener("click", (e) => addElement(e, "ul"));
-		});
-		document.querySelectorAll(".btn-add-button").forEach((item) => {
-			item.addEventListener("click", (e) => addElement(e, "button"));
-		});
-		document.querySelectorAll(".btn-add-youtube").forEach((item) => {
-			item.addEventListener("click", (e) => addElement(e, "youtube"));
-		});
-		document.querySelectorAll(".btn-remove").forEach((item) => {
-			item.addEventListener("click", (e) => removeElement(e));
-		});
 
 		// console.log("Edit mode on...");
 
@@ -2005,9 +2050,13 @@ function start(data) {
 		let allGotoButtons = document.querySelectorAll(".gotobutton");
 
 		allGotoButtons.forEach((btn) => {
-			// Remove previous event listener before adding a new one
-			btn.removeEventListener("click", gotoButton);
-			btn.addEventListener("click", gotoButton);
+			if (dataType === "project") {
+				// Remove previous event listener before adding a new one
+				btn.removeEventListener("click", gotoButton);
+				btn.addEventListener("click", gotoButton);
+			} else {
+				btn.remove();
+			}
 		});
 
 		console.log("Added events to all goto buttons...");
@@ -2619,7 +2668,13 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 					if (markerInternalLinks.length > 0) {
 						// Add event listeners
 						markerInternalLinks.forEach((link) => {
-							link.addEventListener("click", markerInternalLinksClickHandler);
+							// Show internal links if datatype is project
+							if (dataType === "project") {
+								link.addEventListener("click", markerInternalLinksClickHandler);
+							} else {
+								console.log("Not showing internal links...");
+								link.remove();
+							}
 						});
 					}
 

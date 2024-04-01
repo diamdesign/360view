@@ -2040,6 +2040,14 @@ input[type="range"]:focus::-moz-range-thumb {
 	font-size: 1rem;
 }
 
+.zoom-image {
+	background-image: url("../img/loader.gif");
+	background-size: 2.5rem;
+	background-repeat: no-repeat;
+	background-position: center center;
+	min-height: 6rem;
+}
+
 .zoomedimage {
 	position: fixed;
 	z-index: 10000;

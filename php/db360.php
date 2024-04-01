@@ -54,6 +54,36 @@ try {
         order_index INT(2) NULL
     )");
 
+    $pdo->exec("CREATE TABLE IF NOT EXISTS images (
+        id INT(30) AUTO_INCREMENT PRIMARY KEY,
+        user_id INT(30) NOT NULL,
+        fullpath VARCHAR(255) NULL,
+        uploaded DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS project_images (
+        id INT(30) AUTO_INCREMENT PRIMARY KEY,
+        user_id INT(30) NULL,
+        project_id INT(30) NULL,
+        location_id INT(30) NULL,
+        images_id INT(30) NULL
+    )");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS videos (
+        id INT(30) AUTO_INCREMENT PRIMARY KEY,
+        user_id INT(30) NOT NULL,
+        fullpath VARCHAR(255) NULL,
+        uploaded DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS project_videos (
+        id INT(30) AUTO_INCREMENT PRIMARY KEY,
+        user_id INT(30) NULL,
+        project_id INT(30) NULL,
+        location_id INT(30) NULL,
+        videos_id INT(30) NULL
+    )");
+
     $pdo->exec("CREATE TABLE IF NOT EXISTS markers (
         id INT(30) AUTO_INCREMENT PRIMARY KEY,
         location_id INT(30) NULL,
@@ -137,16 +167,21 @@ try {
         caption_language VARCHAR(255)
     )");
 
-    $pdo->exec("CREATE TABLE IF NOT EXISTS music (
+    $pdo->exec("CREATE TABLE IF NOT EXISTS sounds (
+        id INT(30) AUTO_INCREMENT PRIMARY KEY,
+        user_id INT(30) NULL,
+        fullpath VARCHAR(255) NULL,
+        duration VARCHAR(20) NULL,
+        artist VARCHAR(255) NULL,
+        album VARCHAR(255) NULL
+    )");
+
+    $pdo->exec("CREATE TABLE IF NOT EXISTS project_sounds (
         id INT(30) AUTO_INCREMENT PRIMARY KEY,
         user_id INT(30) NULL,
         project_id INT(30) NULL,
         location_id INT(30) NULL,
-        file_name VARCHAR(255) NULL,
-        base_url VARCHAR(255) NULL,
-        duration VARCHAR(20) NULL,
-        artist VARCHAR(255) NULL,
-        album VARCHAR(255) NULL
+        sounds_id INT(30) NULL
     )");
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS inventory (

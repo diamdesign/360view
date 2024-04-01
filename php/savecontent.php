@@ -17,6 +17,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
         $type = $data["type"];
         $html = $data["html"];
 
+        if(isset($_SESSION['user_id'])) {
+            $user_id = $_SESSION['user_id'];
+        } else {
+             $response = ['error' => "User not logged in."];
+            exit;
+        }
+
 
         if($type === "info") {
             try {
