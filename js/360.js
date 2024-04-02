@@ -1956,6 +1956,37 @@ function start(data) {
 						}
 						saveInput(event, element);
 					});
+
+					// Open browse images
+					nextEditMC
+						.querySelector(".btn-browse-images")
+						.addEventListener("click", (event) => {
+							event.stopPropagation();
+							let parentDiv = event.target.closest(".edit-mc");
+
+							const browseHTML = `<div id="browse-files"><h2>Browse Images</h2><div id="close-browse"></div><div id="browse-container"></div></div>`;
+							document.insertAdjacentHTML("beforeend", browseHTML);
+							let getUserFiles = "../php/getfiles.php";
+							let data = { user_id: userID, type: "images" };
+
+							// Get files
+							xhrSend("POST", getUserFiles, data)
+								.then((data) => {
+									if (data) {
+										console.log(data);
+										const browseContainer =
+											document.querySelector("#browse-container");
+									} else {
+										console.log("fail");
+									}
+								})
+								.catch((error) => {
+									// Handle any errors
+									console.error("Get files (images). XHR request failed:", error);
+								});
+
+							saveInput(event, element);
+						});
 				}
 
 				// Focus the input
@@ -1999,7 +2030,10 @@ function start(data) {
 				} else if (element === "image") {
 					html = `<div class="edit-mc" ${idHTML}>
 					<div class="edit-image">
-						<input type="text" class="editimage" placeholder="https://pathtoimage.com" />
+						<div class="editimage-link">
+							<div class="btn-browse-images"></div>
+							<input type="text" class="editimage" placeholder="https://pathtoimage.com" />
+						</div>
 						<div class="dropzone" id="dropzone">
 							<div class="button-wrap">
 								<label class="button" for="imageInput">Drop/Select Image</label>

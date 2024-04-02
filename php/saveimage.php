@@ -127,15 +127,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
                     $response = ['error' => "Unsupported image type"];
                 }
 
-                // Free up memory
-                imagedestroy($image_resized);
-                imagedestroy($resized_image);
+
             }
 
             try {
                 // Insert into images table
                 $imageStatement = $pdo->prepare("
-                    INSERT INTO images (userId, fullpath) 
+                    INSERT INTO images (user_id, fullpath) 
                     VALUES (:userId, :fullpath)
                 ");
                 $imageStatement->bindParam(':userId', $userId, PDO::PARAM_INT);
@@ -152,7 +150,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
 
                 // Insert into projects_images table
                 $projectImageStatement = $pdo->prepare("
-                    INSERT INTO projects_images (user_id, project_id, location_id, images_id)
+                    INSERT INTO project_images (user_id, project_id, location_id, image_id)
                     VALUES (:userId, :projectId, :locationId, :imageId)
                 ");
                 $projectImageStatement->bindParam(':userId', $userId, PDO::PARAM_INT);
@@ -189,3 +187,7 @@ $json_response = json_encode($response);
 // Send the response as JSON
 header('Content-Type: application/json');
 echo $json_response;
+
+// Free up memory
+imagedestroy($image_resized);
+imagedestroy($resized_image);
