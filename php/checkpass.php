@@ -1,5 +1,5 @@
 <?php 
-include("db360.php");
+require("db360.php");
 
 if(isset($_POST['i'])) {
 

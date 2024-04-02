@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
         }
         */
 
-        $userId = $data["user_id"];
+        $userId = (int) $data["user_id"];
 
         /*
         if($userId !== $user_id) {
@@ -37,8 +37,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
 
         $username = $userData["username"];
 
-        $projectId = $data["projectid"];
-        $locationId = $data["locationid"];
+        $projectId = (int) $data["projectid"];
+        $locationId = (int) $data["locationid"];
         $image = $data["image"];
 
         // Check if the image data is not empty
@@ -77,6 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
 
             // Check if the image needs resizing
             if ($image_info[0] > 520) {
+               
                 // Load the image based on its MIME type
                 if ($mime_type === 'image/jpeg') {
                     $image_resized = imagecreatefromjpeg($original_path);
@@ -94,10 +95,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
                 $new_width = 520;
                 $new_height = ($image_info[1] / $image_info[0]) * $new_width;
                 $resized_image = imagescale($image_resized, $new_width, $new_height);
+        
 
                 // Save the resized image
-                $resized_path = '../profile/' . $username . '/images/' . pathinfo($original_path, PATHINFO_FILENAME) . '-low.' . pathinfo($original_path, PATHINFO_EXTENSION);
-                imagejpeg($resized_image, $resized_path);
+                $resized_path = '../profile/' . $username . '/images/' . pathinfo($original_path, PATHINFO_FILENAME) . '-low640.' . pathinfo($original_path, PATHINFO_EXTENSION);
+                // Determine the appropriate image function based on the original image's format
+                $image_function = '';
+                switch (strtolower(pathinfo($original_path, PATHINFO_EXTENSION))) {
+                    case 'jpg':
+                    case 'jpeg':
+                        $image_function = 'imagejpeg';
+                        break;
+                    case 'png':
+                        $image_function = 'imagepng';
+                        break;
+                    case 'gif':
+                        $image_function = 'imagegif';
+                        break;
+                    default:
+                        // Unsupported image type
+                        $response = ['error' => "Unsupported image type"];
+                        // Handle the error appropriately
+                        break;
+                }
+
+                // Save the resized image using the appropriate image function
+                if ($image_function) {
+                    $image_function($resized_image, $resized_path, 90);
+                } else {
+                    // Handle the error if no appropriate image function was found
+                    $response = ['error' => "Unsupported image type"];
+                }
 
                 // Free up memory
                 imagedestroy($image_resized);
@@ -112,7 +140,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
                 ");
                 $imageStatement->bindParam(':userId', $userId, PDO::PARAM_INT);
                 $imageStatement->bindParam(':fullpath', $original_path, PDO::PARAM_STR);
-                $imageStatement->execute();
+                if($imageStatement->execute()) {
+                    $response = ['success' => "Inserted into images"];
+                } else {
+                    $response = ['error' => "Failed inserting into images"];
+                }
+                
 
                 // Get the last inserted image ID
                 $imageId = $pdo->lastInsertId();
@@ -126,7 +159,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
                 $projectImageStatement->bindParam(':projectId', $projectId, PDO::PARAM_INT);
                 $projectImageStatement->bindParam(':locationId', $locationId, PDO::PARAM_INT);
                 $projectImageStatement->bindParam(':imageId', $imageId, PDO::PARAM_INT);
-                $projectImageStatement->execute();
+
+                if($projectImageStatement->execute()) {
+                    $response = ['success' => "Inserted into projects_images"];
+                } else {
+                    $response = ['error' => "Failed inserting into projects_images"];
+                
+                }
 
 
             } catch (PDOException $e) {

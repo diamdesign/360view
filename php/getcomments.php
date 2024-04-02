@@ -1,7 +1,7 @@
 <?php 
 
 require("db360.php");
-include("functions.php");
+require("functions.php");
 
 $response = [];
 

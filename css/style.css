@@ -1477,14 +1477,16 @@ input[type="range"]:focus::-moz-range-thumb {
 	height: calc(100% - 5rem);
 }
 
-#info #info-details {
+#info #info-details,
+#music {
 	display: none;
 }
 
 .show-loc,
 .show-info,
 .show-link,
-.show-embed {
+.show-embed,
+.show-music {
 	padding: 1.5rem;
 	color: white;
 	font-weight: 500;
@@ -1498,7 +1500,8 @@ input[type="range"]:focus::-moz-range-thumb {
 .show-loc:hover,
 .show-info:hover,
 .show-link:hover,
-.show-embed:hover {
+.show-embed:hover,
+.show-music:hover {
 	cursor: pointer;
 	opacity: 1;
 }

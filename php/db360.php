@@ -1,6 +1,6 @@
 <?php
 // Include the database configuration file
-include ("db360_config.php");
+require ("db360_config.php");
 
 // Start the session if it hasn't been started
 if (session_status() == PHP_SESSION_NONE) {

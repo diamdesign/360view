@@ -65,12 +65,11 @@ function imageClickHandler(event) {
 	const divId = "zoom-div-" + Date.now(); // Generate unique ID
 	newDiv.id = divId; // Assign unique ID to the new div
 	newDiv.classList.add("zoomedimage");
-
+	const src = clonedImage.src;
 	// Check if the image source starts with "../" and contains "-low" before the file extension
-	if (clonedImage.src.match(/\.\.\/.*\/.*-low\.\w+$/)) {
-		// Remove "-low" from the image source
-		clonedImage.src = clonedImage.src.replace(/-low(\.\w+)$/, "$1");
-	}
+
+	// Remove "-low" from the image source
+	clonedImage.src = src.replace(/-low640(\.\w+)$/, "$1");
 
 	clonedImage.classList.remove("zoom-image");
 	newDiv.appendChild(clonedImage);
@@ -362,23 +361,39 @@ function start(data) {
 
 	const infoLocationButton = document.querySelector(".show-loc");
 	const infoDetailsButton = document.querySelector(".show-info");
+	const musicListButton = document.querySelector(".show-music");
 	const infoLocationContainer = document.querySelector("#info-location");
 	const infoDetailsContainer = document.querySelector("#info-details");
+	const musicListContainer = document.querySelector("#music");
 
 	infoLocationButton.addEventListener("click", () => {
 		infoLocationContainer.style.display = "block";
 		document.querySelector("#info-location").scrollTop = 0;
 		infoDetailsContainer.style.display = "none";
-		infoLocationButton.classList.add("showactive");
+		musicListContainer.style.display = "none";
 		infoDetailsButton.classList.remove("showactive");
+		musicListButton.classList.remove("showactive");
+		infoLocationButton.classList.add("showactive");
 	});
 
 	infoDetailsButton.addEventListener("click", () => {
 		infoDetailsContainer.style.display = "block";
 		document.querySelector("#info-details").scrollTop = 0;
 		infoLocationContainer.style.display = "none";
+		musicListContainer.style.display = "none";
 		infoLocationButton.classList.remove("showactive");
+		musicListButton.classList.remove("showactive");
 		infoDetailsButton.classList.add("showactive");
+	});
+
+	musicListButton.addEventListener("click", () => {
+		musicListContainer.style.display = "block";
+		document.querySelector("#info-details").scrollTop = 0;
+		infoLocationContainer.style.display = "none";
+		infoDetailsContainer.style.display = "none";
+		infoLocationButton.classList.remove("showactive");
+		infoDetailsButton.classList.remove("showactive");
+		musicListButton.classList.add("showactive");
 	});
 
 	const ShareLinkButton = document.querySelector(".show-link");
@@ -619,9 +634,12 @@ function start(data) {
 							if (data.error) {
 								console.error("Save image. XHR response ERROR:", data.error);
 							}
+							if (data.success) {
+								console.log("Save image. Success", data.success);
+							}
 							console.log("XHR sent...");
 							console.log(data);
-							let newPath = data.path.replace(/(\.[^.]+)$/, "-low$1");
+							let newPath = data.path.replace(/(\.[^.]+)$/, "-low640$1");
 							const img = new Image();
 							img.src = newPath;
 							img.style.maxWidth = "100%";

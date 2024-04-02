@@ -10,10 +10,14 @@ export const rootHTML = `<div id="outside">
 			</div>
 			<div id="info">
 				<div class="show-loc showactive">Information</div>
+				<div class="show-music">Sounds</div>
 				<div class="show-info">Details</div>
+				
 				<div id="closeinfobtn"></div>
 				<div id="resizer"></div>
 				<div id="info-location" class="container"></div>
+				<div id="music" class="container">
+				</div>
 				<div id="info-details" class="container">
 					<div class="user-details">
 						<a href="#" class="thumbnail" target="_blank">
@@ -32,6 +36,7 @@ export const rootHTML = `<div id="outside">
 					<h2 class="title"></h2>
 					<p class="description"></p>
 				</div>
+				
 			</div>
 
 			<div id="comments"></div>

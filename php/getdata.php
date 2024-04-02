@@ -1,6 +1,6 @@
 <?php 
-include("db360.php");
-include("functions.php");
+require("db360.php");
+require("functions.php");
 
 // Initialize an array to store messages and results
 $response = [];
