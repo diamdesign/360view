@@ -2606,6 +2606,7 @@ input[type="range"]:focus::-moz-range-thumb {
 .editimage-link:after {
 	content: "";
 	position: absolute;
+	pointer-events: none;
 	top: 0;
 	right: 0;
 	z-index: 0;
@@ -2767,7 +2768,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	flex-wrap: wrap;
 	flex-direction: row;
 	padding: 2rem;
-	gap: 1rem;
+	gap: 0.5rem;
 	overflow-y: auto;
 	max-height: calc(100% - 5rem);
 	scrollbar-width: thin;
@@ -2786,11 +2787,13 @@ input[type="range"]:focus::-moz-range-thumb {
 	width: 20%;
 	border-radius: 0.4rem;
 	overflow: hidden;
+	position: relative;
 }
 
 .browse-item:hover {
 	cursor: pointer;
 	outline: 4px solid white;
+	z-index: 20;
 }
 
 .browse-item .image {
@@ -2801,4 +2804,157 @@ input[type="range"]:focus::-moz-range-thumb {
 	object-fit: cover;
 	width: 100%;
 	height: 100%;
+}
+
+.browse-filter {
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	padding-left: 2rem;
+	padding-right: 2rem;
+	margin-top: 1rem;
+	position: relative;
+}
+
+.browse-filter div {
+	border-radius: 0.3rem;
+	color: white;
+	height: 1.7rem;
+	padding: 0.3rem 1rem;
+	margin-right: 0.4rem;
+	background-color: rgba(255, 255, 255, 0.2);
+	font-size: 0.7rem !important;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
+.browse-filter div:hover,
+.browse-filter .active {
+	background-color: black;
+	filter: invert(1);
+	cursor: pointer;
+	animation: outlinepush 0.8s ease-out 1 forwards;
+}
+
+.browse-grid {
+	position: absolute;
+	right: 3.3rem;
+}
+
+.browse-grid:after {
+	content: "";
+	width: 100%;
+	height: 100%;
+	filter: invert(1);
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: block;
+	background-image: url("../img/icon-grid.svg");
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 1.1rem;
+}
+
+.browse-list:after {
+	content: "";
+	width: 100%;
+	height: 100%;
+	filter: invert(1);
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: block;
+	background-image: url("../img/icon-list.svg");
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 1.1rem;
+}
+
+.browse-list {
+	position: absolute;
+	right: 1rem;
+}
+
+.browse-item:hover .remove-fileitem {
+	display: block;
+}
+
+.remove-fileitem {
+	position: absolute;
+	z-index: 10;
+	top: 0.5rem;
+	right: 0.5rem;
+	width: 2rem;
+	height: 2rem;
+	display: none;
+	border-radius: 0.3rem;
+	background: rgba(255, 255, 255, 0.5);
+}
+.remove-fileitem:after {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	filter: invert(1);
+	height: 100%;
+	background-image: url("../img/icon-delete.svg");
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 1.2rem;
+}
+
+.remove-fileitem:hover {
+	background: black;
+	filter: invert(1);
+	cursor: pointer;
+	animation: outlinepush 0.8s ease-out 1 forwards;
+}
+
+.browse-filename,
+.browse-uploaded {
+	display: none;
+}
+
+.browselist {
+	flex-direction: column;
+}
+
+.browselist #browse-container {
+	gap: 4px;
+}
+
+.browselist .browse-item {
+	width: 100%;
+	height: 3rem;
+	display: flex;
+	background: rgba(0, 0, 0, 0.4);
+}
+
+.browselist .browse-item .image {
+	width: 90px;
+	min-height: 100%;
+}
+
+.browselist .browse-filename,
+.browselist .browse-uploaded {
+	display: block;
+	color: white;
+	font-size: 0.75rem;
+	line-height: 3rem;
+	margin-left: 1rem;
+	font-weight: 600;
+}
+
+.browselist .browse-uploaded {
+	position: absolute;
+	right: 3.5rem;
+	font-weight: 500;
+	opacity: 0.5;
+}
+
+.browse-item:hover img {
+	animation: flash 0.3s ease-in-out 1 forwards;
 }

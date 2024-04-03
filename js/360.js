@@ -1857,7 +1857,18 @@ function start(data) {
 			// Open file browser function
 			function openFileBrowser(event, browseType, parentDiv) {
 				event.stopPropagation();
-				const browseHTML = `<div id="browse-files"><h2>Select ${browseType}</h2><div id="close-browse"></div><div id="browse-container"></div></div>`;
+				const browseHTML = `<div id="browse-files">
+					<h2>Select ${browseType}</h2>
+					<div id="close-browse"></div>
+					<div class="browse-filter">
+						<div class="browse-showall active">Show all</div>
+						<div class="browse-showproject">Show this project</div>
+						<div class="browse-showlocation">Show this location</div>
+						<div class="browse-grid active"></div>
+						<div class="browse-list"></div>
+					</div>
+					<div id="browse-container"></div>
+				</div>`;
 				rootElement.insertAdjacentHTML("beforeend", browseHTML);
 				let getUserFiles = "../php/getfiles.php";
 				let endpoint = `id=${userID}&type=${browseType}`;
@@ -1877,7 +1888,14 @@ function start(data) {
 							if (browseType === "image") {
 								data.forEach((img) => {
 									let fullpath = img.fullpath.replace(/(\.[^.]+)$/, "-low640$1");
-									browserListHTML += `<div class="browse-item"><div class="remove-fileitem"></div><div class="image zoom-image"><img src="${fullpath}" alt="" data-id="${img.image_id} data-projectid="${img.project_id} data-locationid="${img.location_id}" /></div></div>`;
+									browserListHTML += `<div class="browse-item" data-browseproject="${img.project_id}" data-browselocation="${img.location_id}">
+										<div class="remove-fileitem"></div>
+										<div class="image zoom-image">
+											<img src="${fullpath}" alt="" data-id="${img.image_id}"  />
+										</div>
+										<div class="browse-filename">${img.file_name}</div>
+										<div class="browse-uploaded">${img.uploaded}</div>
+									</div>`;
 								});
 							} else if (browseType === "video") {
 								data.forEach((video) => {
@@ -1891,13 +1909,67 @@ function start(data) {
 
 							browseContainer.insertAdjacentHTML("afterBegin", browserListHTML);
 
+							const browseFiles = document.querySelector("#browse-files");
 							const allBrowseItems = document.querySelectorAll(".browse-item");
+							const showAll = document.querySelector(".browse-showall");
+							const showProject = document.querySelector(".browse-showproject");
+							const showLocation = document.querySelector(".browse-showlocation");
+							const showGrid = document.querySelector(".browse-grid");
+							const showList = document.querySelector(".browse-list");
+
+							showGrid.addEventListener("click", () => {
+								showGrid.classList.add("active");
+								showList.classList.remove("active");
+								browseFiles.classList.remove("browselist");
+							});
+							showList.addEventListener("click", () => {
+								showGrid.classList.remove("active");
+								showList.classList.add("active");
+								browseFiles.classList.add("browselist");
+							});
+							showAll.addEventListener("click", () => {
+								showAll.classList.add("active");
+								showLocation.classList.remove("active");
+								showProject.classList.remove("active");
+								allBrowseItems.forEach((item) => {
+									item.style.display = "flex";
+								});
+							});
+							showProject.addEventListener("click", () => {
+								showProject.classList.add("active");
+								showAll.classList.remove("active");
+								showLocation.classList.remove("active");
+								allBrowseItems.forEach((item) => {
+									item.style.display = "flex";
+									let dataset = parseInt(item.getAttribute("data-browseproject"));
+									if (dataset !== projectID) {
+										item.style.display = "none";
+									}
+								});
+							});
+							showLocation.addEventListener("click", () => {
+								showLocation.classList.add("active");
+								showAll.classList.remove("active");
+								showProject.classList.remove("active");
+								allBrowseItems.forEach((item) => {
+									item.style.display = "flex";
+									let dataset = parseInt(
+										item.getAttribute("data-browselocation")
+									);
+									if (dataset !== locationID) {
+										item.style.display = "none";
+									}
+								});
+							});
 
 							// Selecting image from browser
 							if (browseType === "image") {
 								allBrowseItems.forEach((item) => {
 									item.addEventListener("click", (e) => {
-										let imgSource = e.target.getAttribute("src");
+										let imgSource = e.target
+											.closest(".browse-item")
+											.querySelector("img")
+											.getAttribute("src");
 										parentDiv.querySelector(".editimage").value = imgSource;
 										document.querySelector("#browse-files").remove();
 									});

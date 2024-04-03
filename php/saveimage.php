@@ -149,10 +149,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
             try {
                 // Insert into images table
                 $imageStatement = $pdo->prepare("
-                    INSERT INTO images (user_id, fullpath) 
-                    VALUES (:userId, :fullpath)
+                    INSERT INTO images (user_id, file_name,fullpath) 
+                    VALUES (:userId, :filename, :fullpath)
                 ");
                 $imageStatement->bindParam(':userId', $userId, PDO::PARAM_INT);
+                $imageStatement->bindParam(':filename', $filename, PDO::PARAM_STR);
                 $imageStatement->bindParam(':fullpath', $fullpath, PDO::PARAM_STR);
                 if($imageStatement->execute()) {
                     $response = ['success' => "Inserted into images"];

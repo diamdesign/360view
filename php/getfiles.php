@@ -19,7 +19,7 @@ if(isset($_POST['id']) && isset($_POST['type']) || isset($_GET['id']) && isset($
 
     if($fileType === "image") {
         $stmt = $pdo->prepare("
-            SELECT pi.*, i.fullpath
+            SELECT pi.*, i.*
             FROM project_images pi
             LEFT JOIN images i ON pi.image_id = i.id
             WHERE pi.user_id = :user_id
