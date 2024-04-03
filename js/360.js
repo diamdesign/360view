@@ -585,6 +585,11 @@ function start(data) {
 			var imageInput = imageInputEl.value.trim();
 			var imageFileInputEl = parent.querySelector(".new-image img");
 			var imageFileName = imageFileInputEl.getAttribute("data-filename");
+			// Replace spaces with hyphens
+			imageFileName = imageFileName.replace(/\s+/g, "-");
+
+			// Remove all characters that are not letters, numbers, hyphens, or underscores
+			imageFileName = imageFileName.replace(/[^\w-]/g, "");
 			var imageFileInput = imageFileInputEl.src;
 
 			console.log(imageFileInput);
@@ -1849,6 +1854,65 @@ function start(data) {
 				saveInput(e);
 			}
 
+			// Open file browser function
+			function openFileBrowser(event, browseType, parentDiv) {
+				event.stopPropagation();
+				const browseHTML = `<div id="browse-files"><h2>Select ${browseType}</h2><div id="close-browse"></div><div id="browse-container"></div></div>`;
+				document.insertAdjacentHTML("beforeend", browseHTML);
+				let getUserFiles = "../php/getfiles.php";
+				let endpoint = `id=${userID}&type=${browseType}`;
+
+				document.querySelector("#close-browse").addEventListener("click", () => {
+					document.querySelector("#browse-files").remove();
+				});
+
+				// Get files
+				xhrSend("POST", getUserFiles, endpoint)
+					.then((data) => {
+						if (data) {
+							console.log(data);
+							const browseContainer = document.querySelector("#browse-container");
+
+							let browserListHTML = ``;
+							if (browseType === "image") {
+								data.forEach((img) => {
+									browserListHTML += `<div class="browse-item"><div class="image zoom-image"><img src="${img.source}" alt="" /></div></div>`;
+								});
+							} else if (browseType === "video") {
+								data.forEach((video) => {
+									browserListHTML += `<div class="browse-item"><span class="duration">${video.duration}</span><img src="${video.thumbnail}" alt="" data-source="${video.source}" /></div>`;
+								});
+							} else if (browseType === "sounds") {
+								data.forEach((sound) => {
+									browserListHTML += `<div class="browse-item"><span class="duration">${sound.duration}</span><img src="${sound.thumbnail}" alt="" data-source="${sound.source}" /></div>`;
+								});
+							}
+
+							browserListHTML.insertAdjacentHTML("afterstart", browseContainer);
+
+							const allBrowseItems = document.querySelectorAll(".browse-item");
+
+							// Selecting image from browser
+							if (browseType === "image") {
+								allBrowseItems.forEach((item) => {
+									item.addEventListener("click", (e) => {
+										let imgSource = e.target.getAttribute("src");
+										parentDiv.querySelector(".editimage").value = imgSource;
+									});
+								});
+							} else if (browseType === "video") {
+							} else if (browseType === "sound") {
+							}
+						} else {
+							console.log("fail");
+						}
+					})
+					.catch((error) => {
+						// Handle any errors
+						console.error("Get files (images). XHR request failed:", error);
+					});
+			}
+
 			function addSaveEvent(event, element) {
 				const editMC = event.target.closest(".edit-mc");
 				let nextEditMC = editMC.nextElementSibling;
@@ -1967,55 +2031,7 @@ function start(data) {
 							event.stopPropagation();
 							let parentDiv = event.target.closest(".edit-mc");
 
-							function openFileBrowser(event, browseType) {
-								const browseHTML = `<div id="browse-files"><h2>Select ${browseType}</h2><div id="close-browse"></div><div id="browse-container"></div></div>`;
-								document.insertAdjacentHTML("beforeend", browseHTML);
-								let getUserFiles = "../php/getfiles.php";
-								let data = { user_id: userID, type: browseType };
-
-								// Get files
-								xhrSend("POST", getUserFiles, data)
-									.then((data) => {
-										if (data) {
-											console.log(data);
-											const browseContainer =
-												document.querySelector("#browse-container");
-
-											let browserListHTML = ``;
-											if (browseType === "image") {
-												data.forEach((img) => {
-													browserListHTML += `<div class="browse-item"><div class="image zoom-image"><img src="${img.source}" alt="" /></div></div>`;
-												});
-											} else if (browseType === "video") {
-												data.forEach((video) => {
-													browserListHTML += `<div class="browse-item"><span class="duration">${video.duration}</span><img src="${video.thumbnail}" alt="" data-source="${video.source}" /></div>`;
-												});
-											} else if (browseType === "sounds") {
-												data.forEach((sound) => {
-													browserListHTML += `<div class="browse-item"><span class="duration">${sound.duration}</span><img src="${sound.thumbnail}" alt="" data-source="${sound.source}" /></div>`;
-												});
-											}
-
-											browserListHTML.insertAdjacentHTML(
-												"afterstart",
-												browseContainer
-											);
-										} else {
-											console.log("fail");
-										}
-									})
-									.catch((error) => {
-										// Handle any errors
-										console.error(
-											"Get files (images). XHR request failed:",
-											error
-										);
-									});
-
-								saveInput(event, element);
-							}
-
-							openFileBrowser(event, "image");
+							openFileBrowser(event, "image", parentDiv);
 						});
 				}
 
