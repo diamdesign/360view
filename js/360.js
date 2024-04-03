@@ -584,6 +584,7 @@ function start(data) {
 			var imageInputEl = parent.querySelector(".editimage");
 			var imageInput = imageInputEl.value.trim();
 			var imageFileInputEl = parent.querySelector(".new-image img");
+			var imageFileName = imageFileInputEl.getAttribute("data-filename");
 			var imageFileInput = imageFileInputEl.src;
 
 			console.log(imageFileInput);
@@ -621,6 +622,7 @@ function start(data) {
 						projectid: projectID,
 						locationid: locationID,
 						image: reader.result,
+						filename: imageFileName,
 					};
 
 					var jsonString = JSON.stringify(jsonData);
@@ -1923,6 +1925,7 @@ function start(data) {
 									const img = new Image();
 									img.src = reader.result;
 									img.style.maxWidth = "100%";
+									img.setAttribute("data-filename", file.name);
 
 									const deleteButton = document.createElement("button");
 
@@ -1964,28 +1967,55 @@ function start(data) {
 							event.stopPropagation();
 							let parentDiv = event.target.closest(".edit-mc");
 
-							const browseHTML = `<div id="browse-files"><h2>Browse Images</h2><div id="close-browse"></div><div id="browse-container"></div></div>`;
-							document.insertAdjacentHTML("beforeend", browseHTML);
-							let getUserFiles = "../php/getfiles.php";
-							let data = { user_id: userID, type: "images" };
+							function openFileBrowser(event, browseType) {
+								const browseHTML = `<div id="browse-files"><h2>Select ${browseType}</h2><div id="close-browse"></div><div id="browse-container"></div></div>`;
+								document.insertAdjacentHTML("beforeend", browseHTML);
+								let getUserFiles = "../php/getfiles.php";
+								let data = { user_id: userID, type: browseType };
 
-							// Get files
-							xhrSend("POST", getUserFiles, data)
-								.then((data) => {
-									if (data) {
-										console.log(data);
-										const browseContainer =
-											document.querySelector("#browse-container");
-									} else {
-										console.log("fail");
-									}
-								})
-								.catch((error) => {
-									// Handle any errors
-									console.error("Get files (images). XHR request failed:", error);
-								});
+								// Get files
+								xhrSend("POST", getUserFiles, data)
+									.then((data) => {
+										if (data) {
+											console.log(data);
+											const browseContainer =
+												document.querySelector("#browse-container");
 
-							saveInput(event, element);
+											let browserListHTML = ``;
+											if (browseType === "image") {
+												data.forEach((img) => {
+													browserListHTML += `<div class="browse-item"><div class="image zoom-image"><img src="${img.source}" alt="" /></div></div>`;
+												});
+											} else if (browseType === "video") {
+												data.forEach((video) => {
+													browserListHTML += `<div class="browse-item"><span class="duration">${video.duration}</span><img src="${video.thumbnail}" alt="" data-source="${video.source}" /></div>`;
+												});
+											} else if (browseType === "sounds") {
+												data.forEach((sound) => {
+													browserListHTML += `<div class="browse-item"><span class="duration">${sound.duration}</span><img src="${sound.thumbnail}" alt="" data-source="${sound.source}" /></div>`;
+												});
+											}
+
+											browserListHTML.insertAdjacentHTML(
+												"afterstart",
+												browseContainer
+											);
+										} else {
+											console.log("fail");
+										}
+									})
+									.catch((error) => {
+										// Handle any errors
+										console.error(
+											"Get files (images). XHR request failed:",
+											error
+										);
+									});
+
+								saveInput(event, element);
+							}
+
+							openFileBrowser(event, "image");
 						});
 				}
 
@@ -2036,7 +2066,7 @@ function start(data) {
 						</div>
 						<div class="dropzone" id="dropzone">
 							<div class="button-wrap">
-								<label class="button" for="imageInput">Drop/Select Image</label>
+								<label class="button" for="imageInput">Drop/Browse Image</label>
 								<input type="file" id="imageInput" class="imageInput" accept="image/*">
 							</div>
 						</div>

@@ -39,6 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
 
         $projectId = (int) $data["projectid"];
         $locationId = (int) $data["locationid"];
+        $filename = $data['filename'];
         $image = $data["image"];
 
         // Check if the image data is not empty
@@ -66,11 +67,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
                     break;
             }
 
+            /*
             // Generate a unique filename with the correct extension
             do {
                 $filename = uniqid() . '.' . $extension;
                 $original_path = '../profile/' . $username . '/images/' . $filename;
             } while (file_exists($original_path));
+
+            */
+
+            // Check if the filename already exists
+            $original_path = '../profile/' . $username . '/images/' . $filename;
+            $counter = 1;
+            while (file_exists($original_path)) {
+                // Append a number to the filename
+                $filename = $data['filename'] . '_' . $counter;
+                $original_path = '../profile/' . $username . '/images/' . $filename . '.' . $extension;
+                $counter++;
+            }
 
             // Save the original image
             file_put_contents($original_path, file_get_contents($image));
