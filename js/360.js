@@ -584,18 +584,10 @@ function start(data) {
 			var imageInputEl = parent.querySelector(".editimage");
 			var imageInput = imageInputEl.value.trim();
 			var imageFileInputEl = parent.querySelector(".new-image img");
-			var imageFileName = imageFileInputEl.getAttribute("data-filename");
-			// Replace spaces with hyphens
-			imageFileName = imageFileName.replace(/\s+/g, "-");
-
-			// Remove all characters that are not letters, numbers, hyphens, or underscores
-			imageFileName = imageFileName.replace(/[^\w-]/g, "");
-			var imageFileInput = imageFileInputEl.src;
-
-			console.log(imageFileInput);
 
 			if (imageInput === "" && !imageFileInput) {
 				console.log("Empty fields");
+
 				let parent = editMC.parentNode;
 
 				let all = parent.querySelectorAll(".edit-mc");
@@ -612,6 +604,14 @@ function start(data) {
 			let parentDivEl = editMC.querySelector(".edit-image");
 
 			if (imageFileInput) {
+				var imageFileName = imageFileInputEl.getAttribute("data-filename");
+				// Replace spaces with hyphens
+				imageFileName = imageFileName.replace(/\s+/g, "-");
+
+				// Remove all characters that are not letters, numbers, hyphens, or underscores
+				imageFileName = imageFileName.replace(/[^\w-]/g, "");
+				var imageFileInput = imageFileInputEl.src;
+				console.log(imageFileInput);
 				var blob = dataURItoBlob(imageFileInput);
 				console.log("Image found");
 				const reader = new FileReader();
@@ -1858,7 +1858,7 @@ function start(data) {
 			function openFileBrowser(event, browseType, parentDiv) {
 				event.stopPropagation();
 				const browseHTML = `<div id="browse-files"><h2>Select ${browseType}</h2><div id="close-browse"></div><div id="browse-container"></div></div>`;
-				document.insertAdjacentHTML("beforeend", browseHTML);
+				rootElement.insertAdjacentHTML("beforeend", browseHTML);
 				let getUserFiles = "../php/getfiles.php";
 				let endpoint = `id=${userID}&type=${browseType}`;
 
@@ -1876,7 +1876,8 @@ function start(data) {
 							let browserListHTML = ``;
 							if (browseType === "image") {
 								data.forEach((img) => {
-									browserListHTML += `<div class="browse-item"><div class="image zoom-image"><img src="${img.source}" alt="" /></div></div>`;
+									let fullpath = img.fullpath.replace(/(\.[^.]+)$/, "-low640$1");
+									browserListHTML += `<div class="browse-item"><div class="remove-fileitem"></div><div class="image zoom-image"><img src="${fullpath}" alt="" data-id="${img.image_id} data-projectid="${img.project_id} data-locationid="${img.location_id}" /></div></div>`;
 								});
 							} else if (browseType === "video") {
 								data.forEach((video) => {
@@ -1888,7 +1889,7 @@ function start(data) {
 								});
 							}
 
-							browserListHTML.insertAdjacentHTML("afterstart", browseContainer);
+							browseContainer.insertAdjacentHTML("afterBegin", browserListHTML);
 
 							const allBrowseItems = document.querySelectorAll(".browse-item");
 
@@ -1898,6 +1899,7 @@ function start(data) {
 									item.addEventListener("click", (e) => {
 										let imgSource = e.target.getAttribute("src");
 										parentDiv.querySelector(".editimage").value = imgSource;
+										document.querySelector("#browse-files").remove();
 									});
 								});
 							} else if (browseType === "video") {
@@ -2068,16 +2070,16 @@ function start(data) {
 				}
 
 				if (element === "h1") {
-					html = `<div class="edit-mc" ${idHTML}><h1><textarea class="editheader" type="text" placeholder="Header 1"></textarea></h1></div>`;
+					html = `<div class="edit-mc" data-element="h1" ${idHTML}><h1><textarea class="editheader" type="text" placeholder="Header 1"></textarea></h1></div>`;
 				} else if (element === "h2") {
-					html = `<div class="edit-mc" ${idHTML}><h2><textarea class="editheader2" type="text" placeholder="Header 2"></textarea></h2></div>`;
+					html = `<div class="edit-mc" data-element="h2" ${idHTML}><h2><textarea class="editheader2" type="text" placeholder="Header 2"></textarea></h2></div>`;
 				} else if (element === "p") {
-					html = `<div class="edit-mc" ${idHTML}><p><textarea class="editp" type="text" placeholder="Write text here..."></textarea></p></div>`;
+					html = `<div class="edit-mc" data-element="p" ${idHTML}><p><textarea class="editp" type="text" placeholder="Write text here..."></textarea></p></div>`;
 				} else if (element === "image") {
-					html = `<div class="edit-mc" ${idHTML}>
+					html = `<div class="edit-mc" data-element="image" ${idHTML}>
 					<div class="edit-image">
 						<div class="editimage-link">
-							<div class="btn-browse-images"></div>
+							<div class="btn-browse-images">Browse</div>
 							<input type="text" class="editimage" placeholder="https://pathtoimage.com" />
 						</div>
 						<div class="dropzone" id="dropzone">
@@ -2090,11 +2092,11 @@ function start(data) {
 					</div>
 				</div>`;
 				} else if (element === "ul") {
-					html = `<div class="edit-mc" ${idHTML}><p><span>"Enclose each list item within curly braces. For example: {This is line one}"</span><textarea class="editul" type="text" placeholder="Example: {This is line one}"></textarea></p></div>`;
+					html = `<div class="edit-mc" data-element="ul" ${idHTML}><p><span>"Enclose each list item within curly braces. For example: {This is line one}"</span><textarea class="editul" type="text" placeholder="Example: {This is line one}"></textarea></p></div>`;
 				} else if (element === "button") {
-					html = `<div class="edit-mc" ${idHTML}><div><span>Enter an external link beginning with 'http' or type the location's order number to navigate within your project.</span><input class="editbutton addbuttonlink" type="text" placeholder="https://example.com/externallink" /><input class="editbutton addbuttontext" type="text" placeholder="Button text" /><div class="button addbuttonsave">Save</div></div></div>`;
+					html = `<div class="edit-mc" data-element="button" ${idHTML}><div><span>Enter an external link beginning with 'http' or type the location's order number to navigate within your project.</span><input class="editbutton addbuttonlink" type="text" placeholder="https://example.com/externallink" /><input class="editbutton addbuttontext" type="text" placeholder="Button text" /><div class="button addbuttonsave">Save</div></div></div>`;
 				} else if (element === "youtube") {
-					html = `<div class="edit-mc" ${idHTML}><div><span>Paste your youtube embed code into the textarea.</span><textarea class="edityoutube" type="text" placeholder="Paste your Youtube embed code here..."></textarea></div></div>`;
+					html = `<div class="edit-mc" data-element="youtube" ${idHTML}><div><span>Paste your youtube embed code into the textarea.</span><textarea class="edityoutube" type="text" placeholder="Paste your Youtube embed code here..."></textarea></div></div>`;
 				}
 
 				editMC.insertAdjacentHTML("afterend", html);
@@ -2178,6 +2180,9 @@ function start(data) {
 			});
 			document.querySelectorAll(".btn-add-youtube").forEach((item) => {
 				item.addEventListener("click", (e) => addElement(e, "youtube"));
+			});
+			document.querySelectorAll(".btn-content-edit").forEach((item) => {
+				item.addEventListener("click", (e) => editElement(e));
 			});
 			document.querySelectorAll(".btn-remove").forEach((item) => {
 				item.addEventListener("click", (e) => removeElement(e));
@@ -2311,7 +2316,8 @@ function start(data) {
 				target.closest(".marker-container") !== null ||
 				target.closest("#comments") !== null ||
 				target.closest("#music") !== null ||
-				target.closest("#share") !== null
+				target.closest("#share") !== null ||
+				target.closest("#browse-files") !== null
 			);
 		} else {
 			// If event is undefined or null, return false

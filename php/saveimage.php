@@ -89,6 +89,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
             // Save the original image
             file_put_contents($original_path, file_get_contents($image));
 
+            $fullpath = '../profile/' . $username . '/images/' . $filename . '.' . $extension;
+
             // Check if the image needs resizing
             if ($image_info[0] > 520) {
                
@@ -151,7 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
                     VALUES (:userId, :fullpath)
                 ");
                 $imageStatement->bindParam(':userId', $userId, PDO::PARAM_INT);
-                $imageStatement->bindParam(':fullpath', $original_path, PDO::PARAM_STR);
+                $imageStatement->bindParam(':fullpath', $fullpath, PDO::PARAM_STR);
                 if($imageStatement->execute()) {
                     $response = ['success' => "Inserted into images"];
                 } else {
