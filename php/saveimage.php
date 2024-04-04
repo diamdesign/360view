@@ -42,13 +42,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
         $filename = $data['filename'];
         $image = $data["image"];
 
+        // Fix the filename to remove special characters and spaces
+        $filename = preg_replace('/[^\w.-]/', '', $filename);
+
         // Check if the image data is not empty
         if (!empty($image)) {
             // Get the MIME type of the image
             $image_info = getimagesize($image);
             $mime_type = $image_info['mime'];
 
-           // Determine the file extension based on the image type
+            // Determine the file extension based on the image type
             $extension = '';
             switch ($mime_type) {
                 case 'image/jpeg':
@@ -67,21 +70,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
                     break;
             }
 
-            /*
-            // Generate a unique filename with the correct extension
-            do {
-                $filename = uniqid() . '.' . $extension;
-                $original_path = '../profile/' . $username . '/images/' . $filename;
-            } while (file_exists($original_path));
-
-            */
-
             // Check if the filename already exists
             $original_path = '../profile/' . $username . '/images/' . $filename;
             $counter = 1;
+
+            // Add the file extension to the filename
+            $filename_with_extension = $filename . '.' . $extension;
+
             while (file_exists($original_path)) {
                 // Append a number to the filename
-                $filename = $data['filename'] . '_' . $counter;
+                $filename = pathinfo($filename_with_extension, PATHINFO_FILENAME) . '_' . $counter;
                 $original_path = '../profile/' . $username . '/images/' . $filename . '.' . $extension;
                 $counter++;
             }
@@ -89,23 +87,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
             // Save the original image
             file_put_contents($original_path, file_get_contents($image));
 
-            $fullpath = '../profile/' . $username . '/images/' . $filename . '.' . $extension;
+            $fullpath = '../profile/' . $username . '/images/' . $filename_with_extension;
 
-            // Check if the image needs resizing
-            if ($image_info[0] > 520) {
-               
-                // Load the image based on its MIME type
-                if ($mime_type === 'image/jpeg') {
-                    $image_resized = imagecreatefromjpeg($original_path);
-                } elseif ($mime_type === 'image/png') {
-                    $image_resized = imagecreatefrompng($original_path);
-                } elseif ($mime_type === 'image/gif') {
-                    $image_resized = imagecreatefromgif($original_path);
-                } else {
+
+            $image_resized = null;
+            $resized_image = null;
+
+            // Load the image based on its MIME type
+            if ($mime_type === 'image/jpeg') {
+                $image_resized = imagecreatefromjpeg($original_path);
+            } elseif ($mime_type === 'image/png') {
+                $image_resized = imagecreatefrompng($original_path);
+            } elseif ($mime_type === 'image/gif') {
+                $image_resized = imagecreatefromgif($original_path);
+            } else {
+                // Unsupported image type
+                $response = ['error' => "Unsupported image type"];
+                // Handle the error appropriately
+            }
+
+            // Determine the appropriate image function based on the original image's format
+            $image_function = '';
+            switch ($extension) {
+                case 'jpg':
+                    $image_function = 'imagejpeg';
+                    break;
+                case 'png':
+                    $image_function = 'imagepng';
+                    break;
+                case 'gif':
+                    $image_function = 'imagegif';
+                    break;
+                default:
                     // Unsupported image type
                     $response = ['error' => "Unsupported image type"];
                     // Handle the error appropriately
-                }
+                    break;
+            }
+
+            // Check if the image needs resizing
+            if ($image_info[0] > 520) {
+      
 
                 // Resize the image to a width of 520px
                 $new_width = 520;
@@ -114,26 +136,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
         
 
                 // Save the resized image
-                $resized_path = '../profile/' . $username . '/images/' . pathinfo($original_path, PATHINFO_FILENAME) . '-low640.' . pathinfo($original_path, PATHINFO_EXTENSION);
-                // Determine the appropriate image function based on the original image's format
-                $image_function = '';
-                switch (strtolower(pathinfo($original_path, PATHINFO_EXTENSION))) {
-                    case 'jpg':
-                    case 'jpeg':
-                        $image_function = 'imagejpeg';
-                        break;
-                    case 'png':
-                        $image_function = 'imagepng';
-                        break;
-                    case 'gif':
-                        $image_function = 'imagegif';
-                        break;
-                    default:
-                        // Unsupported image type
-                        $response = ['error' => "Unsupported image type"];
-                        // Handle the error appropriately
-                        break;
-                }
+                $resized_path = '../profile/' . $username . '/images/' . pathinfo($original_path, PATHINFO_FILENAME) . '-low640.' . $extension;
 
                 // Save the resized image using the appropriate image function
                 if ($image_function) {
@@ -144,6 +147,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
                 }
 
 
+            } else {
+                    // If the image doesn't need resizing, set $resized_image to null
+                    $copyimage = '../profile/' . $username . '/images/' . pathinfo($original_path, PATHINFO_FILENAME) . '-low640.' . $extension;
+                    
+                    // Copy the original image to the destination path
+                    if (!copy($original_path, $copyimage)) {
+                        // Handle the error if copying fails
+                        $response = ['error' => "Failed to copy the image"];
+                    }
             }
 
             try {
@@ -205,6 +217,11 @@ $json_response = json_encode($response);
 header('Content-Type: application/json');
 echo $json_response;
 
-// Free up memory
-imagedestroy($image_resized);
-imagedestroy($resized_image);
+// Perform cleanup if $image_resized is not null
+if ($image_resized !== null) {
+    imagedestroy($image_resized);
+}
+// Perform cleanup if $resized_image is not null
+if ($resized_image !== null) {
+    imagedestroy($resized_image);
+}

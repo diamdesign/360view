@@ -585,7 +585,7 @@ function start(data) {
 			var imageInput = imageInputEl.value.trim();
 			var imageFileInputEl = parent.querySelector(".new-image img");
 
-			if (imageInput === "" && !imageFileInput) {
+			if (imageInput === "" && !imageFileInputEl) {
 				console.log("Empty fields");
 
 				let parent = editMC.parentNode;
@@ -603,13 +603,11 @@ function start(data) {
 			}
 			let parentDivEl = editMC.querySelector(".edit-image");
 
-			if (imageFileInput) {
+			if (imageFileInputEl) {
 				var imageFileName = imageFileInputEl.getAttribute("data-filename");
-				// Replace spaces with hyphens
-				imageFileName = imageFileName.replace(/\s+/g, "-");
 
 				// Remove all characters that are not letters, numbers, hyphens, or underscores
-				imageFileName = imageFileName.replace(/[^\w-]/g, "");
+				imageFileName = imageFileName.replace(/\.[^.]+$/, "");
 				var imageFileInput = imageFileInputEl.src;
 				console.log(imageFileInput);
 				var blob = dataURItoBlob(imageFileInput);
@@ -1962,16 +1960,61 @@ function start(data) {
 								});
 							});
 
+							const allRemoveItems = document.querySelectorAll(".remove-fileitem");
+
 							// Selecting image from browser
 							if (browseType === "image") {
 								allBrowseItems.forEach((item) => {
 									item.addEventListener("click", (e) => {
+										e.stopPropagation();
 										let imgSource = e.target
 											.closest(".browse-item")
 											.querySelector("img")
 											.getAttribute("src");
 										parentDiv.querySelector(".editimage").value = imgSource;
 										document.querySelector("#browse-files").remove();
+									});
+								});
+								allRemoveItems.forEach((btn) => {
+									btn.addEventListener("click", (e) => {
+										e.stopPropagation();
+										let userChoice = window.confirm(
+											"This will remove the file completly, are you sure?"
+										);
+
+										// Check the user's choice
+										if (userChoice) {
+											let closestDiv = e.target.closest(".browse-item");
+											let imageIdEl = closestDiv.querySelector("img");
+											let imageId = imageIdEl.getAttribute("data-id");
+											// User clicked "OK"
+
+											const removeItemphp = "../php/removeitem.php";
+											const removeuri = `id=${imageId}&type=image&userid=${userID}`;
+
+											// Remove Item
+											xhrSend("POST", removeItemphp, removeuri)
+												.then((data) => {
+													if (data.success) {
+														closestDiv.remove();
+													} else if (data.error) {
+														alert(
+															"There was an error removing the item.",
+															error
+														);
+													}
+												})
+												.catch((error) => {
+													// Handle any errors
+													console.error(
+														"Remove item image. XHR request failed:",
+														error
+													);
+												});
+										} else {
+											// User clicked "Cancel"
+											return;
+										}
 									});
 								});
 							} else if (browseType === "video") {
@@ -2064,6 +2107,7 @@ function start(data) {
 									img.src = reader.result;
 									img.style.maxWidth = "100%";
 									img.setAttribute("data-filename", file.name);
+									console.log(file.name);
 
 									const deleteButton = document.createElement("button");
 
