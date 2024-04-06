@@ -40,10 +40,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
         $projectId = (int) $data["projectid"];
         $locationId = (int) $data["locationid"];
         $filename = $data['filename'];
-        $image = $data["image"];
+        $sound = $data["sound"];
 
         // Fix the filename to remove special characters and spaces
         $filename = preg_replace('/[^\w.-]/', '', $filename);
+
+
+        try {
+            // Insert into images table
+            $imageStatement = $pdo->prepare("
+                INSERT INTO sounds (user_id, file_name, fullpath) 
+                VALUES (:userId, :filename, :fullpath)
+            ");
+            $imageStatement->bindParam(':userId', $userId, PDO::PARAM_INT);
+            $imageStatement->bindParam(':filename', $filename, PDO::PARAM_STR);
+            $imageStatement->bindParam(':fullpath', $fullpath, PDO::PARAM_STR);
+            if($imageStatement->execute()) {
+                $response = ['success' => "Inserted into sounds"];
+            } else {
+                $response = ['error' => "Failed inserting into sounds"];
+            }
+            
+
+            // Get the last inserted image ID
+            $imageId = $pdo->lastInsertId();
+
+            // Insert into projects_images table
+            $projectImageStatement = $pdo->prepare("
+                INSERT INTO project_sounds (user_id, project_id, location_id, sounds_id)
+                VALUES (:userId, :projectId, :locationId, :soundId)
+            ");
+            $projectImageStatement->bindParam(':userId', $userId, PDO::PARAM_INT);
+            $projectImageStatement->bindParam(':projectId', $projectId, PDO::PARAM_INT);
+            $projectImageStatement->bindParam(':locationId', $locationId, PDO::PARAM_INT);
+            $projectImageStatement->bindParam(':soundId', $imageId, PDO::PARAM_INT);
+
+            if($projectImageStatement->execute()) {
+                $response = ['success' => "Inserted into projects_sounds"];
+            } else {
+                $response = ['error' => "Failed inserting into projects_sounds"];
+            
+            }
+
+
+        } catch (PDOException $e) {
+            $response = ['error' => $e->getMessage()];
+        }
 
         // Check if the image data is not empty
         if (!empty($image)) {
@@ -160,46 +202,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
                     }
             }
 
-            try {
-                // Insert into images table
-                $imageStatement = $pdo->prepare("
-                    INSERT INTO images (user_id, file_name, fullpath) 
-                    VALUES (:userId, :filename, :fullpath)
-                ");
-                $imageStatement->bindParam(':userId', $userId, PDO::PARAM_INT);
-                $imageStatement->bindParam(':filename', $filename, PDO::PARAM_STR);
-                $imageStatement->bindParam(':fullpath', $fullpath, PDO::PARAM_STR);
-                if($imageStatement->execute()) {
-                    $response = ['success' => "Inserted into images"];
-                } else {
-                    $response = ['error' => "Failed inserting into images"];
-                }
-                
 
-                // Get the last inserted image ID
-                $imageId = $pdo->lastInsertId();
-
-                // Insert into projects_images table
-                $projectImageStatement = $pdo->prepare("
-                    INSERT INTO project_images (user_id, project_id, location_id, images_id)
-                    VALUES (:userId, :projectId, :locationId, :imageId)
-                ");
-                $projectImageStatement->bindParam(':userId', $userId, PDO::PARAM_INT);
-                $projectImageStatement->bindParam(':projectId', $projectId, PDO::PARAM_INT);
-                $projectImageStatement->bindParam(':locationId', $locationId, PDO::PARAM_INT);
-                $projectImageStatement->bindParam(':imageId', $imageId, PDO::PARAM_INT);
-
-                if($projectImageStatement->execute()) {
-                    $response = ['success' => "Inserted into projects_images"];
-                } else {
-                    $response = ['error' => "Failed inserting into projects_images"];
-                
-                }
-
-
-            } catch (PDOException $e) {
-                $response = ['error' => $e->getMessage()];
-            }
 
             // Respond with the path
             $response = ['path' => $original_path];

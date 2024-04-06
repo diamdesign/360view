@@ -4,63 +4,72 @@ require("functions.php");
 
 // Initialize an array to store messages and results
 $response = [];
-if(isset($_POST['id']) && isset($_POST['userid']) && isset($_POST['type']) || isset($_GET['id']) && isset($_GET['userid']) && isset($_GET['type'])) {
 
+// Check if JSON data is received
+$jsonData = file_get_contents('php://input');
 
-    if(isset($_POST['id'])) {
-        $image_id = intval($_POST['id']);
-        $fileType = $_POST['type'];
-        $user_id = intval($_POST['userid']);
-    } else {
-        $image_id = intval($_GET['id']);
-        $fileType = $_GET['type'];
-        $user_id = intval($_GET['userid']);
-    }
+// Decode JSON data into an associative array
+$requestData = json_decode($jsonData, true);
+
+// Check if the required parameters are present
+if(isset($requestData['id']) && isset($requestData['userid']) && isset($requestData['type'])) {
+    $images_id = intval($requestData['id']);
+    $fileType = $requestData['type'];
+    $user_id = intval($requestData['userid']);
+
+    $fullpath = [];
 
     if($fileType === "image") {
         try {
-
-            $getpath = $pdo->prepare("SELECT fullpath FROM images WHERE id = :image_id AND user_id = :user_id");
-            $getpath->bindParam(':image_id', $image_id, PDO::PARAM_INT);
+            // Fetch the full path of the image
+            $getpath = $pdo->prepare("SELECT fullpath FROM images WHERE id = :images_id AND user_id = :user_id");
+            $getpath->bindParam(':images_id', $images_id, PDO::PARAM_INT);
             $getpath->bindParam(':user_id', $user_id, PDO::PARAM_INT);
             $getpath->execute();
 
             $fullpath = $getpath->fetch(PDO::FETCH_ASSOC);
 
             // Delete from the project_images table
-            $projectImageStatement = $pdo->prepare("DELETE FROM project_images WHERE image_id = :image_id AND user_id = :user_id");
-            $projectImageStatement->bindParam(':image_id', $image_id, PDO::PARAM_INT);
+            $projectImageStatement = $pdo->prepare("DELETE FROM project_images WHERE images_id = :images_id AND user_id = :user_id");
+            $projectImageStatement->bindParam(':images_id', $images_id, PDO::PARAM_INT);
             $projectImageStatement->bindParam(':user_id', $user_id, PDO::PARAM_INT);
             $projectImageStatement->execute();
 
             // Delete from the images table
-            $imageStatement = $pdo->prepare("DELETE FROM images WHERE id = :image_id AND user_id = :user_id");
-            $imageStatement->bindParam(':image_id', $image_id, PDO::PARAM_INT);
+            $imageStatement = $pdo->prepare("DELETE FROM images WHERE id = :images_id AND user_id = :user_id");
+            $imageStatement->bindParam(':images_id', $images_id, PDO::PARAM_INT);
             $imageStatement->bindParam(':user_id', $user_id, PDO::PARAM_INT);
             $imageStatement->execute();
 
             // Check if fullpath exists
             if (!empty($fullpath['fullpath'])) {
                 // Get the full path of the file
-                $filePath = $fullpath['fullpath'];
-                
-                // Delete the file
-                if (unlink($filePath)) {
-                    $response = ['success' => 'Records deleted successfully'];
+                $originalFilePath = $fullpath['fullpath'];
+
+                // Delete the original file
+                if (unlink($originalFilePath)) {
+                    // Determine the low-resolution file path
+                    $lowResolutionFilePath = preg_replace('/(\.[^.]+)$/', '-low640$1', $originalFilePath);
+
+                    // Delete the low-resolution file if it exists
+                    if (file_exists($lowResolutionFilePath)) {
+                        unlink($lowResolutionFilePath);
+                    }
+
+                    $response = ['success' => 'Files deleted successfully']; // Set success message
                 } else {
-                    $response = ['message' => "Failed to remove file."];
+                    $response = ['message' => "Failed to remove original file."];
                 }
             } else {
-               $response = ['message' => "Path not found."];
+                $response = ['message' => "Path not found."];
             }
         } catch (PDOException $e) {
             $response = ['error' => $e->getMessage()];
         }
     }
-
-    }  else {
-    // If 'i' parameter is not provided in the URL, set an appropriate message in the response array
-    $response = ['message' => "No Data specified."];
+} else {
+    // If required parameters are not provided, set an appropriate message in the response array
+    $response = ['message' => "Required parameters are missing."];
 }
 
 // Convert the response object to JSON
@@ -69,4 +78,4 @@ $json_response = json_encode($response);
 // Send the response as JSON
 header('Content-Type: application/json');
 echo $json_response;
-
+?>

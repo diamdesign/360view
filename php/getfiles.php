@@ -39,6 +39,21 @@ if(isset($_POST['id']) && isset($_POST['type']) || isset($_GET['id']) && isset($
     } elseif($fileType === "video") {
         
     } elseif($fileType ==="sound") {
+        $stmt = $pdo->prepare("
+            SELECT ps.*, s.*
+            FROM project_sounds ps
+            LEFT JOIN sounds i ON ps.sounds_id = s.id
+            WHERE ps.user_id = :user_id
+        ");
+
+        // Bind the user_id parameter
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+
+        // Execute the query
+        $stmt->execute();
+
+        // Fetch all matching rows
+        $response = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     }
 

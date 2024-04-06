@@ -606,67 +606,164 @@ function start(data) {
 			let parentDivEl = editMC.querySelector(".edit-image");
 
 			if (imageFileInputEl) {
-				var imageFileName = imageFileInputEl.getAttribute("data-filename");
+				if (subscriber >= "1") {
+					var imageFileName = imageFileInputEl.getAttribute("data-filename");
 
-				// Remove all characters that are not letters, numbers, hyphens, or underscores
-				imageFileName = imageFileName.replace(/\.[^.]+$/, "");
-				var imageFileInput = imageFileInputEl.src;
-				console.log(imageFileInput);
-				var blob = dataURItoBlob(imageFileInput);
-				console.log("Image found");
-				const reader = new FileReader();
-				reader.readAsDataURL(blob);
+					// Remove all characters that are not letters, numbers, hyphens, or underscores
+					imageFileName = imageFileName.replace(/\.[^.]+$/, "");
+					var imageFileInput = imageFileInputEl.src;
 
-				reader.onload = function () {
-					console.log(reader, reader.result);
-					console.log("XHR Start");
-					parentDivEl.innerHTML = ""; // Clear any existing content
+					var blob = dataURItoBlob(imageFileInput);
+					console.log("Image found");
+					const reader = new FileReader();
+					reader.readAsDataURL(blob);
 
-					var jsonData = {
-						user_id: userID,
-						projectid: projectID,
-						locationid: locationID,
-						image: reader.result,
-						filename: imageFileName,
+					reader.onload = function () {
+						console.log("XHR Save Image...");
+						parentDivEl.innerHTML = ""; // Clear any existing content
+
+						var jsonData = {
+							user_id: userID,
+							projectid: projectID,
+							locationid: locationID,
+							image: reader.result,
+							filename: imageFileName,
+						};
+
+						var jsonString = JSON.stringify(jsonData);
+						console.log(jsonData);
+
+						const saveImagePHP = "../php/saveimage.php";
+
+						// Save image
+						xhrSend("POST", saveImagePHP, jsonString)
+							.then((data) => {
+								if (data.error) {
+									console.error("Save image. XHR response ERROR:", data.error);
+								}
+								if (data.success) {
+									console.log("Save image. Success", data.success);
+								}
+								console.log("XHR sent...");
+								console.log(data);
+								let newPath = data.path.replace(/(\.[^.]+)$/, "-low640$1");
+
+								const img = new Image();
+								img.src = newPath;
+								img.style.maxWidth = "100%";
+								parentDivEl.appendChild(img); // Append the image to the parent div
+								parentDivEl.classList.add("image", "zoom-image");
+								editMC
+									.querySelector(".zoom-image")
+									.addEventListener("click", imageClickHandler); // Attach event listener
+								parentDivEl.classList.remove("edit-image");
+
+								setTimeout(() => {
+									document.querySelector("#logo").classList.remove("saving");
+								}, 1000);
+							})
+							.catch((error) => {
+								// Handle any errors
+								console.error("Saving content. XHR request failed:", error);
+							});
 					};
+				}
+			} else {
+				const img = new Image();
+				img.src = imageInput;
+				img.style.maxWidth = "100%";
+				parentDivEl.innerHTML = ""; // Clear any existing content
 
-					var jsonString = JSON.stringify(jsonData);
-					console.log(jsonData);
+				parentDivEl.appendChild(img); // Append the image to the parent div
+				parentDivEl.classList.add("image", "zoom-image");
+				editMC.querySelector(".zoom-image").addEventListener("click", imageClickHandler); // Attach event listener
+				parentDivEl.classList.remove("edit-image");
+			}
+		} else if (adding === "sound") {
+			var soundInputEl = parent.querySelector(".editsound");
+			var soundInput = imageInputEl.value.trim();
+			var soundFileInputEl = parent.querySelector(".new-sound audio");
 
-					const saveImagePHP = "../php/saveimage.php";
+			if (soundInput === "" && !isoundileInputEl) {
+				console.log("Empty fields");
 
-					// Save image
-					xhrSend("POST", saveImagePHP, jsonString)
-						.then((data) => {
-							if (data.error) {
-								console.error("Save image. XHR response ERROR:", data.error);
-							}
-							if (data.success) {
-								console.log("Save image. Success", data.success);
-							}
-							console.log("XHR sent...");
-							console.log(data);
-							let newPath = data.path.replace(/(\.[^.]+)$/, "-low640$1");
+				let parent = editMC.parentNode;
 
-							const img = new Image();
-							img.src = newPath;
-							img.style.maxWidth = "100%";
-							parentDivEl.appendChild(img); // Append the image to the parent div
-							parentDivEl.classList.add("image", "zoom-image");
-							editMC
-								.querySelector(".zoom-image")
-								.addEventListener("click", imageClickHandler); // Attach event listener
-							parentDivEl.classList.remove("edit-image");
+				let all = parent.querySelectorAll(".edit-mc");
 
-							setTimeout(() => {
-								document.querySelector("#logo").classList.remove("saving");
-							}, 1000);
-						})
-						.catch((error) => {
-							// Handle any errors
-							console.error("Saving content. XHR request failed:", error);
-						});
-				};
+				if (all.length === 2) {
+					parent.querySelector(".edit-mc").style.display = "block";
+				}
+				editMC.remove();
+
+				return;
+			} else {
+				document.querySelector("#logo").classList.add("saving");
+			}
+			let parentDivEl = editMC.querySelector(".edit-sound");
+
+			if (soundFileInputEl) {
+				if (subscriber >= "1") {
+					var soundFileName = soundFileInputEl.getAttribute("data-filename");
+
+					// Remove all characters that are not letters, numbers, hyphens, or underscores
+					soundFileName = soundFileName.replace(/\.[^.]+$/, "");
+					var soundFileInput = soundFileInputEl.src;
+
+					var blob = dataURItoBlob(soundFileInput);
+					console.log("Sound found");
+					const reader = new FileReader();
+					reader.readAsDataURL(blob);
+
+					reader.onload = function () {
+						console.log("XHR Save Sound...");
+						parentDivEl.innerHTML = ""; // Clear any existing content
+
+						var jsonData = {
+							user_id: userID,
+							projectid: projectID,
+							locationid: locationID,
+							sound: reader.result,
+							filename: soundFileName,
+						};
+
+						var jsonString = JSON.stringify(jsonData);
+						console.log(jsonData);
+
+						const saveSoundPHP = "../php/savesound.php";
+
+						// Save image
+						xhrSend("POST", saveSoundPHP, jsonString)
+							.then((data) => {
+								if (data.error) {
+									console.error("Save sound. XHR response ERROR:", data.error);
+								}
+								if (data.success) {
+									console.log("Save sound. Success", data.success);
+								}
+								console.log("XHR sent...");
+								console.log(data);
+
+								const audio = new Image();
+								audio.src = newPath;
+								audio.style.maxWidth = "100%";
+								parentDivEl.appendChild(audio); // Append the image to the parent div
+								parentDivEl.classList.add("image", "zoom-image");
+								editMC
+									.querySelector(".zoom-image")
+									.addEventListener("click", imageClickHandler); // Attach event listener
+								parentDivEl.classList.remove("edit-image");
+
+								setTimeout(() => {
+									document.querySelector("#logo").classList.remove("saving");
+								}, 1000);
+							})
+							.catch((error) => {
+								// Handle any errors
+								console.error("Saving content. XHR request failed:", error);
+							});
+					};
+				}
 			} else {
 				const img = new Image();
 				img.src = imageInput;
@@ -725,7 +822,6 @@ function start(data) {
 			html: encodedContent,
 		};
 
-		console.log(jsonData);
 		var jsonString = JSON.stringify(jsonData);
 
 		const saveContentPHP = "../php/savecontent.php";
@@ -1039,10 +1135,28 @@ function start(data) {
 		currentLocY = Math.floor(yaw);
 	}
 
+	function adjustMarkerPositions() {
+		// Loop through all markers
+		document.querySelectorAll(".marker").forEach((marker) => {
+			// Adjust the position of each marker as needed
+			// For example, you can round the position to whole pixels
+			let transform = marker.style.transform;
+			if (transform.includes("translate") && transform.includes("px")) {
+				let match = transform.match(/translate\(([^,]+)px, ([^,]+)px\)/);
+				if (match) {
+					let left = Math.round(parseFloat(match[1]));
+					let top = Math.round(parseFloat(match[2]));
+					marker.style.transform = `translate(${left}px, ${top}px)`;
+				}
+			}
+		});
+	}
 	// Function to animate it all
 	function animate() {
 		requestAnimationFrame(animate);
 		controls.update();
+
+		adjustMarkerPositions();
 
 		// directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 		render();
@@ -1863,8 +1977,8 @@ function start(data) {
 					<div id="close-browse"></div>
 					<div class="browse-filter">
 						<div class="browse-showall active">Show all</div>
-						<div class="browse-showproject">Show this project</div>
-						<div class="browse-showlocation">Show this location</div>
+						<div class="browse-showproject">Project</div>
+						<div class="browse-showlocation">Location</div>
 						<div class="browse-grid active"></div>
 						<div class="browse-list"></div>
 					</div>
@@ -1893,7 +2007,7 @@ function start(data) {
 									browserListHTML += `<div class="browse-item" data-browseproject="${img.project_id}" data-browselocation="${img.location_id}">
 										<div class="remove-fileitem"></div>
 										<div class="image zoom-image">
-											<img src="${fullpath}" alt="" data-id="${img.image_id}"  />
+											<img src="${fullpath}" alt="" data-id="${img.images_id}"  />
 										</div>
 										<div class="browse-filename">${img.file_name}</div>
 										<div class="browse-uploaded">${img.uploaded}</div>
@@ -1903,7 +2017,7 @@ function start(data) {
 								data.forEach((video) => {
 									browserListHTML += `<div class="browse-item"><span class="duration">${video.duration}</span><img src="${video.thumbnail}" alt="" data-source="${video.source}" /></div>`;
 								});
-							} else if (browseType === "sounds") {
+							} else if (browseType === "sound") {
 								data.forEach((sound) => {
 									browserListHTML += `<div class="browse-item"><span class="duration">${sound.duration}</span><img src="${sound.thumbnail}" alt="" data-source="${sound.source}" /></div>`;
 								});
@@ -1991,13 +2105,104 @@ function start(data) {
 											let closestDiv = e.target.closest(".browse-item");
 											let imageIdEl = closestDiv.querySelector("img");
 											let imageId = imageIdEl.getAttribute("data-id");
+											let imgSrc = imageIdEl.getAttribute("src");
 											// User clicked "OK"
 
 											const removeItemphp = "../php/removeitem.php";
-											const removeuri = `id=${imageId}&type=image&userid=${userID}`;
+
+											const requestData = {
+												id: imageId,
+												type: "image",
+												userid: userID,
+											}; // JSON data
+
+											// Convert JSON object to a string
+											const jsonData = JSON.stringify(requestData);
+											console.log(jsonData);
 
 											// Remove Item
-											xhrSend("POST", removeItemphp, removeuri)
+											xhrSend("POST", removeItemphp, jsonData, "json")
+												.then((data) => {
+													if (data.success) {
+														closestDiv.remove();
+
+														// Get all elements with the class .edit-mc
+														const editMcElements =
+															document.querySelectorAll(".edit-mc");
+
+														// Loop through each .edit-mc element
+														editMcElements.forEach((editMcElement) => {
+															// Check if the element contains an img element with the specified src attribute value
+															const imgElement =
+																editMcElement.querySelector(
+																	`img[src="${imgSrc}"]`
+																);
+															if (imgElement) {
+																// Remove the .edit-mc element if it contains an img element with the specified src attribute value
+																editMcElement.remove();
+															}
+														});
+													} else if (data.error) {
+														alert(
+															"There was an error removing the item.",
+															error
+														);
+													}
+												})
+												.catch((error) => {
+													// Handle any errors
+													console.error(
+														"Remove item image. XHR request failed:",
+														error
+													);
+												});
+										} else {
+											// User clicked "Cancel"
+											return;
+										}
+									});
+								});
+							} else if (browseType === "video") {
+							} else if (browseType === "sound") {
+								allBrowseItems.forEach((item) => {
+									item.addEventListener("click", (e) => {
+										e.stopPropagation();
+										let audioSource = e.target
+											.closest(".browse-item")
+											.querySelector("audio")
+											.getAttribute("src");
+										parentDiv.querySelector(".editsound").value = audioSource;
+										document.querySelector("#browse-files").remove();
+									});
+								});
+								allRemoveItems.forEach((btn) => {
+									btn.addEventListener("click", (e) => {
+										e.stopPropagation();
+										let userChoice = window.confirm(
+											"This will remove the file completly, are you sure?"
+										);
+
+										// Check the user's choice
+										if (userChoice) {
+											let closestDiv = e.target.closest(".browse-item");
+											let soundIdEl = closestDiv.querySelector("audio");
+											let soundId = soundIdEl.getAttribute("data-id");
+											// User clicked "OK"
+
+											const removeItemphp = "../php/removeitem.php";
+
+											const requestData = {
+												id: soundId,
+												type: "sound",
+												userid: userID,
+											}; // JSON data
+
+											// Convert JSON object to a string
+											const jsonData = JSON.stringify(requestData);
+											console.log(jsonData);
+
+											// Remove Item
+											xhrSend("POST", removeItemphp, jsonData, "json")
 												.then((data) => {
 													if (data.success) {
 														closestDiv.remove();
@@ -2021,8 +2226,6 @@ function start(data) {
 										}
 									});
 								});
-							} else if (browseType === "video") {
-							} else if (browseType === "sound") {
 							}
 						} else {
 							console.log("fail");
@@ -2072,77 +2275,92 @@ function start(data) {
 							saveInput(event, element);
 						});
 				} else if (element === "image") {
-					const dropzone = nextEditMC.querySelector(".dropzone");
 					const fileInput = nextEditMC.querySelector(".imageInput");
 
-					dropzone.addEventListener("dragover", (e) => {
-						e.preventDefault();
-						dropzone.classList.add("dragover");
-					});
+					if (subscriber >= "1") {
+						const dropzone = nextEditMC.querySelector(".dropzone");
+						dropzone.addEventListener("dragover", (e) => {
+							e.preventDefault();
+							dropzone.classList.add("dragover");
+						});
 
-					dropzone.addEventListener("dragleave", () => {
-						dropzone.classList.remove("dragover");
-					});
+						dropzone.addEventListener("dragleave", () => {
+							dropzone.classList.remove("dragover");
+						});
 
-					dropzone.addEventListener("drop", (e) => {
-						e.preventDefault();
-						dropzone.classList.remove("dragover");
-						const files = e.dataTransfer.files;
-						handleFiles(files);
-					});
+						dropzone.addEventListener("drop", (e) => {
+							e.preventDefault();
+							dropzone.classList.remove("dragover");
+							const files = e.dataTransfer.files;
+							handleFiles(files);
+						});
 
-					fileInput.addEventListener("change", (e) => {
-						const files = e.target.files;
-						handleFiles(files);
-					});
+						fileInput.addEventListener("change", (e) => {
+							const files = e.target.files;
+							handleFiles(files);
+						});
 
-					function handleFiles(files) {
-						for (const file of files) {
-							if (file.type.startsWith("image/")) {
-								const reader = new FileReader();
-								reader.readAsDataURL(file);
-								reader.onload = function () {
-									const newImageDiv = document.createElement("div");
-									newImageDiv.classList.add("new-image");
+						function handleFiles(files) {
+							for (const file of files) {
+								if (file.type.startsWith("image/")) {
+									const reader = new FileReader();
+									reader.readAsDataURL(file);
+									reader.onload = function () {
+										const newImageDiv = document.createElement("div");
+										newImageDiv.classList.add("new-image");
 
-									dropzone.querySelector(".button-wrap").style.display = "none";
-
-									const img = new Image();
-									img.src = reader.result;
-									img.style.maxWidth = "100%";
-									img.setAttribute("data-filename", file.name);
-									console.log(file.name);
-
-									const deleteButton = document.createElement("button");
-
-									deleteButton.addEventListener("click", function () {
-										newImageDiv.remove();
-										fileInput.value = "";
 										dropzone.querySelector(".button-wrap").style.display =
-											"block";
-									});
+											"none";
 
-									newImageDiv.appendChild(img);
-									newImageDiv.appendChild(deleteButton);
-									dropzone.appendChild(newImageDiv);
-								};
-							} else {
-								alert("Please drop only image files.");
+										const img = new Image();
+										img.src = reader.result;
+										img.style.maxWidth = "100%";
+										img.setAttribute("data-filename", file.name);
+										console.log(file.name);
+
+										const deleteButton = document.createElement("button");
+
+										deleteButton.addEventListener("click", function () {
+											newImageDiv.remove();
+											fileInput.value = "";
+											dropzone.querySelector(".button-wrap").style.display =
+												"block";
+										});
+
+										newImageDiv.appendChild(img);
+										newImageDiv.appendChild(deleteButton);
+										dropzone.appendChild(newImageDiv);
+									};
+								} else {
+									alert("Please drop only image files.");
+									return;
+								}
 							}
 						}
 					}
-
 					nextEditMC.querySelector(".addimagesave").addEventListener("click", (event) => {
 						event.stopPropagation();
 						let parentDiv = event.target.closest(".edit-mc");
 						let inputImageLinkEl = parentDiv.querySelector(".editimage");
-						let inputImageDropEl = parentDiv.querySelector(".imageInput");
 						let inputImageLink = inputImageLinkEl.value.trim();
-						let inputImageDrop = inputImageDropEl.files[0];
-						if (inputImageLink !== "" && inputImageDrop) {
-							alert("You can only save one image, either a link or upload image.");
-							return;
+
+						if (subscriber >= "1") {
+							let inputImageDropEl = parentDiv.querySelector(".imageInput");
+							let inputImageDrop = inputImageDropEl.files[0];
+
+							if (inputImageLink !== "" && inputImageDrop) {
+								alert(
+									"You can only save one image, either a link or upload image."
+								);
+								return;
+							}
+						} else {
+							if (inputImageLink === "") {
+								alert("You must enter a link to an image, to be able to save.");
+								return;
+							}
 						}
+
 						saveInput(event, element);
 					});
 
@@ -2154,6 +2372,106 @@ function start(data) {
 							let parentDiv = event.target.closest(".edit-mc");
 
 							openFileBrowser(event, "image", parentDiv);
+						});
+				} else if (element === "sound") {
+					const fileInput = nextEditMC.querySelector(".soundInput");
+
+					if (subscriber >= "1") {
+						const dropzone = nextEditMC.querySelector(".dropzone");
+						dropzone.addEventListener("dragover", (e) => {
+							e.preventDefault();
+							dropzone.classList.add("dragover");
+						});
+
+						dropzone.addEventListener("dragleave", () => {
+							dropzone.classList.remove("dragover");
+						});
+
+						dropzone.addEventListener("drop", (e) => {
+							e.preventDefault();
+							dropzone.classList.remove("dragover");
+							const files = e.dataTransfer.files;
+							handleFiles(files);
+						});
+
+						fileInput.addEventListener("change", (e) => {
+							const files = e.target.files;
+							handleFiles(files);
+						});
+
+						function handleFiles(files) {
+							for (const file of files) {
+								if (file.type === "audio/mpeg") {
+									const reader = new FileReader();
+									reader.readAsDataURL(file);
+									reader.onload = function () {
+										const newSoundDiv = document.createElement("div");
+										newSoundDiv.classList.add("new-sound");
+
+										dropzone.querySelector(".button-wrap").style.display =
+											"none";
+
+										const audio = new Audio();
+										audio.src = reader.result;
+										audio.controls = true; // Adding controls to the audio player
+										audio.setAttribute("data-filename", file.name);
+										console.log(file.name);
+
+										const deleteButton = document.createElement("button");
+
+										deleteButton.addEventListener("click", function () {
+											newSoundDiv.remove();
+											fileInput.value = "";
+											dropzone.querySelector(".button-wrap").style.display =
+												"block";
+										});
+
+										newSoundDiv.appendChild(audio);
+										newSoundDiv.appendChild(deleteButton);
+										dropzone.appendChild(newSoundDiv);
+									};
+								} else {
+									alert("Please drop only mp3 files.");
+									return;
+								}
+							}
+						}
+					}
+
+					nextEditMC.querySelector(".addsoundsave").addEventListener("click", (event) => {
+						event.stopPropagation();
+						let parentDiv = event.target.closest(".edit-mc");
+						let inputSoundLinkEl = parentDiv.querySelector(".editsound");
+						let inputSoundLink = inputSoundLinkEl.value.trim();
+
+						if (subscriber >= "1") {
+							let inputSoundDropEl = parentDiv.querySelector(".soundInput");
+							let inputSoundDrop = inputSoundDropEl.files[0];
+
+							if (inputSoundLink !== "" && inputSoundDrop) {
+								alert(
+									"You can only save one sound, either a link or upload sound."
+								);
+								return;
+							}
+						}
+
+						if (inputImageLink === "") {
+							alert("You must enter a link to an image, to be able to save.");
+							return;
+						}
+
+						saveInput(event, element);
+					});
+
+					// Open browse sounds
+					nextEditMC
+						.querySelector(".btn-browse-sounds")
+						.addEventListener("click", (event) => {
+							event.stopPropagation();
+							let parentDiv = event.target.closest(".edit-mc");
+
+							openFileBrowser(event, "sound", parentDiv);
 						});
 				}
 
@@ -2170,13 +2488,16 @@ function start(data) {
 					nextEditMC.querySelector("input").focus();
 				} else if (element === "image") {
 					nextEditMC.querySelector(".editimage").focus();
+				} else if (element === "sound") {
+					nextEditMC.querySelector(".editsound").focus();
 				}
 			}
 
 			// Add element inside content function
 			function addElement(e, element) {
 				let editMC = e.target.closest(".edit-mc");
-				let parentMarkerContainer = editMc.closest(".marker-container");
+				let parentMarkerContent = editMC.closest(".marker-content");
+				let parentMarkerContainer = parentMarkerContent.closest(".marker-container");
 
 				let id = editMC.getAttribute("data-id");
 				let html, idHTML, isInfo;
@@ -2201,7 +2522,7 @@ function start(data) {
 					<div class="edit-image">
 						<div class="editimage-link">`;
 					if (subscriber >= "1") {
-						html += `<div class="btn-browse-images">Browse Images</div>`;
+						html += `<div class="btn-browse-images">Browse</div>`;
 					}
 					html += `<input type="text" class="editimage" placeholder="https://pathtoimage.com/image.jpg" />
 						</div>`;
@@ -2223,13 +2544,13 @@ function start(data) {
 				} else if (element === "youtube") {
 					html = `<div class="edit-mc" data-element="youtube" ${idHTML}><div><span>Paste your youtube embed code into the textarea.</span><textarea class="edityoutube" type="text" placeholder="Paste your Youtube embed code here..."></textarea></div></div>`;
 				} else if (element === "sound") {
-					let checkSound = parentMarkerContainer.querySelector("soundplay");
+					let checkSound = parentMarkerContainer.querySelector(".soundplay");
 
-					if (checkSound.length === 0) {
-						html = `<div class="edit-sound">
+					if (!checkSound) {
+						html = `<div class="edit-mc">
 							<div class="editsound-link">`;
 						if (subscriber >= "1") {
-							html += `<div class="btn-browse-sound">Browse Sounds</div>`;
+							html += `<div class="btn-browse-sounds">Browse</div>`;
 						}
 						html += `<input type="text" class="editsound" placeholder="https://pathtosound.com/sound.mp3" />
 							</div>`;
@@ -2352,7 +2673,7 @@ function start(data) {
 			});
 		}
 
-		// console.log("Edit mode on...");
+		console.log("Edit mode on...");
 
 		// console.log("Location info inserted...");
 
@@ -3097,7 +3418,7 @@ directionalLight.position.setFromMatrixPosition(lightHelper.matrixWorld);
 							<div class="btn-add-ul"></div>
 							<div class="btn-add-button"></div>
 							<div class="btn-add-youtube"></div>
-							<div class="btn-add-audio"></div>
+							<div class="btn-add-sound"></div>
 							<div class="btn-content-edit"></div>
 							<div class="btn-remove"></div>
 						</div>`;

@@ -109,11 +109,15 @@ export function getUrlParameter(name) {
 	return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
-export async function xhrSend(type, file, data) {
+export async function xhrSend(type, file, data, header = null) {
 	return new Promise((resolve, reject) => {
 		var xhr = new XMLHttpRequest();
 		xhr.open(type, file, true);
-		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		if (header === null) {
+			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		} else if (header === "json") {
+			xhr.setRequestHeader("Content-Type", "application/json");
+		}
 		xhr.onreadystatechange = function () {
 			if (xhr.readyState === 4) {
 				if (xhr.status === 200) {

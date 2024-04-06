@@ -2157,7 +2157,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	}
 
 	.marker-content {
-		height: 21.8rem;
+		max-height: 21.8rem;
 	}
 
 	#info .container h1,
@@ -2465,7 +2465,7 @@ input[type="range"]:focus::-moz-range-thumb {
 	filter: invert(1);
 }
 
-.btn-add-audio:after {
+.btn-add-sound:after {
 	display: block;
 	width: 100%;
 	height: 100%;
@@ -2582,7 +2582,8 @@ input[type="range"]:focus::-moz-range-thumb {
 .editul,
 .editbutton,
 .edityoutube,
-.editimage {
+.editimage,
+.editsound {
 	display: block;
 	min-width: 100%;
 	max-width: 100%;
@@ -2597,13 +2598,15 @@ input[type="range"]:focus::-moz-range-thumb {
 	font-weight: 600;
 	font-size: 0.875rem;
 }
-.editimage {
+.editimage,
+.editsound {
 	position: relative;
 	padding-left: 0.5rem;
 	padding-right: 0.5rem;
 }
 
-.editimage-link:after {
+.editimage-link:after,
+.editsound-link:after {
 	content: "";
 	position: absolute;
 	pointer-events: none;
@@ -2634,7 +2637,8 @@ input[type="range"]:focus::-moz-range-thumb {
 	background-color: rgba(65, 105, 225, 0.55);
 }
 
-.dropzone .imageInput {
+.dropzone .imageInput,
+.dropzone .soundInput {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -2722,7 +2726,8 @@ input[type="range"]:focus::-moz-range-thumb {
 	max-height: 200px !important;
 }
 
-.btn-browse-images {
+.btn-browse-images,
+.btn-browse-sounds {
 	position: absolute;
 	height: 1.8rem;
 	width: 5rem;
@@ -2740,11 +2745,13 @@ input[type="range"]:focus::-moz-range-thumb {
 	color: white;
 }
 
-.editimage-link {
+.editimage-link,
+.editsound-link {
 	position: relative;
 }
 
-.btn-browse-images:hover {
+.btn-browse-images:hover,
+.btn-browse-sounds:hover {
 	cursor: pointer;
 	filter: invert(1);
 	background: black;
