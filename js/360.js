@@ -69,7 +69,7 @@ function imageClickHandler(event) {
 	// Check if the image source starts with "../" and contains "-low" before the file extension
 
 	// Remove "-low" from the image source
-	clonedImage.src = src.replace(/-low640(\.\w+)$/, "$1");
+	clonedImage.src = src.replace(/(-low640)(\.\w+)$/, "$2");
 
 	clonedImage.classList.remove("zoom-image");
 	newDiv.appendChild(clonedImage);
@@ -118,6 +118,7 @@ var userID = null;
 var creatorID = null;
 var projectID = null;
 var locationID = null;
+var subscriber = 0;
 
 var startLocX = 0;
 var startLocY = 0;
@@ -296,6 +297,7 @@ function start(data) {
 	}
 	userID = data.user.id;
 	creatorID = data.creator.id;
+	subscriber = data.user.subscriber;
 
 	console.log("Data Type:", dataType);
 
@@ -645,6 +647,7 @@ function start(data) {
 							console.log("XHR sent...");
 							console.log(data);
 							let newPath = data.path.replace(/(\.[^.]+)$/, "-low640$1");
+
 							const img = new Image();
 							img.src = newPath;
 							img.style.maxWidth = "100%";
@@ -1886,6 +1889,7 @@ function start(data) {
 							if (browseType === "image") {
 								data.forEach((img) => {
 									let fullpath = img.fullpath.replace(/(\.[^.]+)$/, "-low640$1");
+
 									browserListHTML += `<div class="browse-item" data-browseproject="${img.project_id}" data-browselocation="${img.location_id}">
 										<div class="remove-fileitem"></div>
 										<div class="image zoom-image">
@@ -2172,6 +2176,7 @@ function start(data) {
 			// Add element inside content function
 			function addElement(e, element) {
 				let editMC = e.target.closest(".edit-mc");
+				let parentMarkerContainer = editMc.closest(".marker-container");
 
 				let id = editMC.getAttribute("data-id");
 				let html, idHTML, isInfo;
@@ -2194,17 +2199,21 @@ function start(data) {
 				} else if (element === "image") {
 					html = `<div class="edit-mc" data-element="image" ${idHTML}>
 					<div class="edit-image">
-						<div class="editimage-link">
-							<div class="btn-browse-images">Browse</div>
-							<input type="text" class="editimage" placeholder="https://pathtoimage.com" />
-						</div>
-						<div class="dropzone" id="dropzone">
+						<div class="editimage-link">`;
+					if (subscriber >= "1") {
+						html += `<div class="btn-browse-images">Browse Images</div>`;
+					}
+					html += `<input type="text" class="editimage" placeholder="https://pathtoimage.com/image.jpg" />
+						</div>`;
+					if (subscriber >= "1") {
+						html += `<div class="dropzone" id="dropzone">
 							<div class="button-wrap">
-								<label class="button" for="imageInput">Drop/Browse Image</label>
+								<label class="button" for="imageInput">Drop File/Browse Computer</label>
 								<input type="file" id="imageInput" class="imageInput" accept="image/*">
 							</div>
-						</div>
-						<div class="button addimagesave">Save</div>
+						</div>`;
+					}
+					html += `<div class="button addimagesave">Save</div>
 					</div>
 				</div>`;
 				} else if (element === "ul") {
@@ -2213,6 +2222,31 @@ function start(data) {
 					html = `<div class="edit-mc" data-element="button" ${idHTML}><div><span>Enter an external link beginning with 'http' or type the location's order number to navigate within your project.</span><input class="editbutton addbuttonlink" type="text" placeholder="https://example.com/externallink" /><input class="editbutton addbuttontext" type="text" placeholder="Button text" /><div class="button addbuttonsave">Save</div></div></div>`;
 				} else if (element === "youtube") {
 					html = `<div class="edit-mc" data-element="youtube" ${idHTML}><div><span>Paste your youtube embed code into the textarea.</span><textarea class="edityoutube" type="text" placeholder="Paste your Youtube embed code here..."></textarea></div></div>`;
+				} else if (element === "sound") {
+					let checkSound = parentMarkerContainer.querySelector("soundplay");
+
+					if (checkSound.length === 0) {
+						html = `<div class="edit-sound">
+							<div class="editsound-link">`;
+						if (subscriber >= "1") {
+							html += `<div class="btn-browse-sound">Browse Sounds</div>`;
+						}
+						html += `<input type="text" class="editsound" placeholder="https://pathtosound.com/sound.mp3" />
+							</div>`;
+						if (subscriber >= "1") {
+							html += `<div class="dropzone" id="dropzone">
+								<div class="button-wrap">
+									<label class="button" for="soundInput">Drop File/Browse Computer</label>
+									<input type="file" id="soundInput" class="soundInput" accept="audio/mpeg, audio/mp3">
+								</div>
+							</div>`;
+						}
+						html += `<div class="button addsoundsave">Save</div>
+						</div>`;
+					} else {
+						alert("You can only have 1 sound per marker.");
+						return;
+					}
 				}
 
 				editMC.insertAdjacentHTML("afterend", html);
@@ -2226,7 +2260,7 @@ function start(data) {
 							<div class="btn-add-button"></div>
 							<div class="btn-add-youtube"></div>`;
 				if (!isInfo) {
-					edithtml += `<div class="btn-add-audio"></div>`;
+					edithtml += `<div class="btn-add-sound"></div>`;
 				}
 
 				edithtml += `<div class="btn-content-edit"></div>
@@ -2267,6 +2301,10 @@ function start(data) {
 					.addEventListener("click", (e) => addElement(e, "youtube"));
 
 				nextEditMC
+					.querySelector(".btn-add-sound")
+					.addEventListener("click", (e) => addElement(e, "sound"));
+
+				nextEditMC
 					.querySelector(".btn-remove")
 					.addEventListener("click", (e) => removeElement(e));
 
@@ -2296,6 +2334,9 @@ function start(data) {
 			});
 			document.querySelectorAll(".btn-add-youtube").forEach((item) => {
 				item.addEventListener("click", (e) => addElement(e, "youtube"));
+			});
+			document.querySelectorAll(".btn-add-sound").forEach((item) => {
+				item.addEventListener("click", (e) => addElement(e, "sound"));
 			});
 			document.querySelectorAll(".btn-content-edit").forEach((item) => {
 				item.addEventListener("click", (e) => editElement(e));

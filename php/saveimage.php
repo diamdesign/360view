@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
             }
 
             // Check if the filename already exists
-            $original_path = '../profile/' . $username . '/images/' . $filename;
+            $original_path = '../profile/' . $username . '/images/' . $filename_with_extension;
             $counter = 1;
 
             // Add the file extension to the filename
@@ -161,7 +161,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
             try {
                 // Insert into images table
                 $imageStatement = $pdo->prepare("
-                    INSERT INTO images (user_id, file_name,fullpath) 
+                    INSERT INTO images (user_id, file_name, fullpath) 
                     VALUES (:userId, :filename, :fullpath)
                 ");
                 $imageStatement->bindParam(':userId', $userId, PDO::PARAM_INT);
@@ -179,7 +179,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST)) {
 
                 // Insert into projects_images table
                 $projectImageStatement = $pdo->prepare("
-                    INSERT INTO project_images (user_id, project_id, location_id, image_id)
+                    INSERT INTO project_images (user_id, project_id, location_id, images_id)
                     VALUES (:userId, :projectId, :locationId, :imageId)
                 ");
                 $projectImageStatement->bindParam(':userId', $userId, PDO::PARAM_INT);
